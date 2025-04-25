@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-name='AgroEcoMetrics',
+name='agroecometrics',
 version='0.0.1',
 author='Scarlett Olson',
 author_email='nwolson@wisc.edu',
