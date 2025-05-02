@@ -1,5 +1,0 @@
-setup.py
-AgroEcoMetrics.egg-info/PKG-INFO
-AgroEcoMetrics.egg-info/SOURCES.txt
-AgroEcoMetrics.egg-info/dependency_links.txt
-AgroEcoMetrics.egg-info/top_level.txt

@@ -1,0 +1,12 @@
+LICENSE
+README.md
+setup.py
+agroecometrics/__init__.py
+agroecometrics.egg-info/PKG-INFO
+agroecometrics.egg-info/SOURCES.txt
+agroecometrics.egg-info/dependency_links.txt
+agroecometrics.egg-info/requires.txt
+agroecometrics.egg-info/top_level.txt
+agroecometrics/bio_sci_equations/Runoff.py
+agroecometrics/bio_sci_equations/__init__.py
+agroecometrics/visualizations/__init__.py

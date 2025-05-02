@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: agroecometrics
+Version: 0.0.2b2
+Summary: This package contains useful tools for Aggriculture and Ecological researchers to clean,manipulate, display, and convert data.
+Author: Scarlett Olson
+Author-email: Scarlett.Olson@wisc.edu
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: matplotlib
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

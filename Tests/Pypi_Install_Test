@@ -1,7 +1,0 @@
-import agroecometrics as AEM
-
-
-if __name__ == '__main__':
-    AEM.BioSciEquations.load_data("private/Marshfield_02_11_2023-04_28_2025.csv", [2025])
-    AEM.BioSciEquations.compute_rainfall()
-    AEM.BioSciEquations.plot_rainfall('private/runoff_plot.png')
