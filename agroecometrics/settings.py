@@ -1,8 +1,9 @@
 # Default labels
 _labels = {
     "date": "Date",
+    "date_format": "%m/%d/%Y %I:%M %p",
     "temp": "T_DAILY_AVG",
-    "rain": "Daily Total Rain (mm)",  # optional future use
+    "rain": "Daily Total Rain (mm)",
 }
 
 def get_labels():

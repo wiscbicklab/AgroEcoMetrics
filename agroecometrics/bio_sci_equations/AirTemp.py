@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import circmean
 import os
-import settings
+from agroecometrics import settings
 
 # Create a range of days to be used for modeling
 doy = np.arange(1, 366)
@@ -33,8 +33,8 @@ def load_data(file, start_date=None, end_date=None):
     df.columns = df.columns.str.strip().str.replace("'", "")  # Clean column names
 
     # Convert the 'Date' column to datetime objects
-    df['date'] = pd.to_datetime(df[labels['date']], errors='coerce', infer_datetime_format=True)
-    df = df.dropna(subset=['date'])  # Drop rows where 'Date' conversion failed
+    df[labels['date']] = pd.to_datetime(df[labels['date']], errors='coerce', format=labels['date_format'])
+    df = df.dropna(subset=[labels['date']])  # Drop rows where 'Date' conversion failed
 
     # Filter data based on user-provided start and end dates
     if start_date:
