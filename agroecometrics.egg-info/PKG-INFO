@@ -12,6 +12,7 @@ License-File: LICENSE
 Requires-Dist: numpy
 Requires-Dist: pandas
 Requires-Dist: matplotlib
+Requires-Dist: scipy
 Dynamic: author
 Dynamic: author-email
 Dynamic: classifier

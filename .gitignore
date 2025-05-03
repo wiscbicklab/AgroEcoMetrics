@@ -1,0 +1,13 @@
+# Ignore private files
+private/
+
+# Python bytecode and cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg

@@ -2,26 +2,31 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 df = None
 
-def load_data(file, years=[], ):
+def load_data(file, start_date=None, end_date=None):
     '''
-    Loads a data file to perform calculations on
+    Loads a data file.
 
-    file: Is a string containing the path to your data
-    years: A list of years to select data from
+    file: A string containing the path to your data
+    start_date: Optional string in 'YYYY-MM-DD' format to filter data from this date onward
+    end_date: Optional string in 'YYYY-MM-DD' format to filter data up to this date
     '''
-    # Load data from input file
-    global df 
+    global df
     df = pd.read_csv(file)
-    df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%Y %I:%M %p')
-    df['RAIN'].fillna(0)
 
-    # Select a specific year to study runoff
-    if years:
-        df = df[df['Date'].dt.year.isin(years)]
-    
+    # Ensure 'Date' column is in datetime format
+    df['Date'] = pd.to_datetime(df['Date'])
+
+    # Apply date filtering if start_date or end_date is provided
+    if start_date:
+        df = df[df['Date'] >= pd.to_datetime(start_date)]
+    if end_date:
+        df = df[df['Date'] <= pd.to_datetime(end_date)]
+
+    # Reset index
     df = df.reset_index(drop=True)
 
 def curve_number(P, CN=75):
@@ -61,9 +66,19 @@ def plot_rainfall(file_name):
     file_name: Is the name of the png file the plot will be saved to
     return: the fileName if the file is created otherwise return error
     '''
+    # Validate file_name type
+    if not isinstance(file_name, str):
+        raise TypeError("file_name must be a string.")
+
+    # Validate extension
     if not file_name.lower().endswith('.png'):
-        raise ValueError("The filename must be *.png")
-    # Plot cumulative rainfall and runoff
+        raise ValueError("The filename must end with '.png'.")
+
+    # Optional: Ensure directory exists
+    dir_name = os.path.dirname(file_name)
+    if dir_name and not os.path.exists(dir_name):
+        raise FileNotFoundError(f"The directory '{dir_name}' does not exist.")
+
     plt.figure(figsize=(6,4))
     plt.plot(df['Date'], df['RAIN_SUM'], color='navy', label='Rainfall')
     plt.plot(df['Date'], df['RUNOFF_SUM'], color='tomato', label='Runoff')
@@ -72,8 +87,8 @@ def plot_rainfall(file_name):
     plt.savefig(file_name, dpi=300, bbox_inches='tight')
     return file_name
 
-
+# TODO: Move to testing files.
 if __name__ == '__main__':
-    load_data("private/Marshfield_02_11_2023-04_28_2025.csv", [2025])
+    load_data("private/Marshfield_02_11_2023-04_28_2025.csv", '2024-01-01', '2025-01-01')
     compute_rainfall()
     plot_rainfall('private/runoff_plot.png')
