@@ -12,7 +12,8 @@ setup(
         'numpy',
         'pandas',
         'matplotlib',
-        'scipy'
+        'scipy',
+        'mpl_toolkits.mtlot3d'
     ],
     classifiers=[
     'Programming Language :: Python :: 3',

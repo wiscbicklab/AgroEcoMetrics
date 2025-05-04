@@ -1,2 +1,2 @@
-from . import Runoff, AirTemp
+from . import Runoff, AirTemp, SoilTemp
 from .. import settings
