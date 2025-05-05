@@ -13,7 +13,8 @@ setup(
         'pandas',
         'matplotlib',
         'scipy',
-        'mpl_toolkits.mtlot3d'
+        'mpl_toolkits.mtlot3d',
+        'seaborn'
     ],
     classifiers=[
     'Programming Language :: Python :: 3',

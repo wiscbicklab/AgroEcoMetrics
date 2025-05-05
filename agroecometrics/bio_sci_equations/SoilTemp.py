@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from agroecometrics import settings
 import os
+import _util
 
 # Constants
 avg_temp = 25 # Annual average temperature at the soil surface
@@ -58,14 +59,7 @@ def plot_soil_temp(depth, file_name):
     depth: the depth to model the soil temperature at
     '''
     # Validate input parameters
-    if not isinstance(file_name, str):
-        raise TypeError("file_name must be a string.")
-    if not file_name.lower().endswith('.png'):
-        raise ValueError("The filename must end with '.png'.")
-
-    dir_name = os.path.dirname(file_name)
-    if dir_name and not os.path.exists(dir_name):
-        raise FileNotFoundError(f"The directory '{dir_name}' does not exist.")
+    _util.check_png_filename(file_name)
     
     # Use the model do calulate temperature data
     doy = np.arange(1,366)

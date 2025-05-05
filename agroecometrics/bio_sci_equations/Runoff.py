@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from agroecometrics import settings
+import _util
 
 # Load settings labels
 labels = settings.get_labels()
@@ -64,13 +65,7 @@ def plot_rainfall(df, file_name):
     file_name: PNG file path for the plot
     return: file_name if successful
     '''
-    if not isinstance(file_name, str):
-        raise TypeError("file_name must be a string.")
-    if not file_name.lower().endswith('.png'):
-        raise ValueError("The filename must end with '.png'.")
-    dir_name = os.path.dirname(file_name)
-    if dir_name and not os.path.exists(dir_name):
-        raise FileNotFoundError(f"The directory '{dir_name}' does not exist.")
+    _util.check_png_filename(file_name)
 
     plt.figure(figsize=(6, 4))
     plt.plot(df[labels['date']], df['RAIN_SUM'], color='navy', label='Rainfall')

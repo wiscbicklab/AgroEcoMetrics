@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import circmean
 import os
 from agroecometrics import settings
+import _util
 
 # Create a range of days to be used for modeling
 doy = np.arange(1, 366)
@@ -86,14 +87,7 @@ def plot_temp(df, file_name, T_pred):
     global labels
     
     # Validate input parameters
-    if not isinstance(file_name, str):
-        raise TypeError("file_name must be a string.")
-    if not file_name.lower().endswith('.png'):
-        raise ValueError("The filename must end with '.png'.")
-
-    dir_name = os.path.dirname(file_name)
-    if dir_name and not os.path.exists(dir_name):
-        raise FileNotFoundError(f"The directory '{dir_name}' does not exist.")
+    _util.check_png_filename(file_name)
 
     # Plot actual vs predicted temperature
     plt.figure(figsize=(8, 4))
