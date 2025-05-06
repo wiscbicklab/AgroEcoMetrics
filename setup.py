@@ -22,6 +22,6 @@ setup(
     'Operating System :: OS Independent',
     ],
     python_requires='>=3.6',
-    Homepage = "https://github.com/wiscbicklab/AgroEcoMetrics",
-    Issues = "https://github.com/wiscbicklab/AgroEcoMetrics/issues"
+    #Homepage = "https://github.com/wiscbicklab/AgroEcoMetrics",
+    #Issues = "https://github.com/wiscbicklab/AgroEcoMetrics/issues"
 )

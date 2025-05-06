@@ -1,36 +1,16 @@
-# Import modules
-import pandas as pd
+from scipy.stats import circmean
+
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+import pandas as pd
+
 from agroecometrics import settings
-import _util 
 
-labels = None
 
-def load_data(file, start_date=None, end_date=None):
-    '''
-    Loads a data file and returns a filtered DataFrame.
+# Gets the acutal labels of columns based on the user settings
+labels = settings.get_labels()
 
-    file: A string containing the path to your data
-    start_date: Optional string in 'YYYY-MM-DD' format to filter data from this date onward
-    end_date: Optional string in 'YYYY-MM-DD' format to filter data up to this date
-    return: A pandas DataFrame
-    '''
-    df = pd.read_csv(file)
-    df.columns = df.columns.str.strip().str.replace("'", "")
-    
-    global labels
-    labels = settings.get_labels()
-
-    df[labels['date']] = pd.to_datetime(df[labels['date']])
-
-    if start_date:
-        df = df[df[labels['date']] >= pd.to_datetime(start_date)]
-    if end_date:
-        df = df[df[labels['date']] <= pd.to_datetime(end_date)]
-
-    return df.reset_index(drop=True)
+# Define the air temperature model function
+air_temp_model = lambda doy, a, b, c: a + b * np.cos(2*np.pi*((doy - c)/365) + np.pi)
 
 
 # Helper Functions
@@ -50,7 +30,60 @@ def compute_Ra(doy, latitude):
     return Ra
 
 
-# Models
+def load_data(file, start_date=None, end_date=None):
+    '''
+    Loads a data file and returns a filtered DataFrame.
+
+    file: A string containing the path to your data
+    start_date: Optional string in 'YYYY-MM-DD' format to filter data from this date onward
+    end_date: Optional string in 'YYYY-MM-DD' format to filter data up to this date
+    return: A pandas DataFrame
+    '''
+    # Read the data from the given csv file
+    df = pd.read_csv(file)
+    df.columns = df.columns.str.strip().str.replace("'", "")
+
+    # Ensures that the data colomn is datetime format
+    df[labels['date']] = pd.to_datetime(df[labels['date']])
+
+    # Uses start and end date to filter the data
+    if start_date:
+        df = df[df[labels['date']] >= pd.to_datetime(start_date)]
+    if end_date:
+        df = df[df[labels['date']] <= pd.to_datetime(end_date)]
+
+    # Adds a Year and DOY column to the df based on the date column
+    df['DOY'] = df[labels['date']].dt.dayofyear
+    df['YEAR'] = df[labels['date']].dt.year
+
+    return df.reset_index(drop=True)
+
+def model_air_temp(df):
+    '''
+    Uses the air temperature data to find parameter estimates for the air temperature model
+        and creates the temperature predictions given the model
+
+    df: DataFrame with temperature data
+    return: A numpy array of predicted daily temperatures
+    '''
+    global labels
+
+    # Calculate mean temperature and temperature amplitude
+    T_avg = df[labels['temp']].mean()
+    T_min, T_max = df.groupby(by='DOY')[labels['temp']].mean().quantile([0.05, 0.95])
+    A = (T_max - T_min) / 2
+
+    # Estimate the day of year with minimum temperature using circular mean
+    idx_min = df.groupby(by='YEAR')[labels['temp']].idxmin()
+    doy_T_min = np.round(df.loc[idx_min, 'DOY'].apply(circmean).mean())
+
+    # Generate daily temperature predictions using the model
+    T_pred = air_temp_model(df['DOY'], T_avg, A, doy_T_min)
+
+    return T_pred
+
+
+# EvapoTranspiration Models
 def dalton(T_min,T_max,RH_min,RH_max,wind_speed):
     """Potential evaporation model proposed by Dalton in 1802"""
     e_sat_min = compute_esat(T_min)
@@ -138,52 +171,37 @@ def penman_monteith(T_min,T_max,RH_min,RH_max,solar_rad,wind_speed,doy,latitude,
     PET = (0.408 * delta * (solar_rad - soil_heat_flux) + gamma * (900 / (T_avg  + 273)) * wind_speed_2m * (e_saturation - e_actual)) / (delta + gamma * (1 + 0.34 * wind_speed_2m))
     return np.round(PET,2)
 
-#TODO: Move to visual.py
-def plot_evapo_data(df, file_name, model_data, model_labels):
 
-    # Check Argument Correctness
-    _util.check_filename(file_name)
-    if len(model_data) != len(model_labels):
-        raise ValueError("You must provide the same number of model labels and model data")
+# Rain/Runoff Models
+def curve_number(P, CN=75):
+    '''
+    Curve number method for runoff estimation.
+    P is precipitation in millimeters
+    CN is the curve number
+    '''
+    runoff = np.zeros_like(P)
+    S02 = 1000 / CN - 10
+    S005 = 1.33 * S02**1.15
+    Lambda = 0.05
+    Ia = S005 * Lambda
+    idx = P > Ia
+    runoff[idx] = (P[idx] - Ia)**2 / (P[idx] - Ia + S005)
+    return runoff
+
+def model_rainfall(df, cn=80):
+    '''
+    Computes cumulative rainfall and runoff, and adds the data to the DataFrame
+        with the labels RAIN_SUM, RUNOFF, and RUNOFF_SUM
+
+    df: DataFrame with rainfall data
+    cn: curve number for runoff model
+    '''
+    df['RAIN_SUM'] = df[labels['rain']].cumsum()
+    df['RUNOFF'] = curve_number(df[labels['rain']] / 25.4, CN=cn) * 25.4
+    df['RUNOFF_SUM'] = df['RUNOFF'].cumsum()
 
 
-    # Loop through and plot data from different models
-    for i in range(model_data):
-        data = model_data[i]
-        data_label = model_labels[i]
-        plt.plot(df[settings['date']], data, label=data_label)
-    
-    # Adds plot label
-    plt.ylabel('Evapotranspiration (mm/day)')
-    plt.legend()
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
-    
-    return file_name
-
- 
 
 
-#TODO: Move to tests file
-if __name__ == '__main__':
-    # Load Data
-    df = load_data("private/Marshfield_All_Data.csv", '2024-01-01', '2025-01-01')
-    # Set Latitude and Altitude for models which require it
-    latitude = 34
-    altitude = 350 # m
 
-    # Calculate Model Data
-    models = [
-    dalton(df[labels['tmin']], df[labels['tmax']], df[labels['hmin']], df[labels['hmax']], df[labels['w2avg']]),
-    penman(df[labels['tmin']], df[labels['tmax']], df[labels['hmin']], df[labels['hmax']], df[labels['w2avg']]),
-    romanenko(df[labels['tmin']], df[labels['tmax']], df[labels['hmin']], df[labels['hmax']]),
-    jensen_haise(df[labels['tmin']], df[labels['tmax']], df['DOY'], latitude),
-    hargreaves(df[labels['tmin']], df[labels['tmin']], df[labels['tmin']], latitude),
-    penman_monteith(df[labels['tmin']], df[labels['tmax']], df[labels['hmin']], df[labels['hmax']], df['ATOT'], df[labels['w2avg']], df['DOY'], latitude, altitude)
-    ]
-
-    # Labels for the models
-    model_labels = ['Dalton', 'Penman', 'Romanenko', 'Jensen-Haise', 'Hargreaves', 'Penman-Monteith']
-
-    # Plot Model Data
-    plot_evapo_data(df, 'Evapo_All.png', models, model_labels)
 
