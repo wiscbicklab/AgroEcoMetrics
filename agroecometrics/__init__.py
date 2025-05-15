@@ -1,2 +1,1 @@
-from . import bio_sci_equations
-from . import visualizations
+from . import bio_sci_equations, visualizations, settings

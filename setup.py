@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='agroecometrics',
-    version='0.0.2b2',
+    version='0.0.3b1',
     author='Scarlett Olson',
     author_email='Scarlett.Olson@wisc.edu',
     description='This package contains useful tools for Aggriculture and Ecological researchers to clean,' \
@@ -13,8 +13,7 @@ setup(
         'pandas',
         'matplotlib',
         'scipy',
-        'mpl_toolkits.mtlot3d',
-        'seaborn'
+        'seaborn',
     ],
     classifiers=[
     'Programming Language :: Python :: 3',
@@ -22,6 +21,6 @@ setup(
     'Operating System :: OS Independent',
     ],
     python_requires='>=3.6',
-    Homepage = "https://github.com/wiscbicklab/AgroEcoMetrics",
-    Issues = "https://github.com/wiscbicklab/AgroEcoMetrics/issues"
+    #Homepage = "https://github.com/wiscbicklab/AgroEcoMetrics",
+    #Issues = "https://github.com/wiscbicklab/AgroEcoMetrics/issues"
 )

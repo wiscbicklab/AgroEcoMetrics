@@ -14,6 +14,7 @@ _labels = {
     "hmin": "Daily Minimum Relative Humidity (pct)",
     "hmax": "Daily Maximum Relative Humidity (pct)",
     "w2avg": "Daily Maximum Wind Gust (m/h)",
+    "solar_rad":  "Daily solar radiation"
 
 
 }
