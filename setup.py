@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='agroecometrics',
-    version='0.0.2b2',
+    version='0.0.3b1',
     author='Scarlett Olson',
     author_email='Scarlett.Olson@wisc.edu',
     description='This package contains useful tools for Aggriculture and Ecological researchers to clean,' \
