@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from agroecometrics import settings
 import os
-import _util
 
 # Constants
 avg_temp = 25 # Annual average temperature at the soil surface

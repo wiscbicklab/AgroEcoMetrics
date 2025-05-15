@@ -1,16 +1,15 @@
 import os
+import pandas as pd
+import numpy as np
 
 import matplotlib.pyplot as plt
 
 from agroecometrics import settings
 
-
 # Gets the acutal labels of columns based on the user settings
 labels = settings.get_labels()
 
-
-
-def check_png_filename(file_name):
+def check_png_filename(file_name: str):
     if not isinstance(file_name, str):
         raise TypeError("file_name must be a string.")
     if not file_name.lower().endswith('.png'):
@@ -19,8 +18,7 @@ def check_png_filename(file_name):
     if dir_name and not os.path.exists(dir_name):
         raise FileNotFoundError(f"The directory '{dir_name}' does not exist.")
 
-
-def plot_temp(df, file_name, T_pred):
+def plot_air_temp(df: pd.DataFrame, file_name: str, T_pred: np.ndarray):
     '''
     Creates a plot of air temperature over the time-frame of the loaded data
 
@@ -41,9 +39,10 @@ def plot_temp(df, file_name, T_pred):
     plt.ylabel("Air temperature (Celsius)")
     plt.legend()
     plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.close()
     return file_name
 
-def plot_rain(df, file_name):
+def plot_rainfall(df: pd.DataFrame, file_name: str):
     '''
     Creates a plot of rainfall and runoff over time.
 
@@ -51,6 +50,8 @@ def plot_rain(df, file_name):
     file_name: PNG file path for the plot
     return: file_name if successful
     '''
+    global labels
+    
     check_png_filename(file_name)
 
     plt.figure(figsize=(6, 4))
@@ -59,9 +60,35 @@ def plot_rain(df, file_name):
     plt.ylabel('Rainfall or Runoff (mm)')
     plt.legend()
     plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.close()
     return file_name
 
+def plot_evapo_data(df: pd.DataFrame, file_name: str, model_data: np.ndarray,
+                     model_labels: list[str]):
+    global labels
 
+    # Generates a new Plot
+    plt.figure(figsize=(10,4))
+
+    # Check Argument Correctness
+    check_png_filename(file_name)
+    if len(model_data) != len(model_labels):
+        raise ValueError("You must provide the same number of model labels and model data")
+
+
+    # Loop through and plot data from different models
+    for i in range(len(model_data)):
+        data = model_data[i]
+        data_label = model_labels[i]
+        plt.plot(df[labels['date']], data, label=data_label)
+    
+    # Adds plot label
+    plt.ylabel('Evapotranspiration (mm/day)')
+    plt.legend()
+    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    return file_name
 
 
 

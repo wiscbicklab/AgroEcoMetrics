@@ -4,7 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from agroecometrics import settings
-import _util
 
 # Load settings labels
 labels = settings.get_labels()

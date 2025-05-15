@@ -9,8 +9,34 @@ from agroecometrics import settings
 # Gets the acutal labels of columns based on the user settings
 labels = settings.get_labels()
 
-# Define the air temperature model function
-air_temp_model = lambda doy, a, b, c: a + b * np.cos(2*np.pi*((doy - c)/365) + np.pi)
+
+def load_data(file, start_date=None, end_date=None):
+    '''
+    Loads a data file and returns a filtered DataFrame.
+
+    file: A string containing the path to your data
+    start_date: Optional string in 'YYYY-MM-DD' format to filter data from this date onward
+    end_date: Optional string in 'YYYY-MM-DD' format to filter data up to this date
+    return: A pandas DataFrame
+    '''
+    # Read the data from the given csv file
+    df = pd.read_csv(file)
+    df.columns = df.columns.str.strip().str.replace("'", "")
+
+    # Ensures that the data colomn is datetime format
+    df[labels['date']] = pd.to_datetime(df[labels['date']], format='%m/%d/%Y %I:%M %p')
+
+    # Uses start and end date to filter the data
+    if start_date:
+        df = df[df[labels['date']] >= pd.to_datetime(start_date)]
+    if end_date:
+        df = df[df[labels['date']] <= pd.to_datetime(end_date)]
+
+    # Adds a Year and DOY column to the df based on the date column
+    df['DOY'] = df[labels['date']].dt.dayofyear
+    df['YEAR'] = df[labels['date']].dt.year
+
+    return df.reset_index(drop=True)
 
 
 # Helper Functions
@@ -30,34 +56,7 @@ def compute_Ra(doy, latitude):
     return Ra
 
 
-def load_data(file, start_date=None, end_date=None):
-    '''
-    Loads a data file and returns a filtered DataFrame.
-
-    file: A string containing the path to your data
-    start_date: Optional string in 'YYYY-MM-DD' format to filter data from this date onward
-    end_date: Optional string in 'YYYY-MM-DD' format to filter data up to this date
-    return: A pandas DataFrame
-    '''
-    # Read the data from the given csv file
-    df = pd.read_csv(file)
-    df.columns = df.columns.str.strip().str.replace("'", "")
-
-    # Ensures that the data colomn is datetime format
-    df[labels['date']] = pd.to_datetime(df[labels['date']])
-
-    # Uses start and end date to filter the data
-    if start_date:
-        df = df[df[labels['date']] >= pd.to_datetime(start_date)]
-    if end_date:
-        df = df[df[labels['date']] <= pd.to_datetime(end_date)]
-
-    # Adds a Year and DOY column to the df based on the date column
-    df['DOY'] = df[labels['date']].dt.dayofyear
-    df['YEAR'] = df[labels['date']].dt.year
-
-    return df.reset_index(drop=True)
-
+# Air Temperature model
 def model_air_temp(df):
     '''
     Uses the air temperature data to find parameter estimates for the air temperature model
@@ -78,7 +77,7 @@ def model_air_temp(df):
     doy_T_min = np.round(df.loc[idx_min, 'DOY'].apply(circmean).mean())
 
     # Generate daily temperature predictions using the model
-    T_pred = air_temp_model(df['DOY'], T_avg, A, doy_T_min)
+    T_pred = T_avg + A * np.cos(2 * np.pi * ((df['DOY'] - doy_T_min) / 365) + np.pi)
 
     return T_pred
 
@@ -199,9 +198,35 @@ def model_rainfall(df, cn=80):
     df['RAIN_SUM'] = df[labels['rain']].cumsum()
     df['RUNOFF'] = curve_number(df[labels['rain']] / 25.4, CN=cn) * 25.4
     df['RUNOFF_SUM'] = df['RUNOFF'].cumsum()
+    return df
 
 
 
+
+# Fletcher's Functions
+def match_weather(weather_datetime_col, data_datetime_col):
+    vals = np.searchsorted(weather_datetime_col, data_datetime_col, sorter=None)
+    match_times = [None] * len(vals)
+    match_indices = [None] * len(vals)
+    diffs = [None] * len(vals)
+ 
+    for i in range(len(vals)):
+        vals[i] = min(vals[i], len(weather_datetime_col)-1)
+        if vals[i] > 0 and abs(data_datetime_col[i]-weather_datetime_col[vals[i]]) > abs(data_datetime_col[i]-weather_datetime_col[vals[i]-1]):
+            vals[i] = vals[i]-1
+        match_times[i] = weather_datetime_col[vals[i]]
+        match_indices[i] = vals[i]
+        diffs[i] = abs(data_datetime_col[i]-weather_datetime_col[vals[i]])
+    return (data_datetime_col, match_times, match_indices, diffs)
+ 
+def get_cols_from_weather_for_matched_indices(weather_data, weather_cols, matched_indices):
+    cols = [None]*len(weather_cols)
+    for col in range(len(weather_cols)):
+        cols[col] = [None]*len(matched_indices)
+        for i in range(len(matched_indices)):
+            cols[col][i] = weather_data[weather_cols[col]][matched_indices[i]]
+ 
+    return cols
 
 
 

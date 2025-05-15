@@ -13,6 +13,9 @@ T_upper = None
 
 labels = None
 
+# TODO move elsewhere then finish
+
+
 def load_data(file, start_date=None, end_date=None):
     '''
     Loads a data file and returns a filtered DataFrame.

@@ -1,6 +1,9 @@
 # Ignore private files
 private/
 
+# Testing images
+Tests/Images/
+
 # Python bytecode and cache
 __pycache__/
 **/__pycache__/
