@@ -1,5 +1,10 @@
 from scipy.stats import circmean
 
+from bokeh.plotting import figure, show, output_notebook, ColumnDataSource, save
+from bokeh.layouts import row
+from bokeh.models import HoverTool
+from bokeh.io import export_svgs
+
 import numpy as np
 import pandas as pd
 
@@ -81,6 +86,7 @@ def model_air_temp(df):
 
     return T_pred
 
+
 # Soil Temperature models
 def model_soil_temp_at_depth(depth, avg_temp=25, thermal_amp=10, thermal_dif=0.203, time_lag=15):
     """
@@ -133,6 +139,36 @@ def model_day_soil_temp(doy, max_depth, Nz=100, avg_temp=25, thermal_amp=10, the
 
     T_soil = avg_temp + thermal_amp * np.exp(-depths/damp_depth) * np.sin(OMEGA*doy - depths/damp_depth - phase_const)
     return T_soil, depths
+
+def model_soil_temp_3d(max_depth, Nz=1000, avg_temp=25, thermal_amp=10, thermal_dif=0.203, timelag=15):
+    """
+    Models soil temperature on a particular day of the year
+    
+    Args:
+        doy: Is the day to model soil temperature at, given as days since January first
+        max_depth: The maximum depth to model the soil temperature at, in centimeters
+        Nz: The number of interpolated depths to caluculate soil temperature at
+        avg_temp: The annual average surface temperature in, Celsius
+        thermal_amp: The annual thermal amplitude of the soil surface, in Celsius
+        thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]
+        time_lag: The time lag in days since January 1st
+    Return:
+        Predicted soil temperature at Nz number of depths from max_depth/Nz to max_depth
+        Depths that the soil temperature was modeled at 
+    """
+    # Set Constants
+    OMEGA = 2*np.pi/365
+
+    thermal_dif = thermal_dif / 100 * 86400 # convert to cm^2/day
+    phase_const = np.pi/2 + OMEGA*timelag # Phase constant
+    damp_depth = (2*thermal_dif/OMEGA)**(1/2) # Damping depth 
+
+    doy = np.arange(1,366)
+    depths = np.linspace(0, max_depth, Nz) # Interpolation depths
+    doy_grid,z_grid = np.meshgrid(doy,depths)
+    
+    t_grid = avg_temp + thermal_amp * np.exp(-z_grid/damp_depth) * np.sin(OMEGA*doy_grid - z_grid/damp_depth - phase_const)
+    return doy_grid, z_grid, t_grid
 
 
 # EvapoTranspiration Models
@@ -252,7 +288,6 @@ def model_rainfall(df, cn=80):
     df['RUNOFF'] = curve_number(df[labels['rain']] / 25.4, CN=cn) * 25.4
     df['RUNOFF_SUM'] = df['RUNOFF'].cumsum()
     return df
-
 
 
 

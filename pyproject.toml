@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agroecometrics"
-version = "0.0.2b1"
+version = "0.0.3b1"
 description = "Agricultural ecology metrics and visualization tools."
 readme = "README.md"
 requires-python = ">=3.7"
@@ -17,6 +17,7 @@ dependencies = [
   "matplotlib",
   "pandas",
   "numpy",
+  "bokeh"
 ]
 
 [project.urls]
@@ -25,5 +26,8 @@ dependencies = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["agroecometrics"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 

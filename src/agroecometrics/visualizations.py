@@ -9,6 +9,7 @@ from agroecometrics import settings
 # Gets the acutal labels of columns based on the user settings
 labels = settings.get_labels()
 
+
 ####    UTIL FUNCTIONS    ####
 
 def check_png_filename(file_name: str):
@@ -20,10 +21,15 @@ def check_png_filename(file_name: str):
     if dir_name and not os.path.exists(dir_name):
         raise FileNotFoundError(f"The directory '{dir_name}' does not exist.")
 
+def save_plot(file_name: str):
+    plt.legend()
+    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.close()
+
 
 ####    AIR TEMPERATURE PLOTS    ####
 
-def plot_air_temp(df: pd.DataFrame, file_name: str, T_pred: np.ndarray):
+def plot_air_temp(df: pd.DataFrame, T_pred: np.ndarray, file_name: str):
     """
     Creates a plot of air temperature over the time-frame of the loaded data
 
@@ -44,9 +50,8 @@ def plot_air_temp(df: pd.DataFrame, file_name: str, T_pred: np.ndarray):
     plt.scatter(df[labels['date']], df[labels['temp']], s=5, color='gray', label="Observed")
     plt.plot(df[labels['date']], T_pred, label="Predicted", color='tomato', linewidth=1)
     plt.ylabel("Air temperature (Celsius)")
-    plt.legend()
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
-    plt.close()
+    
+    save_plot(file_name)
     return file_name
 
 
@@ -71,10 +76,11 @@ def plot_yearly_soil_temp(T_soil: np.ndarray, file_name: str):
     # Create the plot
     plt.figure()
     plt.plot(doy,T_soil)
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+   
+    save_plot(file_name)
     return file_name
 
-def plot_day_temp(T_soil: np.ndarray, depths: np.ndarray, file_name: str):
+def plot_day_soil_temp(T_soil: np.ndarray, depths: np.ndarray, file_name: str):
     """
     Creates a plot of modeled soil temperature at different depths 
 
@@ -89,7 +95,43 @@ def plot_day_temp(T_soil: np.ndarray, depths: np.ndarray, file_name: str):
     plt.figure()
     plt.plot(T_soil, -depths)
     plt.ylabel("Air temperature (Celsius)")
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    
+    save_plot(file_name)
+    return file_name
+
+def plot_3d_soil_temp(doy_grid: np.ndarray, z_grid: np.ndarray, 
+                      t_grid: np.ndarray, file_name: str):
+    """
+    
+    """
+    check_png_filename(file_name)
+
+    # Create figure
+    fig = plt.figure(figsize=(10, 6), dpi=80) # 10 inch by 6 inch dpi = dots per inch
+
+    # Get figure axes and convert it to a 3D projection
+    ax = fig.add_subplot(111, projection='3d')
+
+
+    # Add surface plot to axes. Save this surface plot in a variable
+    surf = ax.plot_surface(doy_grid, z_grid, t_grid, cmap='viridis', antialiased=False)
+
+    # Add colorbar to figure based on ranges in the surf map.
+    fig.colorbar(surf, shrink=0.5, aspect=20)
+
+    # Wire mesh
+    frame = surf = ax.plot_wireframe(doy_grid, z_grid, t_grid, linewidth=0.5, color='k', alpha=0.5)
+
+    # Label x,y, and z axis
+    ax.set_xlabel("Day of the year")
+    ax.set_ylabel('Soil depth [cm]')
+    ax.set_zlabel('Soil temperature \N{DEGREE SIGN}C')
+
+    # Set position of the 3D plot
+    ax.view_init(elev=30, azim=35) # elevation and azimuth. Change their value to see what happens.
+
+    save_plot(file_name)
+    return file_name
 
 
 ####    RAILFALL PLOTS    ####
@@ -110,9 +152,8 @@ def plot_rainfall(df: pd.DataFrame, file_name: str):
     plt.plot(df[labels['date']], df['RAIN_SUM'], color='navy', label='Rainfall')
     plt.plot(df[labels['date']], df['RUNOFF_SUM'], color='tomato', label='Runoff')
     plt.ylabel('Rainfall or Runoff (mm)')
-    plt.legend()
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
-    plt.close()
+
+    save_plot(file_name)
     return file_name
 
 
@@ -139,10 +180,8 @@ def plot_evapo_data(df: pd.DataFrame, file_name: str, model_data: np.ndarray,
     
     # Adds plot label
     plt.ylabel('Evapotranspiration (mm/day)')
-    plt.legend()
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
-    plt.close()
     
+    save_plot(file_name)
     return file_name
 
 
