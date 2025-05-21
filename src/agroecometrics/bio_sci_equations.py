@@ -165,10 +165,10 @@ def model_soil_temp_at_depth(
     damp_depth = (2*thermal_dif/OMEGA)**(1/2) # Damping depth 
 
     doy = np.arange(1,366)
-    T_soil = avg_temp + thermal_amp * np.exp(-depth / damp_depth) * \
-        np.sin(OMEGA * doy - depth / damp_depth - phase_const)
+    T_soil = avg_temp + thermal_amp * np.exp(-depth / damp_depth)
+    T_soil = T_soil * np.sin(OMEGA * doy - depth / damp_depth - phase_const)
     
-    return  T_soil
+    return  np.array(T_soil)
 
 def model_day_soil_temp(
         doy: int,
@@ -178,7 +178,7 @@ def model_day_soil_temp(
         thermal_amp: int = 10,
         thermal_dif: int = 0.203,
         timelag: int = 15
-    ) -> pd.DataFrame:
+    ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Models soil temperature on a particular day of the year
     
@@ -192,7 +192,7 @@ def model_day_soil_temp(
         time_lag: The time lag in days (0-365) where January 1st is 0 and 365
 
     Returns:
-        A DataFrame with a depth and temp column
+        An np array of the soil temps and an np array of the depths of the soil temps
     """
     # Set Constants
     OMEGA = 2*np.pi/365
@@ -203,15 +203,10 @@ def model_day_soil_temp(
 
     depths = np.linspace(0, max_depth, Nz) # Interpolation depths
     
-    T_soil = avg_temp + thermal_amp * np.exp(-depths / damp_depth) * \
-        np.sin(OMEGA * doy - depths / damp_depth - phase_const)
-    
-    df = pd.DataFrame({
-        "depth": depths,
-        "temp": T_soil
-    })
+    T_soil = avg_temp + thermal_amp * np.exp(-depths / damp_depth)
+    T_soil = T_soil * np.sin(OMEGA * doy - depths / damp_depth - phase_const)
 
-    return df
+    return (np.array(depths), np.array(T_soil))
 
 def model_soil_temp_3d(
         max_depth: int,
@@ -220,7 +215,7 @@ def model_soil_temp_3d(
         thermal_amp: int = 10,
         thermal_dif: int = 0.203,
         timelag: int = 15
-    ) -> pd.DataFrame:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Models soil temperature over a full year (0–365) and across depth.
     
@@ -233,7 +228,7 @@ def model_soil_temp_3d(
         time_lag: The time lag in days (0-365) where January 1st is 0 and 365
     
     Returns:
-        A DataFrame with columns: 'day', 'depth', 'temp'.
+        A tuple of (doy_grid, z_grid, temp_grid), where each is a 2D NumPy array.
     """
     # Set Constants
     OMEGA = 2*np.pi/365
@@ -248,14 +243,7 @@ def model_soil_temp_3d(
     
     t_grid = avg_temp + thermal_amp * np.exp(-z_grid/damp_depth) * np.sin(OMEGA*doy_grid - z_grid/damp_depth - phase_const)
 
-    # Flatten grids and create DataFrame
-    df = pd.DataFrame({
-        "day": doy_grid.ravel(),
-        "depth": z_grid.ravel(),
-        "temp": t_grid.ravel()
-    })
-
-    return df
+    return doy_grid, z_grid, t_grid
 
 
 # EvapoTranspiration Models
