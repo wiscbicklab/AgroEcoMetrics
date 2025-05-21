@@ -20,7 +20,7 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_name: str):
     tmax = df[labels['tmax']]
     hmin = df[labels['hmin']]
     hmax = df[labels['hmax']]
-    wind_avg = df[labels['w2avg']]*0.5*.44704
+    wind_avg = df[labels['max_gust']]*0.5*.44704
     doy = df['DOY']
     pmin = df[labels['pmin']]*100
     pmax = df[labels['pmax']]*100
@@ -67,9 +67,9 @@ if __name__ == '__main__':
     # Save Folder
     folder = "Tests/Images/"
 
-    #air_temp_tests(df2024, folder+"air_temp_plot.png")
+    air_temp_tests(df2024, folder+"air_temp_plot.png")
     evapo_transpiation_tests(df2024, folder+"Evapo_All.png")
-    #runoff_tests(df2024, folder+"runoff_plot.png")
-    #soil_temp_tests([folder+"soil_temp.png", folder+"day150_temp.png", folder+"soil_temp_3d.png"])
+    runoff_tests(df2024, folder+"runoff_plot.png")
+    soil_temp_tests([folder+"soil_temp.png", folder+"day150_temp.png", folder+"soil_temp_3d.png"])
 
 
