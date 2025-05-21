@@ -30,7 +30,7 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_name: str):
     AEM.visualizations.plot_evapo_data(df, file_name, evapo_models, evapo_model_labels)
 
 def runoff_tests(df: pd.DataFrame, file_name: str):
-    runoff = AEM.bio_sci_equations.model_rainfall(df)
+    runoff = AEM.bio_sci_equations.rainfall_runoff_to_df(df)
     AEM.visualizations.plot_rainfall(runoff, file_name)
 
 def soil_temp_tests(file_names: list[str]):
