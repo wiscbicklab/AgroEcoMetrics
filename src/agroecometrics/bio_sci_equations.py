@@ -133,7 +133,7 @@ def model_air_temp(df: pd.DataFrame) -> np.ndarray:
     # Generate daily temperature predictions using the model
     T_pred = T_avg + A * np.cos(2 * np.pi * ((df['DOY'] - doy_T_min) / 365) + np.pi)
 
-    return np.ndarray(T_pred)
+    return np.array(T_pred)
 
 
 # Soil Temperature models
