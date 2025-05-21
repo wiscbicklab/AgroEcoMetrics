@@ -28,7 +28,7 @@ def load_data(
         file_path: str, 
         start_date: Optional[str] = None,
         end_date: Optional[str] = None, 
-        date_format: Optional[str] ='%m/%d/%Y %I:%M %p'
+        date_format: str ='%m/%d/%Y %I:%M %p'
     ) -> pd.DataFrame:
     '''
     Loads data into a DataFrame from a given CSV file filtered by date
@@ -37,7 +37,7 @@ def load_data(
         file_path: The path to your csv data file
         start_date: Optional. The date to start filtering from (Inclusive)
         end_date: Optional. The date to stop filtering on (Inclusive)
-        date_format: Optional. The date_format to use on the file
+        date_format: The date_format to use on the file
     
     Returns:
         A DataFrame with the information from the csv file filtered by the specified dates
@@ -139,10 +139,10 @@ def model_air_temp(df: pd.DataFrame) -> np.ndarray:
 # Soil Temperature models
 def model_soil_temp_at_depth(
         depth: series_type,
-        avg_temp: Optional[int]=25,
-        thermal_amp: Optional[int] = 10,
-        thermal_dif: Optional[float] = 0.203,
-        time_lag: Optional[int] = 15
+        avg_temp: int=25,
+        thermal_amp: int = 10,
+        thermal_dif: float = 0.203,
+        time_lag: int = 15
     ) -> np.ndarray:
     """
     Models soil temperature over one year at the given depth
@@ -173,11 +173,11 @@ def model_soil_temp_at_depth(
 def model_day_soil_temp(
         doy: int,
         max_depth: int,
-        Nz: Optional[int] = 100,
-        avg_temp: Optional[int] = 25,
-        thermal_amp: Optional[int] = 10,
-        thermal_dif: Optional[int] = 0.203,
-        timelag: Optional[int] = 15
+        Nz: int = 100,
+        avg_temp: int = 25,
+        thermal_amp: int = 10,
+        thermal_dif: int = 0.203,
+        timelag: int = 15
     ) -> pd.DataFrame:
     """
     Models soil temperature on a particular day of the year
@@ -215,11 +215,11 @@ def model_day_soil_temp(
 
 def model_soil_temp_3d(
         max_depth: int,
-        Nz: Optional[int] = 1000,
-        avg_temp: Optional[int] = 25,
-        thermal_amp: Optional[int] = 10,
-        thermal_dif: Optional[int] = 0.203,
-        timelag: Optional[int] = 15
+        Nz: int = 1000,
+        avg_temp: int = 25,
+        thermal_amp: int = 10,
+        thermal_dif: int = 0.203,
+        timelag: int = 15
     ) -> pd.DataFrame:
     """
     Models soil temperature over a full year (0–365) and across depth.
@@ -440,7 +440,7 @@ def penman_monteith(
         doy: series_type,
         latitude: float,
         altitude: float,
-        wind_height: Optional[int] = 1.5,
+        wind_height: int = 1.5,
     ) -> np.ndarray:
     """
     Potential evapotranspiration model proposed by Penman in 1948 
@@ -518,7 +518,7 @@ def penman_monteith(
 
 
 # Rain/Runoff Models
-def model_runoff(precip: series_type, cn: Optional[int] = 75) -> pd.DataFrame:
+def model_runoff(precip: series_type, cn: int = 75) -> pd.DataFrame:
     '''
     Uses Curve Number to estimate runoff from rainfall
 
@@ -543,7 +543,7 @@ def model_runoff(precip: series_type, cn: Optional[int] = 75) -> pd.DataFrame:
 
     return runoff * 25.4 # Convert runoff back to millimeters
 
-def rainfall_runoff_to_df(df: pd.DataFrame, cn: Optional[int]):
+def rainfall_runoff_to_df(df: pd.DataFrame, cn: int = 75):
     '''
     Computes cumulative rainfall, cummulative runoff, and daily runoff and adds
         the computed data to the given DataFrame
