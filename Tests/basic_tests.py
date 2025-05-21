@@ -1,30 +1,42 @@
 import agroecometrics as AEM
 import pandas as pd
 
+labels = AEM.settings.get_labels()
+
 def air_temp_tests(df: pd.DataFrame, file_name: str):
     # Air Temperature models
     air_temp_pred = AEM.bio_sci_equations.model_air_temp(df2024)
     AEM.visualizations.plot_air_temp(df, air_temp_pred, file_name)
 
 def evapo_transpiation_tests(df: pd.DataFrame, file_name: str):
+    global labels
+
     # Set Latitude and Altitude for Evapo Models
-    latitude = 34
-    altitude = 350 # m
+    latitude = 34.0 # Degrees
+    altitude = 350.0 # m
+
+    # Get data from data file
+    tmin = df[labels['tmin']]
+    tmax = df[labels['tmax']]
+    hmin = df[labels['hmin']]
+    hmax = df[labels['hmax']]
+    wind_avg = df[labels['w2avg']]*0.5*.44704
+    doy = df['DOY']
+    pmin = df[labels['pmin']]*100
+    pmax = df[labels['pmax']]*100
 
     # Calculate EVapo model Data
     evapo_models = [
-    AEM.bio_sci_equations.dalton(df[labels['tmin']], df[labels['tmax']], df[labels['hmin']], df[labels['hmax']], df[labels['w2avg']]),
-    AEM.bio_sci_equations.penman(df[labels['tmin']], df[labels['tmax']], df[labels['hmin']], df[labels['hmax']], df[labels['w2avg']]),
-    AEM.bio_sci_equations.romanenko(df[labels['tmin']], df[labels['tmax']], df[labels['hmin']], df[labels['hmax']]),
-    AEM.bio_sci_equations.jensen_haise(df[labels['tmin']], df[labels['tmax']], df['DOY'], latitude),
-    AEM.bio_sci_equations.hargreaves(df[labels['tmin']], df[labels['tmin']], df[labels['tmin']], latitude),
-    #TODO: Need to add solar radiation calculations to get this model to work
-        # Add this model label back to the list of labels
-    #AEM.bio_sci_equat.penman_monteith(df[labels['tmin']], df[labels['tmax']], df[labels['hmin']], df[labels['hmax']], df['solar_rad'], df[labels['w2avg']], df['DOY'], latitude, altitude)
+    AEM.bio_sci_equations.dalton(tmin, tmax, hmin, hmax, wind_avg),
+    AEM.bio_sci_equations.penman(tmin, tmax, hmin, hmax, wind_avg),
+    AEM.bio_sci_equations.romanenko(tmin, tmax, hmin, hmax),
+    AEM.bio_sci_equations.jensen_haise(tmin, tmax, doy, latitude),
+    AEM.bio_sci_equations.hargreaves(tmin, tmax, doy, latitude),
+    AEM.bio_sci_equations.penman_monteith(tmin, tmax, hmin, hmax, wind_avg, pmin, pmax, doy, latitude, altitude)
     ]
 
     # Labels for the models
-    evapo_model_labels = ['Dalton', 'Penman', 'Romanenko', 'Jensen-Haise', 'Hargreaves']
+    evapo_model_labels = ['Dalton', 'Penman', 'Romanenko', 'Jensen-Haise', 'Hargreaves', 'Penman_Monteith']
 
     # Plot Model Data
     AEM.visualizations.plot_evapo_data(df, file_name, evapo_models, evapo_model_labels)
@@ -55,11 +67,9 @@ if __name__ == '__main__':
     # Save Folder
     folder = "Tests/Images/"
 
-    labels = AEM.settings.get_labels()
-
-    air_temp_tests(df2024, folder+"air_temp_plot.png")
+    #air_temp_tests(df2024, folder+"air_temp_plot.png")
     evapo_transpiation_tests(df2024, folder+"Evapo_All.png")
-    runoff_tests(df2024, folder+"runoff_plot.png")
-    soil_temp_tests([folder+"soil_temp.png", folder+"day150_temp.png", folder+"soil_temp_3d.png"])
+    #runoff_tests(df2024, folder+"runoff_plot.png")
+    #soil_temp_tests([folder+"soil_temp.png", folder+"day150_temp.png", folder+"soil_temp_3d.png"])
 
 

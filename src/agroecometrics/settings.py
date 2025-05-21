@@ -13,10 +13,10 @@ _labels = {
     "tmax": "Daily Maximum Air Temperature (c)",
     "hmin": "Daily Minimum Relative Humidity (pct)",
     "hmax": "Daily Maximum Relative Humidity (pct)",
+    "pmin": "Daily Minimum Pressure (mb)",
+    "pmax": "Daily Maximum Pressure (mb)",
     "w2avg": "Daily Maximum Wind Gust (m/h)",
-    "solar_rad":  "Daily solar radiation"
-
-
+    "solar_rad":  "Daily solar radiation",
 }
 
 def get_labels():

@@ -42,6 +42,7 @@ def load_data(
     Returns:
         A DataFrame with the information from the csv file filtered by the specified dates
     '''
+    global labels
     # Check that the start date is not after the end date
     if start_date and end_date and pd.to_datetime(start_date) > pd.to_datetime(end_date):
         print("The start date must be on or before the end date")
@@ -390,7 +391,7 @@ def hargreaves(
         temp_min: series_type,
         temp_max: series_type,
         doy: series_type,
-        latitude: series_type
+        latitude: float
     ) -> np.ndarray:
     """
     Potential evapotranspiration model proposed by Hargreaves in 1982
@@ -423,7 +424,8 @@ def penman_monteith(
         temp_max: series_type,
         RH_min: series_type,
         RH_max: series_type,
-        solar_rad: series_type,
+        p_min: series_type,
+        p_max: series_type,
         wind_speed: series_type,
         doy: series_type,
         latitude: float,
@@ -439,7 +441,8 @@ def penman_monteith(
         temp_max: The maximum daily temperature in Celsius
         RH_min:   The minimum daily relative humidity (range: 0.0-1.0)
         RH_max:   The maximum daily relative humidity (range: 0.0-1.0)
-        solar_rad: The extra-terrestrial solar radiation (Ra) in MJ/m²/day
+        p_min:    The minimum daily atmospheric pressure in Pa
+        p_max:    The maximum daily atmospheric pressure in Pa
         wind_speed: The average daily wind speed in meters per second
         doy:      Day of year (0-365) where January 1st is 0 and 365
         latitude: Latitude of the location in degrees
@@ -451,13 +454,12 @@ def penman_monteith(
             a minimum of zero
     """
     # Ensure parameter saftey
-    if not isinstance(temp_min, float) and not \
-        (len(temp_min) == len(temp_max) == len(RH_min) == len(RH_max) == len(wind_speed) == \
-         len(solar_rad) == len(wind_speed) == len(doy) == len(latitude) == len(altitude)):
+    if not isinstance(temp_min, float) and not (len(temp_min) == len(temp_max) == len(RH_min)\
+                                     == len(RH_max) ==  len(wind_speed) == len(wind_speed)):
         raise ValueError("All inputs must be the same length")
     
     temp_avg = (temp_min + temp_max)/2
-    atm_pressure = 101.3 * ((293 - 0.0065 * altitude) / 293)**5.26 # Can be also obtained from weather station
+    atm_pressure = (p_min+p_max)/2 # Can be also obtained from weather station
     Cp = 0.001013; # Approx. 0.001013 for average atmospheric conditions
     gamma = (Cp * atm_pressure) / (0.622 * 2.45) # Approx. 0.000665
 
@@ -473,10 +475,10 @@ def penman_monteith(
     e_actual = (e_temp_min * (RH_max / 100) + e_temp_max * (RH_min / 100)) / 2
 
     # Calculates solar radiation
-    Ra = compute_Ra(doy, latitude)
+    solar_rad = compute_Ra(doy, latitude)
 
     # Clear Sky Radiation: Rso (MJ/m2/day)
-    Rso =  (0.75 + (2 * 10**-5) * altitude) * Ra  # Eq. 37, FAO-56
+    Rso =  (0.75 + (2 * 10**-5) * altitude) * solar_rad  # Eq. 37, FAO-56
 
     # Rs/Rso = relative shortwave radiation (limited to <= 1.0)
     alpha = 0.23 # 0.23 for hypothetical grass reference crop
