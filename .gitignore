@@ -11,10 +11,11 @@ __pycache__/
 
 # Build artifacts
 build/
-!docs/build
 dist/
 *.egg-info/
 *.egg
+.buildinfo
+.buildinfo.bak
 
 # Ignore Projct Files
 LICENSE

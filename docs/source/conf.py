@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 
 
 
-project = 'agro-eco-metrics'
+project = 'agroecometrics'
 copyright = "2025, 'Scarlett Olson'"
 author = "'Scarlett Olson'"
 release = '0.0.3b1'
@@ -37,3 +37,6 @@ exclude_patterns = []
 
 html_theme = 'furo'
 html_static_path = ['_static']
+html_baseurl = 'https://username.github.io/repo-name/'
+
+
