@@ -14,3 +14,10 @@ build/
 dist/
 *.egg-info/
 *.egg
+
+# Ignore Projct Files
+LISCENSE
+README.md
+pyproject.toml
+src/
+Tests/
