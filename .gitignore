@@ -16,7 +16,7 @@ dist/
 *.egg
 
 # Ignore Projct Files
-LISCENSE
+LICENSE
 README.md
 pyproject.toml
 src/
