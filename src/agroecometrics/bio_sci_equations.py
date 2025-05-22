@@ -71,6 +71,32 @@ def load_data(
 
     return df.reset_index(drop=True)
 
+def interpolate_missing_data(
+        df: pd.DataFrame, 
+        label_keys: Optional[list[str]] = None,
+        method: str = "linear"
+        ):
+    """
+    Interpolates missing data within a DataFrame. Interpolates labels based on
+        list of keys in label_keys or all data is label_keys is None.
+
+    Args:
+        df:     The DataFrame to interpolate data on
+        labels: A list of the label keys to interpolate data on.
+        method: The pandas interpolation type to use on the data
+    """
+    global labels
+    if label_keys:
+        if len(label_keys) == 0:
+            raise ValueError("label_keys must containa list of keys or be none")
+        for key in label_keys:
+            if key not in labels:
+                raise KeyError(key + " was not found in the available labels")
+            df[labels[key]].interpolate(method=method, inplace=True)
+    else:
+        for key in labels.keys:
+            df[labels[key]].interpolate(method=method, inplace=True)
+
 
 # Helper Functions
 def compute_esat(temp: series_type) -> np.ndarray:
