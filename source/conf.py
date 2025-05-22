@@ -3,15 +3,14 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../src'))
+sys.path.insert(0, os.path.abspath('../src'))
 
+# -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-
-project = 'agroecometrics'
+project = 'AgroEcoMetrics'
 copyright = "2025, 'Scarlett Olson'"
 author = "'Scarlett Olson'"
 release = '0.0.3b1'
@@ -20,11 +19,10 @@ release = '0.0.3b1'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "sphinx.ext.autodoc",      # Auto-generates documentation from docstrings
-    "sphinx.ext.napoleon",     # Supports NumPy/Google-style docstrings
-    "sphinx.ext.viewcode",     # Adds links to highlighted source code
-    "sphinx.ext.autosummary",  # Summarizes module/class/function listings
-    "sphinx_autodoc_typehints",  # Optional, needs pip install
+    'sphinx.ext.autodoc',      # For docstrings from Python modules
+    'sphinx.ext.napoleon',     # For Google/NumPy style docstrings
+    'sphinx.ext.viewcode',     # Add links to highlighted source code
+    'sphinx.ext.githubpages',  # Create .nojekyll file automatically
 ]
 
 templates_path = ['_templates']
@@ -37,6 +35,5 @@ exclude_patterns = []
 
 html_theme = 'furo'
 html_static_path = ['_static']
-html_baseurl = 'https://username.github.io/repo-name/'
-
+html_baseurl = 'https://wiscbicklab.github.io//AgroEcoMetrics'
 
