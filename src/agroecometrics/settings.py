@@ -1,4 +1,5 @@
-# Default labels
+# Labels are used to convert a generic label for a type of data to the 
+#       actual label used with in the csv file.
 _labels = {
     "date": "Date",
     "date_format": "%m/%d/%Y %I:%M %p",
@@ -20,7 +21,7 @@ _labels = {
 }
 
 def get_labels():
-    """Return current labels."""
+    """Return: The current label dictionary."""
     return _labels.copy()
 
 def set_labels(**kwargs):

@@ -26,9 +26,9 @@ series_type = Union[float, list[float], np.ndarray]
 # Data File Functions
 def load_data(
         file_path: str, 
+        date_format: str ='%m/%d/%Y %I:%M %p',
         start_date: Optional[str] = None,
-        end_date: Optional[str] = None, 
-        date_format: str ='%m/%d/%Y %I:%M %p'
+        end_date: Optional[str] = None,
     ) -> pd.DataFrame:
     '''
     Loads data into a DataFrame from a given CSV file filtered by date
@@ -134,7 +134,7 @@ def model_air_temp(df: pd.DataFrame) -> np.ndarray:
     # Generate daily temperature predictions using the model
     T_pred = T_avg + A * np.cos(2 * np.pi * ((df['DOY'] - doy_T_min) / 365) + np.pi)
 
-    return np.array(T_pred)
+    return np.asarray(T_pred)
 
 
 # Soil Temperature models
@@ -169,7 +169,7 @@ def model_soil_temp_at_depth(
     T_soil = avg_temp + thermal_amp * np.exp(-depth / damp_depth)
     T_soil = T_soil * np.sin(OMEGA * doy - depth / damp_depth - phase_const)
     
-    return  np.array(T_soil)
+    return  np.asarray(T_soil)
 
 def model_day_soil_temp(
         doy: int,
@@ -207,7 +207,7 @@ def model_day_soil_temp(
     T_soil = avg_temp + thermal_amp * np.exp(-depths / damp_depth)
     T_soil = T_soil * np.sin(OMEGA * doy - depths / damp_depth - phase_const)
 
-    return (np.array(depths), np.array(T_soil))
+    return (np.asarray(depths), np.asarray(T_soil))
 
 def model_soil_temp_3d(
         max_depth: int,
