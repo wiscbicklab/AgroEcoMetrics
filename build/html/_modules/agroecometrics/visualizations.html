@@ -236,8 +236,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for agroecometrics.visualizations</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -311,7 +310,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        df: DataFrame with temperature data</span>
 <span class="sd">        T_pred: Predicted temperature array</span>
-<span class="sd">        file_name: The filename that the plot will be saved to (*.png).</span>
+<span class="sd">        file_path: A Path object representing the output file path.</span>
 
 <span class="sd">    Returns: </span>
 <span class="sd">        The resolved file path where the plot was saved</span>
@@ -342,13 +341,13 @@
 
 <div class="viewcode-block" id="plot_yearly_soil_temp">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_yearly_soil_temp">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_yearly_soil_temp</span><span class="p">(</span><span class="n">T_soil</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_yearly_soil_temp</span><span class="p">(</span><span class="n">T_soil</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a plot of modeled soil temperature over a year&quot;s time</span>
+<span class="sd">    Creates a plot of modeled soil temperature over a year&#39;s time</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        T_soil: Is the predicted Temperatures for the years</span>
-<span class="sd">        file_name: The filename that the plot will be saved to (*.png).</span>
+<span class="sd">        T_soil:    Is the surface temperatures of the soil for each day of the year</span>
+<span class="sd">        file_path: A Path object representing the output file path.</span>
 
 <span class="sd">    Returns: </span>
 <span class="sd">        The filename where the plot was saved</span>
@@ -358,7 +357,7 @@
 <span class="sd">        ValueError: If the file extension is not &#39;.png&#39;.</span>
 <span class="sd">        FileNotFoundError: If the parent directory does not exist.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
     <span class="n">doy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">366</span><span class="p">)</span>
 
@@ -368,20 +367,20 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Surface Soil Temperature (Celsius)&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Day of Year&quot;</span><span class="p">)</span>
    
-    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">file_name</span></div>
+    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
 
 
 <div class="viewcode-block" id="plot_day_soil_temp">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_day_soil_temp">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_day_soil_temp</span><span class="p">(</span><span class="n">T_soil</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">depths</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_day_soil_temp</span><span class="p">(</span><span class="n">T_soil</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">depths</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a plot of modeled soil temperature at different depths </span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        T_soil: Is the predicted Temperatures at the given depths</span>
 <span class="sd">        depths: Are the depths in meters that the temperature predict</span>
-<span class="sd">        file_name: The filename that the plot will be saved to (*.png).</span>
+<span class="sd">        file_path: A Path object representing the output file path.</span>
 
 <span class="sd">    Returns: </span>
 <span class="sd">        The filename where the plot was saved</span>
@@ -397,14 +396,14 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Soil temperature (Celsius)&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Soil Depth (Centimeters)&quot;</span><span class="p">)</span>
     
-    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">file_name</span></div>
+    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
 
 
 <div class="viewcode-block" id="plot_3d_soil_temp">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_3d_soil_temp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_3d_soil_temp</span><span class="p">(</span><span class="n">doy_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">z_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
-                      <span class="n">t_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+                      <span class="n">t_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a 3d plot of soil temperature at different depths over the course of a year</span>
 
@@ -415,7 +414,7 @@
 <span class="sd">                for each plot point.</span>
 <span class="sd">        t_grid:   A 2d np.ndarray with shape (Nz, 365) containing the soil temperature</span>
 <span class="sd">                for each plot point.</span>
-<span class="sd">        file_name: The filename that the plot will be saved to (*.png).</span>
+<span class="sd">        file_path: A Path object representing the output file path.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns: </span>
 <span class="sd">        The filename where the plot was saved</span>
@@ -425,7 +424,7 @@
 <span class="sd">        ValueError: If the file extension is not &#39;.png&#39;.</span>
 <span class="sd">        FileNotFoundError: If the parent directory does not exist.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
     <span class="c1"># Create figure</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># 10 inch by 6 inch dpi = dots per inch</span>
@@ -451,8 +450,8 @@
     <span class="c1"># Set position of the 3D plot</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">elev</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">azim</span><span class="o">=</span><span class="mi">35</span><span class="p">)</span> <span class="c1"># elevation and azimuth. Change their value to see what happens.</span>
 
-    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">file_name</span></div>
+    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
 
 
 
@@ -460,13 +459,13 @@
 
 <div class="viewcode-block" id="plot_rainfall">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_rainfall">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_rainfall</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_rainfall</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a plot of rainfall and runoff over time.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        df: DataFrame with cumulative rainfall and runoff</span>
-<span class="sd">        file_name: The filename that the plot will be saved to (*.png).</span>
+<span class="sd">        file_path: A Path object representing the output file path.</span>
 
 <span class="sd">    Returns: </span>
 <span class="sd">        The filename where the plot was saved</span>
@@ -478,15 +477,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">labels</span>
 
-    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">labels</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]],</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;RAIN_SUM&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;navy&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rainfall&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">labels</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]],</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;RUNOFF_SUM&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tomato&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Runoff&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Rainfall or Runoff (mm)&quot;</span><span class="p">)</span>
 
-    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">file_name</span></div>
+    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
 
 
 
@@ -494,14 +493,14 @@
 
 <div class="viewcode-block" id="plot_evapo_data">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_evapo_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_evapo_data</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_evapo_data</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">model_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                      <span class="n">model_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a plot of Evapotranspiration model data predictions</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        df: The DataFrame that the evapotranspiration models were run on.</span>
-<span class="sd">        file_name: The filename that the plot will be saved to (*.png).</span>
+<span class="sd">        file_path: A Path object representing the output file path.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns: </span>
 <span class="sd">        The filename where the plot was saved</span>
@@ -517,7 +516,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
 
     <span class="c1"># Check Argument Correctness</span>
-    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_data</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_labels</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You must provide the same number of model labels and model data&quot;</span><span class="p">)</span>
 
@@ -532,22 +531,22 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Evapotranspiration (mm/day)&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">)</span>
     
-    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">file_name</span></div>
+    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
 
 
 
 <span class="c1">####    GROWING DEGREE DAYS PLOTS    ####</span>
 <div class="viewcode-block" id="plot_gdd">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_gdd">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_gdd</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_gdd</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a plot of the Growing Degree Days that occured over each time segment in the data</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        df: The DataFrame that Growing Degree Days was calculated on.</span>
 <span class="sd">                Must also contain &quot;GROWING_DEGREE_DAYS&quot; column generated by model</span>
-<span class="sd">        file_name: The filename that the plot will be saved to (*.png).</span>
+<span class="sd">        file_path: A Path object representing the output file path.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The filename where the plot was saved</span>
@@ -559,7 +558,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">labels</span>
 
-    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
     <span class="c1"># Extract GDD data</span>
     <span class="n">gdd_data</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;GROWING_DEGREE_DAYS&quot;</span><span class="p">]</span>
@@ -569,12 +568,12 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Growing degree days </span><span class="si">{</span><span class="nb">chr</span><span class="p">(</span><span class="mi">176</span><span class="p">)</span><span class="si">}</span><span class="s1">C-d)&#39;</span><span class="p">)</span>
 
-    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span></div>
+    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
 
     
 <div class="viewcode-block" id="plot_gdd_sum">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_gdd_sum">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_gdd_sum</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_gdd_sum</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a plot of the Cumulative Growing Degree Days that occured in the data</span>
 
@@ -582,7 +581,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        df: The DataFrame that Growing Degree Days was calculated on.</span>
 <span class="sd">                Must also contain &quot;GROWING_DEGREE_DAYS_SUM&quot; column generated by model</span>
-<span class="sd">        file_name: The filename that the plot will be saved to (*.png).</span>
+<span class="sd">        file_path: A Path object representing the output file path.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The filename where the plot was saved</span>
@@ -594,7 +593,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">labels</span>
 
-    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="n">check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
     <span class="c1"># Extract GDD data</span>
     <span class="n">gdd_sum_data</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;GROWING_DEGREE_DAYS_SUM&quot;</span><span class="p">]</span>
@@ -604,7 +603,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Growing degree days sum </span><span class="si">{</span><span class="nb">chr</span><span class="p">(</span><span class="mi">176</span><span class="p">)</span><span class="si">}</span><span class="s1">C-d)&#39;</span><span class="p">)</span>
 
-    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span></div>
+    <span class="n">save_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
 
     
 

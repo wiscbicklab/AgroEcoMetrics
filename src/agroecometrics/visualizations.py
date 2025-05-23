@@ -64,7 +64,7 @@ def plot_air_temp(df: pd.DataFrame, T_pred: np.ndarray, file_path: Path):
     Args:
         df: DataFrame with temperature data
         T_pred: Predicted temperature array
-        file_name: The filename that the plot will be saved to (*.png).
+        file_path: A Path object representing the output file path.
 
     Returns: 
         The resolved file path where the plot was saved
@@ -92,13 +92,13 @@ def plot_air_temp(df: pd.DataFrame, T_pred: np.ndarray, file_path: Path):
 
 ####    SOIL TEMPERATURE PLOTS    ####
 
-def plot_yearly_soil_temp(T_soil: np.ndarray, file_name: str):
+def plot_yearly_soil_temp(T_soil: np.ndarray, file_path: Path):
     """
-    Creates a plot of modeled soil temperature over a year"s time
+    Creates a plot of modeled soil temperature over a year's time
 
     Args:
-        T_soil: Is the predicted Temperatures for the years
-        file_name: The filename that the plot will be saved to (*.png).
+        T_soil:    Is the surface temperatures of the soil for each day of the year
+        file_path: A Path object representing the output file path.
 
     Returns: 
         The filename where the plot was saved
@@ -108,7 +108,7 @@ def plot_yearly_soil_temp(T_soil: np.ndarray, file_name: str):
         ValueError: If the file extension is not '.png'.
         FileNotFoundError: If the parent directory does not exist.
     """
-    check_png_filename(file_name)
+    check_png_filename(file_path)
 
     doy = np.arange(1,366)
 
@@ -118,17 +118,17 @@ def plot_yearly_soil_temp(T_soil: np.ndarray, file_name: str):
     plt.ylabel("Surface Soil Temperature (Celsius)")
     plt.xlabel("Day of Year")
    
-    save_plot(file_name)
-    return file_name
+    save_plot(file_path)
+    return file_path
 
-def plot_day_soil_temp(T_soil: np.ndarray, depths: np.ndarray, file_name: str):
+def plot_day_soil_temp(T_soil: np.ndarray, depths: np.ndarray, file_path: Path):
     """
     Creates a plot of modeled soil temperature at different depths 
 
     Args:
         T_soil: Is the predicted Temperatures at the given depths
         depths: Are the depths in meters that the temperature predict
-        file_name: The filename that the plot will be saved to (*.png).
+        file_path: A Path object representing the output file path.
 
     Returns: 
         The filename where the plot was saved
@@ -144,11 +144,11 @@ def plot_day_soil_temp(T_soil: np.ndarray, depths: np.ndarray, file_name: str):
     plt.ylabel("Soil temperature (Celsius)")
     plt.xlabel("Soil Depth (Centimeters)")
     
-    save_plot(file_name)
-    return file_name
+    save_plot(file_path)
+    return file_path
 
 def plot_3d_soil_temp(doy_grid: np.ndarray, z_grid: np.ndarray, 
-                      t_grid: np.ndarray, file_name: str):
+                      t_grid: np.ndarray, file_path: Path):
     """
     Creates a 3d plot of soil temperature at different depths over the course of a year
 
@@ -159,7 +159,7 @@ def plot_3d_soil_temp(doy_grid: np.ndarray, z_grid: np.ndarray,
                 for each plot point.
         t_grid:   A 2d np.ndarray with shape (Nz, 365) containing the soil temperature
                 for each plot point.
-        file_name: The filename that the plot will be saved to (*.png).
+        file_path: A Path object representing the output file path.
     
     Returns: 
         The filename where the plot was saved
@@ -169,7 +169,7 @@ def plot_3d_soil_temp(doy_grid: np.ndarray, z_grid: np.ndarray,
         ValueError: If the file extension is not '.png'.
         FileNotFoundError: If the parent directory does not exist.
     """
-    check_png_filename(file_name)
+    check_png_filename(file_path)
 
     # Create figure
     fig = plt.figure(figsize=(10, 6), dpi=80, constrained_layout=True) # 10 inch by 6 inch dpi = dots per inch
@@ -195,19 +195,19 @@ def plot_3d_soil_temp(doy_grid: np.ndarray, z_grid: np.ndarray,
     # Set position of the 3D plot
     ax.view_init(elev=30, azim=35) # elevation and azimuth. Change their value to see what happens.
 
-    save_plot(file_name)
-    return file_name
+    save_plot(file_path)
+    return file_path
 
 
 ####    RAILFALL PLOTS    ####
 
-def plot_rainfall(df: pd.DataFrame, file_name: str):
+def plot_rainfall(df: pd.DataFrame, file_path: Path):
     """
     Creates a plot of rainfall and runoff over time.
 
     Args:
         df: DataFrame with cumulative rainfall and runoff
-        file_name: The filename that the plot will be saved to (*.png).
+        file_path: A Path object representing the output file path.
 
     Returns: 
         The filename where the plot was saved
@@ -219,27 +219,27 @@ def plot_rainfall(df: pd.DataFrame, file_name: str):
     """
     global labels
 
-    check_png_filename(file_name)
+    check_png_filename(file_path)
 
     plt.figure(figsize=(6, 4))
     plt.plot(df[labels["date"]], df["RAIN_SUM"], color="navy", label="Rainfall")
     plt.plot(df[labels["date"]], df["RUNOFF_SUM"], color="tomato", label="Runoff")
     plt.ylabel("Rainfall or Runoff (mm)")
 
-    save_plot(file_name)
-    return file_name
+    save_plot(file_path)
+    return file_path
 
 
 ####    EVAPOTRANSPIRATION PLOTS    ####
 
-def plot_evapo_data(df: pd.DataFrame, file_name: str, model_data: np.ndarray,
+def plot_evapo_data(df: pd.DataFrame, file_path: Path, model_data: np.ndarray,
                      model_labels: list[str]):
     """
     Creates a plot of Evapotranspiration model data predictions
 
     Args:
         df: The DataFrame that the evapotranspiration models were run on.
-        file_name: The filename that the plot will be saved to (*.png).
+        file_path: A Path object representing the output file path.
     
     Returns: 
         The filename where the plot was saved
@@ -255,7 +255,7 @@ def plot_evapo_data(df: pd.DataFrame, file_name: str, model_data: np.ndarray,
     plt.figure(figsize=(10,4))
 
     # Check Argument Correctness
-    check_png_filename(file_name)
+    check_png_filename(file_path)
     if len(model_data) != len(model_labels):
         raise ValueError("You must provide the same number of model labels and model data")
 
@@ -270,19 +270,19 @@ def plot_evapo_data(df: pd.DataFrame, file_name: str, model_data: np.ndarray,
     plt.ylabel("Evapotranspiration (mm/day)")
     plt.xlabel("Date")
     
-    save_plot(file_name)
-    return file_name
+    save_plot(file_path)
+    return file_path
 
 
 ####    GROWING DEGREE DAYS PLOTS    ####
-def plot_gdd(df: pd.DataFrame, file_name: str):
+def plot_gdd(df: pd.DataFrame, file_path: Path):
     """
     Creates a plot of the Growing Degree Days that occured over each time segment in the data
 
     Args:
         df: The DataFrame that Growing Degree Days was calculated on.
                 Must also contain "GROWING_DEGREE_DAYS" column generated by model
-        file_name: The filename that the plot will be saved to (*.png).
+        file_path: A Path object representing the output file path.
 
     Returns:
         The filename where the plot was saved
@@ -294,7 +294,7 @@ def plot_gdd(df: pd.DataFrame, file_name: str):
     """
     global labels
 
-    check_png_filename(file_name)
+    check_png_filename(file_path)
 
     # Extract GDD data
     gdd_data = df["GROWING_DEGREE_DAYS"]
@@ -304,9 +304,9 @@ def plot_gdd(df: pd.DataFrame, file_name: str):
     plt.xlabel("Date")
     plt.ylabel(f'Growing degree days {chr(176)}C-d)')
 
-    save_plot(file_name)
+    save_plot(file_path)
     
-def plot_gdd_sum(df: pd.DataFrame, file_name: str):
+def plot_gdd_sum(df: pd.DataFrame, file_path: Path):
     """
     Creates a plot of the Cumulative Growing Degree Days that occured in the data
 
@@ -314,7 +314,7 @@ def plot_gdd_sum(df: pd.DataFrame, file_name: str):
     Args:
         df: The DataFrame that Growing Degree Days was calculated on.
                 Must also contain "GROWING_DEGREE_DAYS_SUM" column generated by model
-        file_name: The filename that the plot will be saved to (*.png).
+        file_path: A Path object representing the output file path.
 
     Returns:
         The filename where the plot was saved
@@ -326,7 +326,7 @@ def plot_gdd_sum(df: pd.DataFrame, file_name: str):
     """
     global labels
 
-    check_png_filename(file_name)
+    check_png_filename(file_path)
 
     # Extract GDD data
     gdd_sum_data = df["GROWING_DEGREE_DAYS_SUM"]
@@ -336,7 +336,7 @@ def plot_gdd_sum(df: pd.DataFrame, file_name: str):
     plt.xlabel("Date")
     plt.ylabel(f'Growing degree days sum {chr(176)}C-d)')
 
-    save_plot(file_name)
+    save_plot(file_path)
     
 
 

@@ -704,7 +704,7 @@ above this temperature growing will slow linearly</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.visualizations.plot_3d_soil_temp">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doy_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_3d_soil_temp" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doy_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_3d_soil_temp" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a 3d plot of soil temperature at different depths over the course of a year</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -715,7 +715,7 @@ for each plot point.</p></li>
 for each plot point.</p></li>
 <li><p><strong>t_grid</strong> – A 2d np.ndarray with shape (Nz, 365) containing the soil temperature
 for each plot point.</p></li>
-<li><p><strong>file_name</strong> – The filename that the plot will be saved to (<a href="#id1"><span class="problematic" id="id2">*</span></a>.png).</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -740,7 +740,7 @@ for each plot point.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> – DataFrame with temperature data</p></li>
 <li><p><strong>T_pred</strong> – Predicted temperature array</p></li>
-<li><p><strong>file_name</strong> – The filename that the plot will be saved to (<a href="#id3"><span class="problematic" id="id4">*</span></a>.png).</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -758,14 +758,14 @@ for each plot point.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.visualizations.plot_day_soil_temp">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_day_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_soil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_day_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_day_soil_temp" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_day_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_soil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_day_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_day_soil_temp" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a plot of modeled soil temperature at different depths</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>T_soil</strong> – Is the predicted Temperatures at the given depths</p></li>
 <li><p><strong>depths</strong> – Are the depths in meters that the temperature predict</p></li>
-<li><p><strong>file_name</strong> – The filename that the plot will be saved to (<a href="#id5"><span class="problematic" id="id6">*</span></a>.png).</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -783,13 +783,13 @@ for each plot point.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.visualizations.plot_evapo_data">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_evapo_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_evapo_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_evapo_data" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_evapo_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_evapo_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_evapo_data" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a plot of Evapotranspiration model data predictions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> – The DataFrame that the evapotranspiration models were run on.</p></li>
-<li><p><strong>file_name</strong> – The filename that the plot will be saved to (<a href="#id7"><span class="problematic" id="id8">*</span></a>.png).</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -807,14 +807,14 @@ for each plot point.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.visualizations.plot_gdd">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_gdd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_gdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_gdd" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_gdd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_gdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_gdd" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a plot of the Growing Degree Days that occured over each time segment in the data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> – The DataFrame that Growing Degree Days was calculated on.
 Must also contain “GROWING_DEGREE_DAYS” column generated by model</p></li>
-<li><p><strong>file_name</strong> – The filename that the plot will be saved to (<a href="#id9"><span class="problematic" id="id10">*</span></a>.png).</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -832,14 +832,14 @@ Must also contain “GROWING_DEGREE_DAYS” column generated by model</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.visualizations.plot_gdd_sum">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_gdd_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_gdd_sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_gdd_sum" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_gdd_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_gdd_sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_gdd_sum" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a plot of the Cumulative Growing Degree Days that occured in the data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> – The DataFrame that Growing Degree Days was calculated on.
 Must also contain “GROWING_DEGREE_DAYS_SUM” column generated by model</p></li>
-<li><p><strong>file_name</strong> – The filename that the plot will be saved to (<a href="#id11"><span class="problematic" id="id12">*</span></a>.png).</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -857,13 +857,13 @@ Must also contain “GROWING_DEGREE_DAYS_SUM” column generated by model</p></l
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.visualizations.plot_rainfall">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_rainfall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_rainfall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_rainfall" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_rainfall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_rainfall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_rainfall" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a plot of rainfall and runoff over time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> – DataFrame with cumulative rainfall and runoff</p></li>
-<li><p><strong>file_name</strong> – The filename that the plot will be saved to (<a href="#id13"><span class="problematic" id="id14">*</span></a>.png).</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -881,13 +881,13 @@ Must also contain “GROWING_DEGREE_DAYS_SUM” column generated by model</p></l
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.visualizations.plot_yearly_soil_temp">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_yearly_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_soil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_yearly_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_yearly_soil_temp" title="Link to this definition">¶</a></dt>
-<dd><p>Creates a plot of modeled soil temperature over a year”s time</p>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_yearly_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T_soil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_yearly_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_yearly_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of modeled soil temperature over a year’s time</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>T_soil</strong> – Is the predicted Temperatures for the years</p></li>
-<li><p><strong>file_name</strong> – The filename that the plot will be saved to (<a href="#id15"><span class="problematic" id="id16">*</span></a>.png).</p></li>
+<li><p><strong>T_soil</strong> – Is the surface temperatures of the soil for each day of the year</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
