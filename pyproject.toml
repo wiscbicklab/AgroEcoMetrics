@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agroecometrics"
-version = "0.0.4"
+version = "0.0.5"
 description = "Agricultural ecology metrics and visualization tools."
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"  
 authors = [
-  {name = "Scarlett Olson", email = "scarlett.olson@example.com"},
+  {name = "Scarlett Olson", email = "Scarlett.W.Olson@gmail.com"},
 ]
 
 dependencies = [
