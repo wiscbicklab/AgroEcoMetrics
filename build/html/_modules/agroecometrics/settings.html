@@ -236,19 +236,20 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for agroecometrics.settings</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Default labels</span>
+<span></span><span class="c1"># Labels are used to convert a generic label for a type of data to the </span>
+<span class="c1">#       actual label used with in the csv file.</span>
 <span class="n">_labels</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;Date&quot;</span><span class="p">,</span>
     <span class="s2">&quot;date_format&quot;</span><span class="p">:</span> <span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y %I:%M %p&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;temp&quot;</span><span class="p">:</span> <span class="s2">&quot;T_DAILY_AVG&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;temp_avg&quot;</span><span class="p">:</span> <span class="s2">&quot;T_DAILY_AVG&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;temp_min&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Minimum Air Temperature (c)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;temp_max&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Maximum Air Temperature (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rain&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Total Rain (mm)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;soiltemp2&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 2 Inches (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;soil_temp4&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 4 Inches (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;soil_temp8&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 8 Inches (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;soil_temp20&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 20 Inches (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;soil_temp40&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 40 Inches (c)&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tmin&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Minimum Air Temperature (c)&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tmax&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Maximum Air Temperature (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;hmin&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Minimum Relative Humidity (pct)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;hmax&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Maximum Relative Humidity (pct)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;pmin&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Minimum Pressure (mb)&quot;</span><span class="p">,</span>
@@ -260,7 +261,7 @@
 <div class="viewcode-block" id="get_labels">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.settings.get_labels">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_labels</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return current labels.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return: The current label dictionary.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 

@@ -12,17 +12,4 @@ Welcome to the documentation for the Agroecometrics package.
 API Reference
 =============
 
-.. automodule:: agroecometrics.bio_sci_equations
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: agroecometrics.visualizations
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: agroecometrics.settings
-   :members:
-   :undoc-members:
-   :show-inheritance:
+See the full API reference in the `modules` section above.
