@@ -16,9 +16,4 @@ dist/
 .buildinfo
 .buildinfo.bak
 
-# Ignore Projct Files
-LICENSE
-README.md
-pyproject.toml
-src/
-Tests/
+
