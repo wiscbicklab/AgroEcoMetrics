@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agroecometrics"
-version = "0.0.3b1"
+version = "0.0.4"
 description = "Agricultural ecology metrics and visualization tools."
 readme = "README.md"
 requires-python = ">=3.7"
@@ -23,6 +23,7 @@ dependencies = [
 [project.urls]
 "Homepage" = "https://github.com/YourUsername/agro-eco-metrics"
 "Bug Tracker" = "https://github.com/YourUsername/agro-eco-metrics/issues"
+"Documentation" = "https://wiscbicklab.github.io/AgroEcoMetrics"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
