@@ -1,3 +1,4 @@
+import numpy as np
 import agroecometrics as AEM
 import pandas as pd
 
@@ -16,27 +17,27 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_name: str):
     altitude = 350.0 # m
 
     # Get data from data file
-    tmin = df[labels['tmin']]
-    tmax = df[labels['tmax']]
-    hmin = df[labels['hmin']]
-    hmax = df[labels['hmax']]
-    wind_avg = df[labels['max_gust']]*0.5*.44704
-    doy = df['DOY']
-    pmin = df[labels['pmin']]*100
-    pmax = df[labels['pmax']]*100
+    tmin = df[labels["temp_min"]]
+    tmax = df[labels["temp_max"]]
+    hmin = df[labels["hmin"]]
+    hmax = df[labels["hmax"]]
+    wind_avg = df[labels["max_gust"]]*0.5*.44704
+    doy = df["DOY"]
+    pmin = df[labels["pmin"]]*100
+    pmax = df[labels["pmax"]]*100
 
     # Calculate EVapo model Data
-    evapo_models = [
+    evapo_models = np.array([
     AEM.bio_sci_equations.dalton(tmin, tmax, hmin, hmax, wind_avg),
     AEM.bio_sci_equations.penman(tmin, tmax, hmin, hmax, wind_avg),
     AEM.bio_sci_equations.romanenko(tmin, tmax, hmin, hmax),
     AEM.bio_sci_equations.jensen_haise(tmin, tmax, doy, latitude),
     AEM.bio_sci_equations.hargreaves(tmin, tmax, doy, latitude),
     AEM.bio_sci_equations.penman_monteith(tmin, tmax, hmin, hmax, wind_avg, pmin, pmax, doy, latitude, altitude)
-    ]
+    ])
 
     # Labels for the models
-    evapo_model_labels = ['Dalton', 'Penman', 'Romanenko', 'Jensen-Haise', 'Hargreaves', 'Penman_Monteith']
+    evapo_model_labels = ["Dalton", "Penman", "Romanenko", "Jensen-Haise", "Hargreaves", "Penman_Monteith"]
 
     # Plot Model Data
     AEM.visualizations.plot_evapo_data(df, file_name, evapo_models, evapo_model_labels)
@@ -55,8 +56,22 @@ def soil_temp_tests(file_names: list[str]):
     doy_grid, z_grid, t_grid = AEM.bio_sci_equations.model_soil_temp_3d(500)
     AEM.visualizations.plot_3d_soil_temp(doy_grid, z_grid, t_grid, file_names[2])
 
+def gdd_tests(df: pd.DataFrame, file_name: str):
 
-if __name__ == '__main__':
+    global labels
+
+    temp_avg = df[labels["temp_avg"]]
+
+    AEM.bio_sci_equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10)
+    AEM.visualizations.plot_gdd(file_name+"_basic.png")
+    AEM.visualizations.plot_gdd_sum(file_name + "_basic_sum.png")
+
+    AEM.bio_sci_equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10, temp_opt=28, temp_upper=38)
+    AEM.visualizations.plot_gdd(file_name+"_advanced.png")
+    AEM.visualizations.plot_gdd_sum(file_name + "_advanced_sum.png")
+
+
+if __name__ == "__main__":
     # Get Data
     data_file = "Tests/Data/Marshfield_All_Data.csv"
     df = AEM.bio_sci_equations.load_data(data_file)
@@ -71,5 +86,6 @@ if __name__ == '__main__':
     evapo_transpiation_tests(df2024, folder+"Evapo_All.png")
     runoff_tests(df2024, folder+"runoff_plot.png")
     soil_temp_tests([folder+"soil_temp.png", folder+"day150_temp.png", folder+"soil_temp_3d.png"])
+    gdd_tests(df2024, folder+"gdd")
 
 

@@ -149,12 +149,12 @@ def model_air_temp(df: pd.DataFrame) -> np.ndarray:
     global labels
 
     # Calculate mean temperature and temperature amplitude
-    T_avg = df[labels['temp']].mean()
-    T_min, T_max = df.groupby(by='DOY')[labels['temp']].mean().quantile([0.05, 0.95])
+    T_avg = df[labels["temp_avg"]].mean()
+    T_min, T_max = df.groupby(by='DOY')[labels["temp_avg"]].mean().quantile([0.05, 0.95])
     A = (T_max - T_min) / 2
 
     # Estimate the day of year with minimum temperature using circular mean
-    idx_min = df.groupby(by='YEAR')[labels['temp']].idxmin()
+    idx_min = df.groupby(by='YEAR')[labels["temp_avg"]].idxmin()
     doy_T_min = np.round(df.loc[idx_min, 'DOY'].apply(circmean).mean())
 
     # Generate daily temperature predictions using the model
@@ -248,11 +248,11 @@ def model_soil_temp_3d(
     
     Args:
         max_depth: The maximum depth in centimeters to model the soil temperature
-        Nz: The number of interpolated depths to caluculate soil temperature at
+        Nz: The number of interpolated depths to calculate soil temperature at
         avg_temp: The annual average surface temperature in Celcius
         thermal_amp: The annual thermal amplitude of the soil surface in Celsius
         thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]
-        time_lag: The time lag in days (0-365) where January 1st is 0 and 365
+        timelag: The time lag in days (0-365) where January 1st is 0 and 365
     
     Returns:
         A tuple of (doy_grid, z_grid, temp_grid), where each is a 2D NumPy array.
@@ -532,6 +532,61 @@ def penman_monteith(
 
     return np.round(PET,2)
 
+def EvapoTranspiration_to_df(
+        df: pd.DataFrame,
+        model_name: str,
+        temp_min: Optional[series_type] = None,
+        temp_max: Optional[series_type] = None,
+        RH_min: Optional[series_type] = None,
+        RH_max: Optional[series_type] = None,
+        wind_speed: Optional[series_type] = None,
+        p_min: Optional[series_type] = None,
+        p_max: Optional[series_type] = None,
+        doy: Optional[series_type] = None,
+        latitude: Optional[float] = None,
+        altitude: Optional[float] = None,
+        wind_height: int = 1.5
+    ) -> pd.DataFrame:
+    """
+    Adds daily evapotranspiration and its cumulative sum to the given DataFrame 
+    using a specified model and its required parameters.
+
+    Args:
+        df: The DataFrame to add the evapotranspiration data to
+        model_name: Name of the model to use. One of:
+                ["dalton", "penman", "romanenko", "jensen_haise", "hargreaves", "penman_monteith"]
+        temp_min:   The minimum daily temperature in Celsius
+        temp_max:   The maximum daily temperature in Celsius
+        RH_min:     The minimum daily relative humidity (range: 0.0-1.0)
+        RH_max:     The maximum daily relative humidity (range: 0.0-1.0)
+        wind_speed: The average daily wind speed in meters per second
+        p_min:      The minimum daily atmospheric pressure in Pa
+        p_max:      The maximum daily atmospheric pressure in Pa
+        doy:        Day of year (0-365) where January 1st is 0 and 365
+        latitude:   Latitude of the location in degrees
+        altitude:   Altitude of the location in meters
+        wind_height: Height of measurement for wind speed in meters
+    """
+    model_name = model_name.lower()
+    if model_name == "dalton":
+        pet = dalton(temp_min, temp_max, RH_min, RH_max, wind_speed)
+    elif model_name == "penman":
+        pet = penman(temp_min, temp_max, RH_min, RH_max, wind_speed)
+    elif model_name == "romanenko":
+        pet = romanenko(temp_min, temp_max, RH_min, RH_max)
+    elif model_name == "jensen_haise":
+        pet = jensen_haise(temp_min, temp_max, doy, latitude)
+    elif model_name == "hargreaves":
+        pet = hargreaves(temp_min, temp_max, doy, latitude)
+    elif model_name == "penman_monteith":
+        pet = penman_monteith(temp_min, temp_max, RH_min, RH_max, p_min, p_max,
+                              wind_speed, doy, latitude, altitude, wind_height)
+    else:
+        raise ValueError(f"Unknown model name '{model_name}'. Must be one of: "
+                         "['dalton', 'penman', 'romanenko', 'jensen_haise', 'hargreaves', 'penman_monteith'].")
+
+    df["EVAPOTRANSPIRATION"] = pet
+
 
 # Rain/Runoff Models
 def model_runoff(precip: series_type, cn: int = 75) -> pd.DataFrame:
@@ -560,17 +615,17 @@ def model_runoff(precip: series_type, cn: int = 75) -> pd.DataFrame:
     return runoff * 25.4 # Convert runoff back to millimeters
 
 def rainfall_runoff_to_df(df: pd.DataFrame, cn: int = 75):
-    '''
+    """
     Computes cumulative rainfall, cummulative runoff, and daily runoff and adds
         the computed data to the given DataFrame
 
     Args:
         df: The DataFrame containing the rainfall data
         cn: The curve number to be used in the runoff calculation
-    '''
-    df['RAIN_SUM'] = df[labels['rain']].cumsum()
-    df['RUNOFF'] = model_runoff(df[labels['rain']], cn=cn)
-    df['RUNOFF_SUM'] = df['RUNOFF'].cumsum()
+    """
+    df["RAIN_SUM"] = df[labels["rain"]].cumsum()
+    df["RUNOFF"] = model_runoff(df[labels["rain"]], cn=cn)
+    df["RUNOFF_SUM"] = df["RUNOFF"].cumsum()
 
 
 
@@ -627,4 +682,88 @@ def get_weather_data_from_cols(
     }
 
 
+# Growing Degree Days
+def model_gdd(
+        temp_avg: series_type,
+        temp_base: float,
+        temp_opt: Optional[float] = None,
+        temp_upper: Optional[float] = None,
+        duration_time: float = 1
+    ) -> np.ndarray:
+    """
+    Models Growing Degree days using a minimum base temperature, an optional 
+        optimal temperature, an optional maximum growing temperature, and 
+        the average temperature over the recorded durations
+        
+    Args:
+        temp_avg:  The average temperature over the duration_time in Celsius
+        temp_base: The minimum temperature a given crop will grow at in Celsius
+        temp_opt: The optimal temperature a given crop will grow in Celsius, 
+                            above this temperature growing will slow linearly
+        temp_upper: The maximum temperature a given crop will grow in Celsius
+        duration_time: The number of days that each temp_avg represents
+    
+    Returns:
+        An np.ndarray with the calculated Growing Degree Days for each daily temperature
+    """
+    # Validate parameter input
+    if(duration_time <= 0):
+        raise ValueError("The time duration must be positive")
+    if temp_avg is None or (not np.isscalar(temp_avg) and len(temp_avg) == 0):
+        raise ValueError("You must provide temperature averages, None provided")
+    if temp_opt is None and temp_upper is not None or\
+        temp_upper is None and temp_opt is not None:
+        raise ValueError("You must provide both upper and optimal temperatures or neither")
+    
+    # Simply GDD calculation
+    if temp_opt is None and temp_upper is None:
+        temp_avg = np.asarray(temp_avg)
+        return max(0, (temp_avg - temp_base)*duration_time)
 
+    # Initialize GDD array
+    gdd = np.zeros_like(temp_avg)
+
+    # Vectorized masks
+    below_opt = temp_avg < temp_opt
+    above_opt = not below_opt  # Equivalent to temp_avg >= temp_opt
+
+    # Compute GDD where temp < temp_opt
+    gdd[below_opt] = np.maximum( 0, (temp_avg[below_opt] - temp_base) * duration_time)
+
+    # Compute GDD where temp >= temp_opt
+    gdd_max = (temp_opt - temp_base) * duration_time
+    gdd[above_opt] = np.maximum(0, 
+        gdd_max * (temp_upper - temp_avg[above_opt]) / (temp_upper - temp_opt),)
+
+    return gdd
+
+def gdd_to_df(
+        df: pd.DataFrame,
+        temp_avg: series_type,
+        temp_base: float,
+        temp_opt: Optional[float] = None,
+        temp_upper: Optional[float] = None,
+        duration_time: float = 1
+    ):
+    """
+    Models Growing Degree days using a minimum base temperature, an optional 
+        optimal temperature, an optional maximum growing temperature, and 
+        the average temperature over the recorded durations.
+        Adds the Growing Degree days and cummulative GDD to the given DataFrame
+
+    Args:
+        df: The DataFrame to add the GDD data to
+        temp_avg:  The average temperature over the duration_time in Celsius
+        temp_base: The minimum temperature a given crop will grow at in Celsius
+        temp_optimal: The optimal temperature a given crop will grow in Celsius, 
+                            above this temperature growing will slow linearly
+        temp_upper: The maximum temperature a given crop will grow in Celsius
+        duration_time: The number of days that each temp_avg represents
+    """
+    # Calculate gdd
+    gdd = model_gdd(temp_avg, temp_base, temp_opt, temp_upper, duration_time)
+
+    df["GROWING_DEGREE_DAYS"] = gdd
+    df["GROWING_DEGREE_DAYS_SUM"] = gdd.cumsum()
+
+    
