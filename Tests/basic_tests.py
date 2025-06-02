@@ -1,15 +1,17 @@
+from pathlib import Path
 import numpy as np
 import agroecometrics as AEM
 import pandas as pd
 
 labels = AEM.settings.get_labels()
 
-def air_temp_tests(df: pd.DataFrame, file_name: str):
+def air_temp_tests(df: pd.DataFrame, file_path: Path):
     # Air Temperature models
+    file_path.with_name("air_temp_plot.png")
     air_temp_pred = AEM.bio_sci_equations.model_air_temp(df2024)
-    AEM.visualizations.plot_air_temp(df, air_temp_pred, file_name)
+    AEM.visualizations.plot_air_temp(df, air_temp_pred, file_path)
 
-def evapo_transpiation_tests(df: pd.DataFrame, file_name: str):
+def evapo_transpiation_tests(df: pd.DataFrame, file_path: Path):
     global labels
 
     # Set Latitude and Altitude for Evapo Models
@@ -40,35 +42,45 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_name: str):
     evapo_model_labels = ["Dalton", "Penman", "Romanenko", "Jensen-Haise", "Hargreaves", "Penman_Monteith"]
 
     # Plot Model Data
-    AEM.visualizations.plot_evapo_data(df, file_name, evapo_models, evapo_model_labels)
+    AEM.visualizations.plot_evapo_data(df, file_path, evapo_models, evapo_model_labels)
 
-def runoff_tests(df: pd.DataFrame, file_name: str):
+def runoff_tests(df: pd.DataFrame, file_path: Path):
     AEM.bio_sci_equations.rainfall_runoff_to_df(df)
-    AEM.visualizations.plot_rainfall(df, file_name)
+    AEM.visualizations.plot_rainfall(df, file_path)
 
-def soil_temp_tests(file_names: list[str]):
-    T_depth = AEM.bio_sci_equations.model_soil_temp_at_depth(10)
-    AEM.visualizations.plot_yearly_soil_temp(T_depth, file_names[0])
+def soil_temp_tests(file_paths: list[Path]):
+    T_depth = AEM.bio_sci_equations.soil_temp_at_depth(10)
+    AEM.visualizations.plot_yearly_soil_temp(T_depth, file_paths[0])
 
-    T_day, depths = AEM.bio_sci_equations.model_day_soil_temp(10, 500)
-    AEM.visualizations.plot_day_soil_temp(T_day, depths, file_names[1])
+    T_day, depths = AEM.bio_sci_equations.soil_temp_on_day(10, 500)
+    AEM.visualizations.plot_day_soil_temp(T_day, depths, file_paths[1])
 
-    doy_grid, z_grid, t_grid = AEM.bio_sci_equations.model_soil_temp_3d(500)
-    AEM.visualizations.plot_3d_soil_temp(doy_grid, z_grid, t_grid, file_names[2])
+    doy_grid, z_grid, t_grid = AEM.bio_sci_equations.soil_temp_at_depth_on_day(500)
+    AEM.visualizations.plot_3d_soil_temp(doy_grid, z_grid, t_grid, file_paths[2])
 
-def gdd_tests(df: pd.DataFrame, file_name: str):
+def gdd_tests(df: pd.DataFrame, file_path: Path):
 
     global labels
 
     temp_avg = df[labels["temp_avg"]]
 
     AEM.bio_sci_equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10)
-    AEM.visualizations.plot_gdd(file_name+"_basic.png")
-    AEM.visualizations.plot_gdd_sum(file_name + "_basic_sum.png")
+    AEM.visualizations.plot_gdd(file_path+"_basic.png")
+    AEM.visualizations.plot_gdd_sum(file_path + "_basic_sum.png")
 
     AEM.bio_sci_equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10, temp_opt=28, temp_upper=38)
-    AEM.visualizations.plot_gdd(file_name+"_advanced.png")
-    AEM.visualizations.plot_gdd_sum(file_name + "_advanced_sum.png")
+    AEM.visualizations.plot_gdd(file_path+"_advanced.png")
+    AEM.visualizations.plot_gdd_sum(file_path + "_advanced_sum.png")
+
+def photoperiod_test(file_path: Path):
+    """
+    Test the functionality of photoperiod tests
+
+    Args:
+        file_path
+    """
+    global labels
+
 
 
 if __name__ == "__main__":
@@ -82,7 +94,7 @@ if __name__ == "__main__":
     # Save Folder
     folder = "Tests/Images/"
 
-    air_temp_tests(df2024, folder+"air_temp_plot.png")
+    air_temp_tests(df2024, folder)
     evapo_transpiation_tests(df2024, folder+"Evapo_All.png")
     runoff_tests(df2024, folder+"runoff_plot.png")
     soil_temp_tests([folder+"soil_temp.png", folder+"day150_temp.png", folder+"soil_temp_3d.png"])

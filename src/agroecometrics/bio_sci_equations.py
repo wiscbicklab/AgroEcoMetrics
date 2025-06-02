@@ -90,7 +90,6 @@ def interpolate_missing_data(
         for key in labels.keys:
             df[labels[key]].interpolate(method=method, inplace=True)
 
-
 # Helper Functions
 def compute_esat(temp: np.ndarray) -> np.ndarray:
     """
@@ -157,7 +156,7 @@ def model_air_temp(df: pd.DataFrame) -> np.ndarray:
 
 
 # Soil Temperature models
-def model_soil_temp_at_depth(
+def soil_temp_at_depth(
         depth: np.ndarray,
         avg_temp: int=25,
         thermal_amp: int = 10,
@@ -190,7 +189,7 @@ def model_soil_temp_at_depth(
     
     return  np.asarray(T_soil)
 
-def model_day_soil_temp(
+def soil_temp_on_day(
         doy: int,
         max_depth: int,
         Nz: int = 100,
@@ -228,7 +227,7 @@ def model_day_soil_temp(
 
     return (np.asarray(depths), np.asarray(T_soil))
 
-def model_soil_temp_3d(
+def soil_temp_at_depth_on_day(
         max_depth: int,
         Nz: int = 1000,
         avg_temp: int = 25,
@@ -759,4 +758,88 @@ def gdd_to_df(
     df["GROWING_DEGREE_DAYS"] = gdd
     df["GROWING_DEGREE_DAYS_SUM"] = gdd.cumsum()
 
+
+# Photo Period Tools
+def photoperiod_at_latitude(phi: float, doy: np.ndarray):
+    """
+    Function to compute photoperiod or daylight hours. This function is not accurate
+    near polar regions.
+
+    Args:
+        phi: Latitude in decimal degress. Where the northern Hemisphere is positive
+        doy: np.ndarray of the days of year (0-365) where January 1st is 0 and 365
+
+    Returns:
+        Photoperiod, daylight hours, at the given latitude for the given days.
+        The angle of the sum below the horizon.
+        The zenithal distance of the sun in degrees
+        The mean anomaly of the sun
+        The declination of the sun in degrees
+        Lambda
+        Delta
+    """
+    # Convert latitude to radians
+    phi = np.radians(phi)
     
+    # Angle of the sun below the horizon. Civil twilight is -4.76 degrees.
+    light_intensity = 2.206 * 10**-3
+    B = -4.76 - 1.03 * np.log(light_intensity) # Eq. [5].
+
+    # Zenithal distance of the sun in degrees
+    alpha = np.radians(90 + B) # Eq. [6]. Value at sunrise and sunset.
+    
+    # Mean anomaly of the sun. It is a convenient uniform measure of 
+    # how far around its orbit a body has progressed since pericenter.
+    M = 0.9856*doy - 3.251 # Eq. [4].
+    
+    # Declination of sun in degrees
+    lmd = M + 1.916*np.sin(np.radians(M)) + 0.020*np.sin(np.radians(2*M)) + 282.565 # Eq. [3]. Lambda
+    C = np.sin(np.radians(23.44)) # 23.44 degrees is the orbital plane of Earth around the Sun
+    delta = np.arcsin(C*np.sin(np.radians(lmd))) # Eq. [2].
+
+    # Calculate daylength in hours, defining sec(x) = 1/cos(x)
+    P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(phi)) * (1/np.cos(delta)) - np.tan(phi) * np.tan(delta) ) ) # Eq. [1].
+
+    return P, B, alpha, M, lmd, np.degrees[delta]
+    
+def photoperiod_on_day(latitude: np.ndarray, doy: int):
+    """
+    Function to compute photoperiod or daylight hours. This function is not accurate
+    near polar regions.
+
+    Args:
+        latitude: Latitude in decimal degress. Where the northern Hemisphere is positive
+        doy: The day of year (0-365) where January 1st is 0 and 365 to perform the calculation
+
+    Returns:
+        Photoperiod, daylight hours, for the given latitudes on the given day.
+        The angle of the sum below the horizon.
+        The zenithal distance of the sun in degrees
+        The mean anomaly of the sun
+        The declination of the sun in degrees
+        Lambda
+        Delta
+    """
+    # Convert latitude to radians
+    latitude = np.radians(latitude)
+    
+    # Angle of the sun below the horizon. Civil twilight is -4.76 degrees.
+    light_intensity = 2.206 * 10**-3
+    B = -4.76 - 1.03 * np.log(light_intensity) # Eq. [5].
+
+    # Zenithal distance of the sun in degrees
+    alpha = np.radians(90 + B) # Eq. [6]. Value at sunrise and sunset.
+    
+    # Mean anomaly of the sun. It is a convenient uniform measure of 
+    # how far around its orbit a body has progressed since pericenter.
+    M = 0.9856*doy - 3.251 # Eq. [4].
+    
+    # Declination of sun in degrees
+    lmd = M + 1.916*np.sin(np.radians(M)) + 0.020*np.sin(np.radians(2*M)) + 282.565 # Eq. [3]. Lambda
+    C = np.sin(np.radians(23.44)) # 23.44 degrees is the orbital plane of Earth around the Sun
+    delta = np.arcsin(C*np.sin(np.radians(lmd))) # Eq. [2].
+
+    # Calculate daylength in hours, defining sec(x) = 1/cos(x)
+    P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(latitude)) * (1/np.cos(delta)) - np.tan(latitude) * np.tan(delta) ) ) # Eq. [1].
+
+    return P, B, alpha, M, lmd, np.degrees[delta]

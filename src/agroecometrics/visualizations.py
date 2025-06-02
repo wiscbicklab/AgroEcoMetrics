@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-from agroecometrics import settings
+from agroecometrics import settings, bio_sci_equations
 
 # Gets the acutal labels of columns based on the user settings
 labels = settings.get_labels()
@@ -275,6 +275,7 @@ def plot_evapo_data(df: pd.DataFrame, file_path: Path, model_data: np.ndarray,
 
 
 ####    GROWING DEGREE DAYS PLOTS    ####
+
 def plot_gdd(df: pd.DataFrame, file_path: Path):
     """
     Creates a plot of the Growing Degree Days that occured over each time segment in the data
@@ -338,6 +339,87 @@ def plot_gdd_sum(df: pd.DataFrame, file_path: Path):
 
     save_plot(file_path)
     
+####    PHOTOPERIOD PLOTS    ####
+
+def plot_yearly_photoperiod(latitude: float, file_path: Path):
+    """
+    Creates a plot of the photoperiod at a specified latitude over a year's time
+
+    Args:
+        latitude: Latitude in decimal degress. Where the northern Hemisphere is positive
+        file_path: A Path object representing the output file path.
+
+    Returns:
+        The filename where the plot was saved
+
+    Raises:
+        TypeError: If file_path is not a Path object.
+        ValueError: If the file extension is not '.png'.
+        FileNotFoundError: If the parent directory does not exist.
+    """
+    global labels
+
+    check_png_filename(file_path)
+
+    doy = np.arange(1,366)
+
+    # Set up plot with Title and axes
+    plt.figure(figsize=(6,4))
+    plt.title('Latitude:' + str(latitude))
+    plt.xlabel('Day of the year', size=14)
+    plt.ylabel('Photoperiod (hours per day)', size=14)
+
+    # Calulate photoperiods and adds them to the plot
+    photoperiods = bio_sci_equations.photoperiod_at_latitude(latitude, doy)
+    plt.plot(doy, photoperiods, color='k')
+
+    save_plot(file_path)
+
+def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
+    """
+    Creates a plot of the photoperiod from -45 to 45 degree latitude on the given day of year
+
+    Args:
+        doys: A np.ndarray of the days of year (0-365) where January 1st is 0 and 365 to perform the calculation
+        file_path: A Path object representing the output file path.
+
+    Returns:
+        The filename where the plot was saved
+
+    Raises:
+        TypeError: If file_path is not a Path object.
+        ValueError: If the file extension is not '.png'.
+        FileNotFoundError: If the parent directory does not exist.
+    """
+    global labels
+
+    check_png_filename(file_path)
+
+    # Set up plot with Title and axes
+    plt.figure(figsize=(6,4))
+    plt.xlabel('Latitude (decimal degrees)', size=14)
+    plt.ylabel('Photoperiod (hours per day)', size=14)
+    plt.legend()
+
+    # Calculated photoperiods and adds them to the plot
+    latitudes = np.linspace(-45, 45, num=180)
+    for doy in doys:
+        bio_sci_equations.photoperiod_on_day(latitudes, doys)
+        plt.plot(latitudes, doy, label=f'DOY {doy}')
+    
+    save_plot(file_path)
+
+
+
+####    AutoRegressive Model Plots    ####
+
+def plot_autoregression(file_path: Path):
+    """
+    
+    """
+    global labels
+
+    check_png_filename(file_path)
 
 
 
