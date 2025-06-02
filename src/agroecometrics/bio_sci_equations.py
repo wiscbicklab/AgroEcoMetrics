@@ -843,3 +843,4 @@ def photoperiod_on_day(latitude: np.ndarray, doy: int):
     P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(latitude)) * (1/np.cos(delta)) - np.tan(latitude) * np.tan(delta) ) ) # Eq. [1].
 
     return P, B, alpha, M, lmd, np.degrees[delta]
+

@@ -411,15 +411,7 @@ def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
 
 
 
-####    AutoRegressive Model Plots    ####
 
-def plot_autoregression(file_path: Path):
-    """
-    
-    """
-    global labels
-
-    check_png_filename(file_path)
 
 
 
