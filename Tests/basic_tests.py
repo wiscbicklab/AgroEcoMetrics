@@ -170,13 +170,7 @@ def photoperiod_test(file_path: Path):
     except Exception as e:
         return False
 
-def autoregression_tests(file_path: Path):
-    try:
-        AEM.visualizations.plot_autoregression()
-        return True
-    except Exception as e:
-        print(e.with_traceback)
-        return False
+
 
 if __name__ == "__main__":
     # Get Data
