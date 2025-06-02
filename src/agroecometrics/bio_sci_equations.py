@@ -15,13 +15,6 @@ from agroecometrics import settings
 # Gets the acutal labels of columns based on the user settings
 labels = settings.get_labels()
 
-# Defines types for type hints
-series_type = Union[float, list[float], np.ndarray]
-
-
-
-
-
 
 # Data File Functions
 def load_data(
@@ -99,7 +92,7 @@ def interpolate_missing_data(
 
 
 # Helper Functions
-def compute_esat(temp: series_type) -> np.ndarray:
+def compute_esat(temp: np.ndarray) -> np.ndarray:
     """
     Function that computes saturation vapor pressure based Tetens formula
     
@@ -112,7 +105,7 @@ def compute_esat(temp: series_type) -> np.ndarray:
     e_sat = 0.6108 * np.exp(17.27 * temp/(temp+237.3)) 
     return e_sat
 
-def compute_Ra(doy: series_type, latitude: float) -> np.ndarray:
+def compute_Ra(doy: np.ndarray, latitude: float) -> np.ndarray:
     """
     Function that computes extra-terrestrial solar radiation
         based on the FAO Penman-Monteith method
@@ -165,7 +158,7 @@ def model_air_temp(df: pd.DataFrame) -> np.ndarray:
 
 # Soil Temperature models
 def model_soil_temp_at_depth(
-        depth: series_type,
+        depth: np.ndarray,
         avg_temp: int=25,
         thermal_amp: int = 10,
         thermal_dif: float = 0.203,
@@ -275,11 +268,11 @@ def model_soil_temp_3d(
 
 # EvapoTranspiration Models
 def dalton(
-        temp_min: series_type,
-        temp_max: series_type,
-        RH_min: series_type,
-        RH_max: series_type,
-        wind_speed: series_type
+        temp_min: np.ndarray,
+        temp_max: np.ndarray,
+        RH_min: np.ndarray,
+        RH_max: np.ndarray,
+        wind_speed: np.ndarray
     ) -> np.ndarray:
     """
     Potential evaporation model proposed by Dalton in 1802
@@ -312,11 +305,11 @@ def dalton(
     return PET
 
 def penman(
-        temp_min: series_type,
-        temp_max: series_type,
-        RH_min: series_type,
-        RH_max: series_type,
-        wind_speed: series_type
+        temp_min: np.ndarray,
+        temp_max: np.ndarray,
+        RH_min: np.ndarray,
+        RH_max: np.ndarray,
+        wind_speed: np.ndarray
     ) -> np.ndarray:
     """
     Potential evapotranspiration model proposed by Penman in 1948
@@ -349,10 +342,10 @@ def penman(
     return PET
 
 def romanenko(
-        temp_min: series_type,
-        temp_max: series_type,
-        RH_min: series_type,
-        RH_max: series_type,
+        temp_min: np.ndarray,
+        temp_max: np.ndarray,
+        RH_min: np.ndarray,
+        RH_max: np.ndarray,
     ) -> np.ndarray:
     """
     Potential evaporation model proposed by Romanenko in 1961
@@ -382,10 +375,10 @@ def romanenko(
     return PET
 
 def jensen_haise(
-        temp_min: series_type,
-        temp_max: series_type,
-        doy: series_type,
-        latitude: series_type
+        temp_min: np.ndarray,
+        temp_max: np.ndarray,
+        doy: np.ndarray,
+        latitude: np.ndarray
     ) -> np.ndarray:
     """
     Potential evapotranspiration model proposed by Jensen in 1963
@@ -414,9 +407,9 @@ def jensen_haise(
     return PET
 
 def hargreaves(
-        temp_min: series_type,
-        temp_max: series_type,
-        doy: series_type,
+        temp_min: np.ndarray,
+        temp_max: np.ndarray,
+        doy: np.ndarray,
         latitude: float
     ) -> np.ndarray:
     """
@@ -446,14 +439,14 @@ def hargreaves(
     return PET
 
 def penman_monteith(
-        temp_min: series_type,
-        temp_max: series_type,
-        RH_min: series_type,
-        RH_max: series_type,
-        p_min: series_type,
-        p_max: series_type,
-        wind_speed: series_type,
-        doy: series_type,
+        temp_min: np.ndarray,
+        temp_max: np.ndarray,
+        RH_min: np.ndarray,
+        RH_max: np.ndarray,
+        p_min: np.ndarray,
+        p_max: np.ndarray,
+        wind_speed: np.ndarray,
+        doy: np.ndarray,
         latitude: float,
         altitude: float,
         wind_height: int = 1.5,
@@ -535,14 +528,14 @@ def penman_monteith(
 def EvapoTranspiration_to_df(
         df: pd.DataFrame,
         model_name: str,
-        temp_min: Optional[series_type] = None,
-        temp_max: Optional[series_type] = None,
-        RH_min: Optional[series_type] = None,
-        RH_max: Optional[series_type] = None,
-        wind_speed: Optional[series_type] = None,
-        p_min: Optional[series_type] = None,
-        p_max: Optional[series_type] = None,
-        doy: Optional[series_type] = None,
+        temp_min: Optional[np.ndarray] = None,
+        temp_max: Optional[np.ndarray] = None,
+        RH_min: Optional[np.ndarray] = None,
+        RH_max: Optional[np.ndarray] = None,
+        wind_speed: Optional[np.ndarray] = None,
+        p_min: Optional[np.ndarray] = None,
+        p_max: Optional[np.ndarray] = None,
+        doy: Optional[np.ndarray] = None,
         latitude: Optional[float] = None,
         altitude: Optional[float] = None,
         wind_height: int = 1.5
@@ -589,7 +582,7 @@ def EvapoTranspiration_to_df(
 
 
 # Rain/Runoff Models
-def model_runoff(precip: series_type, cn: int = 75) -> pd.DataFrame:
+def model_runoff(precip: np.ndarray, cn: int = 75) -> pd.DataFrame:
     '''
     Uses Curve Number to estimate runoff from rainfall
 
@@ -684,7 +677,7 @@ def get_weather_data_from_cols(
 
 # Growing Degree Days
 def model_gdd(
-        temp_avg: series_type,
+        temp_avg: np.ndarray,
         temp_base: float,
         temp_opt: Optional[float] = None,
         temp_upper: Optional[float] = None,
@@ -739,7 +732,7 @@ def model_gdd(
 
 def gdd_to_df(
         df: pd.DataFrame,
-        temp_avg: series_type,
+        temp_avg: np.ndarray,
         temp_base: float,
         temp_opt: Optional[float] = None,
         temp_upper: Optional[float] = None,
