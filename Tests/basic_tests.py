@@ -140,13 +140,11 @@ def gdd_tests(df: pd.DataFrame, file_path: Path):
         return False
     
     try:
-        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10)
-        print("\n\nBasic GDD equations Finished\n\n")
+        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10.0)
         AEM.visualizations.plot_gdd(file_path.with_name("gdd_basic.png"))
         AEM.visualizations.plot_gdd_sum(file_path.with_name("gdd_basic_sum.png"))
-        print("\n\nBasic gdd Test Complete\n\n")
 
-        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10, temp_opt=28, temp_upper=38)
+        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10.0, temp_opt=28.0, temp_upper=38.0)
         AEM.visualizations.plot_gdd(file_path.with_name("gdd_advanced.png"))
         AEM.visualizations.plot_gdd_sum(file_path.with_name("gdd_advanced_sum.png"))
 
