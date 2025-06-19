@@ -168,14 +168,14 @@ def get_daily_air_temp_params(
     daily_df = df[df[labels['date']].dt.date == target_date.date()]
 
     # Calculates daily average, minimum, and maximum temperature
-    avg_temp = daily_df[labels['5_minute_avg']].mean()
-    min_temp = min(daily_df[labels['5_minute_avg']])
-    max_temp = max(daily_df[labels['5_minute_avg']])
+    avg_temp = daily_df[labels['5_minute_temp']].mean()
+    min_temp = min(daily_df[labels['5_minute_temp']])
+    max_temp = max(daily_df[labels['5_minute_temp']])
     # Calculates thermal amplitude
     thermal_amp = (max_temp - min_temp) / 2.0
 
     # Find index of minimum temperature
-    idx_min = daily_df[labels['5_minute_avg']].idxmin()
+    idx_min = daily_df[labels['5_minute_temp']].idxmin()
     min_time = daily_df.loc[idx_min, labels['date']].time()
     min_temp_time = min_time.hour * 60 + min_time.minute
 

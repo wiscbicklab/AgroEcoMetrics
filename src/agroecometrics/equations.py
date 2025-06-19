@@ -183,7 +183,7 @@ def model_soil_temp_from_air_temp(
         df: pd.DataFrame,
         depth: float,
         date: str,
-        date_format: str = '%m/%d/%Y %I:%M %p',
+        date_format: str = labels['date_format'],
         thermal_dif: int = 0.203,
     ) -> np.ndarray:
     """
@@ -205,23 +205,41 @@ def model_soil_temp_from_air_temp(
             the given air temperatures
     """
     global labels
-    # Set Constants
-    OMEGA = 2*np.pi/1440
+    OMEGA = 2 * np.pi / 1440
 
+    # Parse the input date
+    target_day = pd.to_datetime(date, format=date_format).normalize()
+
+    # Filter to only that day
+    df['timestamp'] = pd.to_datetime(df[labels['date']], format=date_format)
+    df_day = df[df['timestamp'].dt.normalize() == target_day]
+
+    # Make sure it's sorted by time
+    df_day = df_day.sort_values('timestamp')
+
+    # Extract the 5-minute air temperatures
+    air_temp = df_day[labels['5_minute_temp']].to_numpy()
+
+    # Ensure it's exactly 288 values (1 day at 5-minute intervals)
+    if len(air_temp) != 288:
+        raise ValueError(f"Expected 288 5-minute temperature values for {target_day.date()}, got {len(air_temp)}")
+
+    # Estimate sinusoidal parameters
     avg_temp, __, __, thermal_amp, timelag = (
         AEM.data.get_daily_air_temp_params(df, date, date_format)
     )
 
-    # Approximate the damping depth using thermal diffusivity
-    thermal_dif = thermal_dif / 100 * 86400 # convert to cm^2/day
-    damp_depth = (2*thermal_dif/OMEGA)**(1/2) # Damping depth 
+    # Compute damping depth
+    thermal_dif = thermal_dif / 100 * 86400  # convert to cm²/day
+    damp_depth = (2 * thermal_dif / OMEGA) ** 0.5
 
-
+    # Generate predictions
     time = np.arange(0, 1440, 5)
-    # Equation 8.6
-    temp_predictions = avg_temp + thermal_amp * np.exp(-depth/damp_depth) * np.sin(OMEGA * (time - timelag) - (depth/damp_depth))
+    temp_predictions = avg_temp + thermal_amp * np.exp(-depth / damp_depth) * np.sin(
+        OMEGA * (time - timelag) - (depth / damp_depth)
+    )
 
-    return temp_predictions, df[labels['5_minute_temp']]
+    return temp_predictions, air_temp
 
 def model_soil_temp_at_depth_from_air_temp(
         df: pd.DataFrame,
@@ -713,12 +731,12 @@ def model_gdd(
     if temp_opt is None and temp_upper is not None or\
         temp_upper is None and temp_opt is not None:
         raise ValueError("You must provide both upper and optimal temperatures or neither")
-    print("\n\nGDD Recieved Valid Parameters")
-
-
+    
+    # Ensure the temp_avg is a numpy array
+    temp_avg = np.asarray(temp_avg)
+    
     # Simply GDD calculation
     if temp_opt is None and temp_upper is None:
-        temp_avg = np.asarray(temp_avg)
         gdd_days = (temp_avg - temp_base)*duration_time
         return np.maximum(0, gdd_days)
 
@@ -726,17 +744,17 @@ def model_gdd(
     gdd = np.zeros_like(temp_avg)
 
     # Vectorized masks
-    below_opt = temp_avg < temp_opt
-    above_opt = not below_opt  # Equivalent to temp_avg >= temp_opt
-
+    below_opt = temp_avg <= temp_opt
+    above_opt = temp_avg > temp_opt 
+    
     # Compute GDD where temp < temp_opt
     gdd[below_opt] = np.maximum( 0, (temp_avg[below_opt] - temp_base) * duration_time)
-
+    
     # Compute GDD where temp >= temp_opt
     gdd_max = (temp_opt - temp_base) * duration_time
     gdd[above_opt] = np.maximum(0, 
         gdd_max * (temp_upper - temp_avg[above_opt]) / (temp_upper - temp_opt),)
-
+    
     return gdd
 
 def gdd_to_df(
@@ -762,11 +780,13 @@ def gdd_to_df(
         temp_upper: The maximum temperature a given crop will grow in Celsius
         duration_time: The number of days that each temp_avg represents
     """
+    global labels
+    
     # Calculate gdd
     gdd = model_gdd(temp_avg, temp_base, temp_opt, temp_upper, duration_time)
 
-    df["GROWING_DEGREE_DAYS"] = gdd
-    df["GROWING_DEGREE_DAYS_SUM"] = gdd.cumsum()
+    df[labels['gdd']] = gdd
+    df[labels['gdd_sum']] = gdd.cumsum()
 
 
 # Photo Period Tools
@@ -810,16 +830,16 @@ def photoperiod_at_latitude(phi: float, doy: np.ndarray):
     # Calculate daylength in hours, defining sec(x) = 1/cos(x)
     P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(phi)) * (1/np.cos(delta)) - np.tan(phi) * np.tan(delta) ) ) # Eq. [1].
 
-    return P, B, alpha, M, lmd, np.degrees[delta]
+    return P, B, alpha, M, lmd, np.degrees(delta)
     
-def photoperiod_on_day(latitude: np.ndarray, doy: int):
+def photoperiod_on_day(latitude: np.ndarray, doys: np.ndarray):
     """
     Function to compute photoperiod or daylight hours. This function is not accurate
     near polar regions.
 
     Args:
         latitude: Latitude in decimal degress. Where the northern Hemisphere is positive
-        doy: The day of year (0-365) where January 1st is 0 and 365 to perform the calculation
+        doys: The day of year (0-365) where January 1st is 0 and 365 to perform the calculation
 
     Returns:
         Photoperiod, daylight hours, for the given latitudes on the given day.
@@ -830,8 +850,9 @@ def photoperiod_on_day(latitude: np.ndarray, doy: int):
         Lambda
         Delta
     """
-    # Convert latitude to radians
-    latitude = np.radians(latitude)
+    # Convert latitude to radians and convert shapes
+    latitude = np.radians(np.asarray(latitude)).reshape(-1, 1)  # shape (N, 1)
+    doys = np.asarray(doys).reshape(1, -1) 
     
     # Angle of the sun below the horizon. Civil twilight is -4.76 degrees.
     light_intensity = 2.206 * 10**-3
@@ -842,7 +863,7 @@ def photoperiod_on_day(latitude: np.ndarray, doy: int):
     
     # Mean anomaly of the sun. It is a convenient uniform measure of 
     # how far around its orbit a body has progressed since pericenter.
-    M = 0.9856*doy - 3.251 # Eq. [4].
+    M = 0.9856*doys - 3.251 # Eq. [4].
     
     # Declination of sun in degrees
     lmd = M + 1.916*np.sin(np.radians(M)) + 0.020*np.sin(np.radians(2*M)) + 282.565 # Eq. [3]. Lambda
@@ -852,7 +873,7 @@ def photoperiod_on_day(latitude: np.ndarray, doy: int):
     # Calculate daylength in hours, defining sec(x) = 1/cos(x)
     P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(latitude)) * (1/np.cos(delta)) - np.tan(latitude) * np.tan(delta) ) ) # Eq. [1].
 
-    return P, B, alpha, M, lmd, np.degrees[delta]
+    return P, B, alpha, M, lmd, np.degrees(delta)
 
 
 # Additional Functions

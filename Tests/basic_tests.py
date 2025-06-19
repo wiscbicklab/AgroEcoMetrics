@@ -1,4 +1,5 @@
 from pathlib import Path
+import traceback
 import numpy as np
 import agroecometrics as AEM
 import pandas as pd
@@ -19,10 +20,11 @@ def air_temp_tests(df: pd.DataFrame, file_path: Path):
     try:
         # Air Temperature models
         air_temp_pred = AEM.equations.model_air_temp(df2024)
-        AEM.visualizations.plot_air_temp(df, air_temp_pred, file_path.with_name("air_temp_plot.png"))
+        AEM.visualizations.plot_air_temp(df, air_temp_pred, file_path.joinpath("air_temp_plot.png"))
         return True
     except Exception as e:
-        print(e.with_traceback)
+        print("ERROR:", e)
+        traceback.print_exc()
         return False
 
 def evapo_transpiation_tests(df: pd.DataFrame, file_path: Path):
@@ -54,7 +56,8 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_path: Path):
         pmax = df[labels["pmax"]]*100
     except Exception as e:
         print("Error getting data from file, unable to run evapotranspiration model tests")
-        print(e.with_traceback)
+        print("ERROR:", e)
+        traceback.print_exc()
         return False
 
     try:
@@ -70,10 +73,11 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_path: Path):
         # Create model Labels for the plot
         evapo_model_labels = ["Dalton", "Penman", "Romanenko", "Jensen-Haise", "Hargreaves", "Penman_Monteith"]
         # Plot Mmodel data
-        AEM.visualizations.plot_evapo_data(df, file_path.with_name("Evapo_All.png"), evapo_models, evapo_model_labels)
+        AEM.visualizations.plot_evapo_data(df, file_path.joinpath("Evapo_All.png"), evapo_models, evapo_model_labels)
         return True
     except Exception as e:
-        print(e.with_traceback)
+        print("ERROR:", e)
+        traceback.print_exc()
         return False
     
 def rainfall_runoff_tests(df: pd.DataFrame, file_path: Path):
@@ -88,12 +92,13 @@ def rainfall_runoff_tests(df: pd.DataFrame, file_path: Path):
         True if the tests ran sucessfully and False otherwise
     """
     try:
-        file_path = file_path.with_name("runoff_plot.png")
+        file_path = file_path.joinpath("runoff_plot.png")
         AEM.equations.rainfall_runoff_to_df(df)
         AEM.visualizations.plot_rainfall(df, file_path)
         return True
     except Exception as e:
-        print(e.with_traceback)
+        print("ERROR:", e)
+        traceback.print_exc()
         return False
 
 def soil_temp_tests(file_path: Path):
@@ -108,16 +113,17 @@ def soil_temp_tests(file_path: Path):
     """
     try:
         T_depth = AEM.equations.soil_temp_at_depth(10)
-        AEM.visualizations.plot_yearly_soil_temp(T_depth, file_path.with_name("soil_temp.png"))
+        AEM.visualizations.plot_yearly_soil_temp(T_depth, file_path.joinpath("soil_temp.png"))
 
         T_day, depths = AEM.equations.soil_temp_on_day(10, 500)
-        AEM.visualizations.plot_day_soil_temp(T_day, depths, file_path.with_name("day150_temp.png"))
+        AEM.visualizations.plot_day_soil_temp(T_day, depths, file_path.joinpath("day150_temp.png"))
 
         doy_grid, z_grid, t_grid = AEM.equations.soil_temp_at_depth_on_day(500)
-        AEM.visualizations.plot_3d_soil_temp(doy_grid, z_grid, t_grid, file_path.with_name("soil_temp_3d.png"))
+        AEM.visualizations.plot_3d_soil_temp(doy_grid, z_grid, t_grid, file_path.joinpath("soil_temp_3d.png"))
         return True
     except Exception as e:
-        print(e.with_traceback)
+        print("ERROR:", e)
+        traceback.print_exc()
         return False
 
 def gdd_tests(df: pd.DataFrame, file_path: Path):
@@ -136,21 +142,23 @@ def gdd_tests(df: pd.DataFrame, file_path: Path):
         temp_avg = df[labels["temp_avg"]]
     except Exception as e:
         print("Error getting data from file, unable to run gdd model tests")
-        print(e.with_traceback)
+        print("ERROR:", e)
+        traceback.print_exc()
         return False
     
     try:
         AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10.0)
-        AEM.visualizations.plot_gdd(file_path.with_name("gdd_basic.png"))
-        AEM.visualizations.plot_gdd_sum(file_path.with_name("gdd_basic_sum.png"))
+        AEM.visualizations.plot_gdd(df, file_path.joinpath("gdd_basic.png"))
+        AEM.visualizations.plot_gdd_sum(df, file_path.joinpath("gdd_basic_sum.png"))
 
-        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10.0, temp_opt=28.0, temp_upper=38.0)
-        AEM.visualizations.plot_gdd(file_path.with_name("gdd_advanced.png"))
-        AEM.visualizations.plot_gdd_sum(file_path.with_name("gdd_advanced_sum.png"))
+        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10.0, temp_opt=22.0, temp_upper=28.0)
+        AEM.visualizations.plot_gdd(df, file_path.joinpath("gdd_advanced.png"))
+        AEM.visualizations.plot_gdd_sum(df, file_path.joinpath("gdd_advanced_sum.png"))
 
         return True
     except Exception as e:
-        print(e.with_traceback)
+        print("ERROR:", e)
+        traceback.print_exc()
         return False
 
 def photoperiod_test(file_path: Path):
@@ -165,10 +173,12 @@ def photoperiod_test(file_path: Path):
     """
     global labels
     try:
-        AEM.visualizations.plot_yearly_photoperiod(33.4, file_path.with_name("Yearly_photoperiod.png"))
-        AEM.visualizations.plot_daily_photoperiod(np.array([1,90,180,270,360]), file_path.with_name("Daily_photoperiod.png"))
+        AEM.visualizations.plot_yearly_photoperiod(33.4, file_path.joinpath("Yearly_photoperiod.png"))
+        AEM.visualizations.plot_daily_photoperiod(np.array([1,90,180,270,360]), file_path.joinpath("Daily_photoperiod.png"))
         return True
     except Exception as e:
+        print("ERROR:", e)
+        traceback.print_exc()
         return False
 
 def air_to_soil_temp_test(df: pd.DataFrame, file_path: Path):
@@ -183,14 +193,15 @@ def air_to_soil_temp_test(df: pd.DataFrame, file_path: Path):
     """
     global labels 
     try:
-        temp_predictions, air_temp = AEM.equations.model_soil_temp_from_air_temp(df, 10, "01/01/2025")
-        AEM.visualizations.plot_day_soil_temp_pred(air_temp, temp_predictions, 10, file_path.with_name("January_1_soil_temp_predictions.png"))
+        temp_predictions, air_temp = AEM.equations.model_soil_temp_from_air_temp(df, 10, "01/01/2025 12:00 AM")
+        AEM.visualizations.plot_day_soil_temp_pred(air_temp, temp_predictions, 10, file_path.joinpath("January_1_soil_temp_predictions.png"))
 
-        time_grid, depth_grid, temp_grid = AEM.equations.model_soil_temp_at_depth_from_air_temp(df, 10, "01/01/2025")
-        AEM.visualizations.plot_3d_day_soil_temp_pred(time_grid, depth_grid, temp_grid, file_path.with_name("3d_soil_temp_predictions.png"))
+        time_grid, depth_grid, temp_grid = AEM.equations.model_soil_temp_at_depth_from_air_temp(df, 10, "01/01/2025 12:00 AM")
+        AEM.visualizations.plot_3d_day_soil_temp_pred(time_grid, depth_grid, temp_grid, file_path.joinpath("3d_soil_temp_predictions.png"))
         return True
     except Exception as e:
-        print(e.with_traceback)
+        print("ERROR:", e)
+        traceback.print_exc()
         return False
 
 
@@ -201,9 +212,10 @@ if __name__ == "__main__":
     df2023 = AEM.data.load_data(data_file, start_date="2023-01-01", end_date="2023-12-31")
     df2024 = AEM.data.load_data(data_file, start_date="2024-01-01", end_date="2024-12-31")
     df2025 = AEM.data.load_data(data_file, start_date="2025-01-01", end_date="2025-12-31")
+    df_5_min = AEM.data.load_data("Tests/Data/Arlington_Daily_Data.csv")
 
     # Save Folder
-    folder = Path("Tests/Images/")
+    folder = Path("/home/scarlett/Documents/Entomology/AgroEcoMetrics/Tests/Images/")
     if air_temp_tests(df2024, folder):
         print("Air_Temp_Tests: Passed")
     else:
@@ -228,15 +240,15 @@ if __name__ == "__main__":
         print("Growing_Degree_Day_Tests: Passed")
     else:
         print("Growing_Degree_Day_Tests: Failed")
-
+    
     if photoperiod_test(folder):
         print("PhotoPeriod_Tests: Passed")
     else:
         print("PhotoPeriod_Tests: Failed")
 
-    if air_to_soil_temp_test(df2025, folder):
+    if air_to_soil_temp_test(df_5_min, folder):
         print("Air_Soil_Temp_Conversion_Tests: Passed")
     else:
         print("Air_Soil_Temp_Conversion_Tests: Failed")
-
+    
 

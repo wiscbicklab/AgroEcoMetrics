@@ -233,14 +233,16 @@ def plot_day_soil_temp_pred(
     # Validate input parameters
     check_png_filename(file_path)
     time_passed = np.arange(0, 1440, 5)
-    time = datetime.time(hour=time_passed // 60, minute=time_passed % 60)
+    time = time_passed / 60  # Converts to float hours: [0.0, 0.083, 0.167, ..., 23.917]
 
     # Plot actual vs predicted temperature
     plt.figure(figsize=(8, 4))
     plt.scatter(time, air_temp, s=5, color="gray", label="Observed")
     plt.plot(time, pred_temp, label="Predicted", color="tomato", linewidth=1)
     plt.ylabel(f"Soil temperature at {depth}cm  (Celsius) and Air temperature  (Celsius)")
-    plt.xlabel("Time")
+    plt.xlabel("Time (Hours)")
+    plt.xticks(ticks=[0, 6, 12, 18, 24], labels=["12 AM", "6 AM", "12 PM", "6 PM", "12 AM"])
+
     
     save_plot(file_path)
     return file_path.resolve
@@ -397,7 +399,7 @@ def plot_gdd(df: pd.DataFrame, file_path: Path):
     check_png_filename(file_path)
 
     # Extract GDD data
-    gdd_data = df["GROWING_DEGREE_DAYS"]
+    gdd_data = df[labels['gdd']]
 
     plt.figure(figsize=(6, 4))
     plt.plot(df[labels["date"]], gdd_data)
@@ -429,7 +431,7 @@ def plot_gdd_sum(df: pd.DataFrame, file_path: Path):
     check_png_filename(file_path)
 
     # Extract GDD data
-    gdd_sum_data = df["GROWING_DEGREE_DAYS_SUM"]
+    gdd_sum_data = df[labels['gdd_sum']]
 
     plt.figure(figsize=(6,2))
     plt.plot(df[labels["date"]], gdd_sum_data)
@@ -469,7 +471,8 @@ def plot_yearly_photoperiod(latitude: float, file_path: Path):
     plt.ylabel('Photoperiod (hours per day)', size=14)
 
     # Calulate photoperiods and adds them to the plot
-    photoperiods = equations.photoperiod_at_latitude(latitude, doy)
+    photoperiods, __, __, __, __, __ = equations.photoperiod_at_latitude(latitude, doy)
+
     plt.plot(doy, photoperiods, color='k')
 
     save_plot(file_path)
@@ -498,13 +501,14 @@ def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
     plt.figure(figsize=(6,4))
     plt.xlabel('Latitude (decimal degrees)', size=14)
     plt.ylabel('Photoperiod (hours per day)', size=14)
-    plt.legend()
 
     # Calculated photoperiods and adds them to the plot
     latitudes = np.linspace(-45, 45, num=180)
+
+    # Loop over each day and plot
     for doy in doys:
-        equations.photoperiod_on_day(latitudes, doys)
-        plt.plot(latitudes, doy, label=f'DOY {doy}')
+        photoperiod, *_ = equations.photoperiod_on_day(latitudes, doy)
+        plt.plot(latitudes, photoperiod, label=f'DOY {doy}')
     
     save_plot(file_path)
 

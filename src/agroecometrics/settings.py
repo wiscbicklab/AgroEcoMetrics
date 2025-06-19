@@ -19,6 +19,8 @@ _labels = {
     "max_gust": "Daily Maximum Wind Gust (m/h)",
     "solar_rad":  "Daily solar radiation",
     "5_minute_temp": "5 Minute Average Air Temperature (f)",
+    "gdd": "GROWING_DEGREE_DAYS",
+    "gdd_sum": "GROWING_DEGREE_DAYS_SUM",
 }
 
 def get_labels():
