@@ -1,5 +1,6 @@
 # Ignore private files
 private/
+.vscode/
 
 # Testing images
 Tests/Images/

@@ -1,11 +1,13 @@
 from pathlib import Path
+from typing import Optional
 import pandas as pd
 import numpy as np
+import datetime
 
 import matplotlib.pyplot as plt
 
 
-from agroecometrics import settings, bio_sci_equations
+from agroecometrics import equations, settings
 
 # Gets the acutal labels of columns based on the user settings
 labels = settings.get_labels()
@@ -121,7 +123,11 @@ def plot_yearly_soil_temp(T_soil: np.ndarray, file_path: Path):
     save_plot(file_path)
     return file_path
 
-def plot_day_soil_temp(T_soil: np.ndarray, depths: np.ndarray, file_path: Path):
+def plot_day_soil_temp(
+        T_soil: np.ndarray,
+        depths: np.ndarray,
+        file_path: Path,
+        t_pred: Optional[np.ndarray]=None):
     """
     Creates a plot of modeled soil temperature at different depths 
 
@@ -143,6 +149,7 @@ def plot_day_soil_temp(T_soil: np.ndarray, depths: np.ndarray, file_path: Path):
     plt.plot(T_soil, -depths)
     plt.ylabel("Soil temperature (Celsius)")
     plt.xlabel("Soil Depth (Centimeters)")
+    
     
     save_plot(file_path)
     return file_path
@@ -197,6 +204,98 @@ def plot_3d_soil_temp(doy_grid: np.ndarray, z_grid: np.ndarray,
 
     save_plot(file_path)
     return file_path
+
+def plot_day_soil_temp_pred(
+        air_temp: np.ndarray,
+        pred_temp: np.ndarray,
+        depth: float,
+        file_path: Path,
+    ):
+    """
+    Creates a plot of air temperature and the predicted soil temperature on a particular date
+
+    Args:
+        air_temp: Is the air temperature collected every 5 minutes
+        pred_temp: Is the soil temperature prediction given in 5 minute intervals
+        depth: Is the depth that the soil temperature was predicted at
+        file_path: A Path object representing the output file path.
+
+    Returns: 
+        The filename where the plot was saved
+
+    Raises:
+        TypeError: If file_path is not a Path object.
+        ValueError: If the file extension is not '.png'.
+        FileNotFoundError: If the parent directory does not exist.
+    """
+    global labels
+    
+    # Validate input parameters
+    check_png_filename(file_path)
+    time_passed = np.arange(0, 1440, 5)
+    time = datetime.time(hour=time_passed // 60, minute=time_passed % 60)
+
+    # Plot actual vs predicted temperature
+    plt.figure(figsize=(8, 4))
+    plt.scatter(time, air_temp, s=5, color="gray", label="Observed")
+    plt.plot(time, pred_temp, label="Predicted", color="tomato", linewidth=1)
+    plt.ylabel(f"Soil temperature at {depth}cm  (Celsius) and Air temperature  (Celsius)")
+    plt.xlabel("Time")
+    
+    save_plot(file_path)
+    return file_path.resolve
+
+def plot_3d_day_soil_temp_pred(
+        time_grid: np.ndarray,
+        depth_grid: np.ndarray,
+        temp_grid: np.ndarray,
+        file_path: Path,
+    ):
+    """
+    Creates a 3D plot of predicted soil temperature over the course of a single day at different depths.
+
+    Args:
+        time_grid: A 2D numpy array of shape (n_depths, n_times), where each value is time in minutes.
+        depth_grid: A 2D numpy array matching time_grid, where each value is the depth in cm.
+        temp_grid: A 2D numpy array of predicted soil temperatures (same shape as time_grid).
+        file_path: A Path object representing the output file path.
+
+    Returns:
+        The filename where the plot was saved
+
+    Raises:
+        TypeError: If file_path is not a Path object.
+        ValueError: If the file extension is not '.png'.
+        FileNotFoundError: If the parent directory does not exist.
+    """
+    check_png_filename(file_path)
+
+    # Convert minutes to hours for plotting
+    hours_grid = time_grid / 60
+    depth_grid = -depth_grid  # Flip so depth increases downward
+
+    # Create figure and axis
+    fig = plt.figure(figsize=(10, 6), dpi=100, constrained_layout=True)
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Surface plot
+    surf = ax.plot_surface(hours_grid, depth_grid, temp_grid, cmap="viridis", antialiased=False)
+    fig.colorbar(surf, shrink=0.5, aspect=20)
+
+    # Optional: wireframe overlay
+    ax.plot_wireframe(hours_grid, depth_grid, temp_grid, linewidth=0.5, color='k', alpha=0.3)
+
+    # Axis labels
+    ax.set_xlabel("Hour of Day")
+    ax.set_ylabel("Soil Depth [cm]")
+    ax.set_zlabel("Soil Temperature (°C)")
+
+    # Set viewing angle
+    ax.view_init(elev=30, azim=35)
+
+    # Save and return path
+    save_plot(file_path)
+
 
 
 ####    RAILFALL PLOTS    ####
@@ -370,7 +469,7 @@ def plot_yearly_photoperiod(latitude: float, file_path: Path):
     plt.ylabel('Photoperiod (hours per day)', size=14)
 
     # Calulate photoperiods and adds them to the plot
-    photoperiods = bio_sci_equations.photoperiod_at_latitude(latitude, doy)
+    photoperiods = equations.photoperiod_at_latitude(latitude, doy)
     plt.plot(doy, photoperiods, color='k')
 
     save_plot(file_path)
@@ -404,7 +503,7 @@ def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
     # Calculated photoperiods and adds them to the plot
     latitudes = np.linspace(-45, 45, num=180)
     for doy in doys:
-        bio_sci_equations.photoperiod_on_day(latitudes, doys)
+        equations.photoperiod_on_day(latitudes, doys)
         plt.plot(latitudes, doy, label=f'DOY {doy}')
     
     save_plot(file_path)

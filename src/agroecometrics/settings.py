@@ -1,7 +1,7 @@
 # Labels are used to convert a generic label for a type of data to the 
 #       actual label used with in the csv file.
 _labels = {
-    "date": "Date",
+    "date": "Date & Time Collected",
     "date_format": "%m/%d/%Y %I:%M %p",
     "temp_avg": "T_DAILY_AVG",
     "temp_min": "Daily Minimum Air Temperature (c)",
@@ -18,6 +18,7 @@ _labels = {
     "pmax": "Daily Maximum Pressure (mb)",
     "max_gust": "Daily Maximum Wind Gust (m/h)",
     "solar_rad":  "Daily solar radiation",
+    "5_minute_temp": "5 Minute Average Air Temperature (f)",
 }
 
 def get_labels():

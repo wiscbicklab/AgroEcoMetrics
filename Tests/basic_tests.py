@@ -18,7 +18,7 @@ def air_temp_tests(df: pd.DataFrame, file_path: Path):
     """
     try:
         # Air Temperature models
-        air_temp_pred = AEM.bio_sci_equations.model_air_temp(df2024)
+        air_temp_pred = AEM.equations.model_air_temp(df2024)
         AEM.visualizations.plot_air_temp(df, air_temp_pred, file_path.with_name("air_temp_plot.png"))
         return True
     except Exception as e:
@@ -60,12 +60,12 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_path: Path):
     try:
         # Calculate evapo-transpiration models
         evapo_models = np.array([
-        AEM.bio_sci_equations.dalton(tmin, tmax, hmin, hmax, wind_avg),
-        AEM.bio_sci_equations.penman(tmin, tmax, hmin, hmax, wind_avg),
-        AEM.bio_sci_equations.romanenko(tmin, tmax, hmin, hmax),
-        AEM.bio_sci_equations.jensen_haise(tmin, tmax, doy, latitude),
-        AEM.bio_sci_equations.hargreaves(tmin, tmax, doy, latitude),
-        AEM.bio_sci_equations.penman_monteith(tmin, tmax, hmin, hmax, wind_avg, pmin, pmax, doy, latitude, altitude)
+        AEM.equations.dalton(tmin, tmax, hmin, hmax, wind_avg),
+        AEM.equations.penman(tmin, tmax, hmin, hmax, wind_avg),
+        AEM.equations.romanenko(tmin, tmax, hmin, hmax),
+        AEM.equations.jensen_haise(tmin, tmax, doy, latitude),
+        AEM.equations.hargreaves(tmin, tmax, doy, latitude),
+        AEM.equations.penman_monteith(tmin, tmax, hmin, hmax, wind_avg, pmin, pmax, doy, latitude, altitude)
         ])
         # Create model Labels for the plot
         evapo_model_labels = ["Dalton", "Penman", "Romanenko", "Jensen-Haise", "Hargreaves", "Penman_Monteith"]
@@ -89,7 +89,7 @@ def rainfall_runoff_tests(df: pd.DataFrame, file_path: Path):
     """
     try:
         file_path = file_path.with_name("runoff_plot.png")
-        AEM.bio_sci_equations.rainfall_runoff_to_df(df)
+        AEM.equations.rainfall_runoff_to_df(df)
         AEM.visualizations.plot_rainfall(df, file_path)
         return True
     except Exception as e:
@@ -107,13 +107,13 @@ def soil_temp_tests(file_path: Path):
         True if the tests ran sucessfully and False otherwise
     """
     try:
-        T_depth = AEM.bio_sci_equations.soil_temp_at_depth(10)
+        T_depth = AEM.equations.soil_temp_at_depth(10)
         AEM.visualizations.plot_yearly_soil_temp(T_depth, file_path.with_name("soil_temp.png"))
 
-        T_day, depths = AEM.bio_sci_equations.soil_temp_on_day(10, 500)
+        T_day, depths = AEM.equations.soil_temp_on_day(10, 500)
         AEM.visualizations.plot_day_soil_temp(T_day, depths, file_path.with_name("day150_temp.png"))
 
-        doy_grid, z_grid, t_grid = AEM.bio_sci_equations.soil_temp_at_depth_on_day(500)
+        doy_grid, z_grid, t_grid = AEM.equations.soil_temp_at_depth_on_day(500)
         AEM.visualizations.plot_3d_soil_temp(doy_grid, z_grid, t_grid, file_path.with_name("soil_temp_3d.png"))
         return True
     except Exception as e:
@@ -140,13 +140,16 @@ def gdd_tests(df: pd.DataFrame, file_path: Path):
         return False
     
     try:
-        AEM.bio_sci_equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10)
+        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10)
+        print("\n\nBasic GDD equations Finished\n\n")
         AEM.visualizations.plot_gdd(file_path.with_name("gdd_basic.png"))
         AEM.visualizations.plot_gdd_sum(file_path.with_name("gdd_basic_sum.png"))
+        print("\n\nBasic gdd Test Complete\n\n")
 
-        AEM.bio_sci_equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10, temp_opt=28, temp_upper=38)
+        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10, temp_opt=28, temp_upper=38)
         AEM.visualizations.plot_gdd(file_path.with_name("gdd_advanced.png"))
         AEM.visualizations.plot_gdd_sum(file_path.with_name("gdd_advanced_sum.png"))
+
         return True
     except Exception as e:
         print(e.with_traceback)
@@ -170,24 +173,72 @@ def photoperiod_test(file_path: Path):
     except Exception as e:
         return False
 
+def air_to_soil_temp_test(df: pd.DataFrame, file_path: Path):
+    """
+    Tests functions for predicting soil temperature from air temperature and saving plots
+
+    Args:
+        file_path: A path to the location where the plot file will be saved
+
+    Returns:
+        True if the tests ran sucessfully and False otherwise
+    """
+    global labels 
+    try:
+        temp_predictions, air_temp = AEM.equations.model_soil_temp_from_air_temp(df, 10, "01/01/2025")
+        AEM.visualizations.plot_day_soil_temp_pred(air_temp, temp_predictions, 10, file_path.with_name("January_1_soil_temp_predictions.png"))
+
+        time_grid, depth_grid, temp_grid = AEM.equations.model_soil_temp_at_depth_from_air_temp(df, 10, "01/01/2025")
+        AEM.visualizations.plot_3d_day_soil_temp_pred(time_grid, depth_grid, temp_grid, file_path.with_name("3d_soil_temp_predictions.png"))
+        return True
+    except Exception as e:
+        print(e.with_traceback)
+        return False
 
 
 if __name__ == "__main__":
     # Get Data
     data_file = "Tests/Data/Marshfield_All_Data.csv"
-    df = AEM.bio_sci_equations.load_data(data_file)
-    df2023 = AEM.bio_sci_equations.load_data(data_file, start_date="2023-01-01", end_date="2023-12-31")
-    df2024 = AEM.bio_sci_equations.load_data(data_file, start_date="2024-01-01", end_date="2024-12-31")
-    df2025 = AEM.bio_sci_equations.load_data(data_file, start_date="2025-01-01", end_date="2025-12-31")
+    df = AEM.data.load_data(data_file)
+    df2023 = AEM.data.load_data(data_file, start_date="2023-01-01", end_date="2023-12-31")
+    df2024 = AEM.data.load_data(data_file, start_date="2024-01-01", end_date="2024-12-31")
+    df2025 = AEM.data.load_data(data_file, start_date="2025-01-01", end_date="2025-12-31")
 
     # Save Folder
     folder = Path("Tests/Images/")
+    if air_temp_tests(df2024, folder):
+        print("Air_Temp_Tests: Passed")
+    else:
+        print("Air_Temp_Tests: Failed")
 
-    air_temp_tests(df2024, folder)
-    evapo_transpiation_tests(df2024, folder)
-    rainfall_runoff_tests(df2024, folder)
-    soil_temp_tests(folder)
-    gdd_tests(df2024, folder)
-    photoperiod_test(folder)
+    if evapo_transpiation_tests(df2024, folder):
+        print("Evapo_Transpiration_Tests: Passed")
+    else:
+        print("Evapo_Transpiration_Tests: Failed")
+
+    if rainfall_runoff_tests(df2024, folder):
+        print("Rainfall_&_Runoff_Tests: Passed")
+    else:
+        print("Rainoff_&_Runoff_Tests: Failed")
+
+    if soil_temp_tests(folder):
+        print("Soil_Temp_Tests: Passed")
+    else:
+        print("Soil_Temp_Tests: Failed")
+
+    if gdd_tests(df2024, folder):
+        print("Growing_Degree_Day_Tests: Passed")
+    else:
+        print("Growing_Degree_Day_Tests: Failed")
+
+    if photoperiod_test(folder):
+        print("PhotoPeriod_Tests: Passed")
+    else:
+        print("PhotoPeriod_Tests: Failed")
+
+    if air_to_soil_temp_test(df2025, folder):
+        print("Air_Soil_Temp_Conversion_Tests: Passed")
+    else:
+        print("Air_Soil_Temp_Conversion_Tests: Failed")
 
 
