@@ -602,7 +602,7 @@ def EvapoTranspiration_to_df(
         raise ValueError(f"Unknown model name '{model_name}'. Must be one of: "
                          "['dalton', 'penman', 'romanenko', 'jensen_haise', 'hargreaves', 'penman_monteith'].")
 
-    df["EVAPOTRANSPIRATION"] = pet
+    df[labels['evapotranspiration'] + "-" + model_name] = pet
 
 
 # Rain/Runoff Models
