@@ -8,9 +8,10 @@ from agroecometrics import settings
 import agroecometrics as AEM
 
 
-# Gets the acutal labels of columns based on the user settings
-labels = settings.get_labels()
-
+# Gets the acutal LABELS of columns based on the user settings
+LABELS = settings.get_labels()
+DAY_SECONDS = 24*60*60
+YEAR_SECONDS = DAY_SECONDS*365
 
 # Helper Functions
 def compute_esat(temp: np.ndarray) -> np.ndarray:
@@ -18,7 +19,7 @@ def compute_esat(temp: np.ndarray) -> np.ndarray:
     Function that computes saturation vapor pressure based Tetens formula
     
     Args:
-        temp: Temperature in Celsius to calculate the saturation vapor pressure on
+        temp: Temperature (°C) to calculate the saturation vapor pressure on
     
     Returns:
         Computed saturation vapor pressure in kPa
@@ -47,7 +48,6 @@ def compute_Ra(doy: np.ndarray, latitude: float) -> np.ndarray:
     Ra = Ra * (omega * np.sin(phi) * np.sin(d) + np.cos(phi) * np.cos(d) * np.sin(omega))
     return Ra
 
-
 # Air Temperature model
 def model_air_temp(df: pd.DataFrame) -> np.ndarray:
     '''
@@ -60,9 +60,16 @@ def model_air_temp(df: pd.DataFrame) -> np.ndarray:
     Returns: 
         A numpy array of predicted daily temperatures
     '''
-    global labels
+    global LABELS
     # Get Parameters
-    avg_temp, __, __, thermal_amp, min_temp_doy = AEM.data.get_yearly_air_temp_params(df)    
+    # Extract the 5-minute air temperatures and ensure all exist
+    air_temp = df[LABELS['5_minute_temp']]
+
+    # Estimate sinusoidal parameters
+    avg_temp = air_temp.mean()    # Units: °C
+    thermal_amp = (max(air_temp) - min(air_temp)) / 2 # Units: °C
+    min_time = df.loc[air_temp.idxmin(), LABELS['date_time']]
+    timelag = (min_time.hour * 60 + min_time.minute) * 60 # Units: s    
 
     # Generate daily temperature predictions using the model
     T_pred = avg_temp + thermal_amp * np.cos(2 * np.pi * ((df['DOY'] - min_temp_doy) / 365) + np.pi)
@@ -83,24 +90,27 @@ def soil_temp_at_depth(
 
     Args:
         depth: The depth in meters to model the soil temperature
-        avg_temp: The annual average surface temperature in Celsius
-        thermal_amp: The annual thermal amplitude of the soil surface in Celsius
+        avg_temp: The annual average surface temperature (°C)
+        thermal_amp: The annual thermal amplitude of the soil surface (°C)
         thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]
         time_lag: The time lag in days (0-365) where January 1st is 0 and 365
 
     Return:
-        Predicted soil temperature at the given depth for each day of the year
+        Predicted soil temperature at the given depth for each day of the year (°C)
     """
     # Set Constants
-    OMEGA = 2*np.pi/365
+    OMEGA = 2 * np.pi / YEAR_SECONDS # Phase Frequency | Units: 1 / s
+    PHASE = np.pi/2 + OMEGA * (time_lag * DAY_SECONDS) # Phase constant | Units: 
 
-    thermal_dif = thermal_dif / 100 * 86400 # convert to cm^2/day
-    phase_const = np.pi/2 + OMEGA*time_lag # Phase constant
-    damp_depth = (2*thermal_dif/OMEGA)**(1/2) # Damping depth 
+    # Calculate Damping Depth
+    thermal_dif = thermal_dif / 100    # Unit Conversion: cm^2 / s
+    damp_depth = (2*thermal_dif/OMEGA)**(1/2) # Units: cm
 
-    doy = np.arange(1,366)
-    T_soil = avg_temp + thermal_amp * np.exp(-depth / damp_depth)
-    T_soil = T_soil * np.sin(OMEGA * doy - depth / damp_depth - phase_const)
+    # Estimate the temperatures for each day of the year
+    doy = np.arange(0,366)*DAY_SECONDS # Units: s
+    T_soil = avg_temp + \
+        thermal_amp * np.exp(-depth / damp_depth) * \
+        np.sin(OMEGA * doy - depth / damp_depth - PHASE)
     
     return  np.asarray(T_soil)
 
@@ -120,25 +130,27 @@ def soil_temp_on_day(
         doy: Day of year (0-365) where January 1st is 0 and 365
         max_depth: The maximum depth in centimeters to model the soil temperature
         Nz: The number of interpolated depths to caluculate soil temperature at
-        avg_temp: The annual average surface temperature in Celsius
-        thermal_amp: The annual thermal amplitude of the soil surface in Celsius
+        avg_temp: The annual average surface temperature (°C)
+        thermal_amp: The annual thermal amplitude of the soil surface (°C)
         thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]
         time_lag: The time lag in days (0-365) where January 1st is 0 and 365
 
     Returns:
-        An np array of the soil temps and an np array of the depths of the soil temps
+        An np array of the soil temps and an np array of the depths of the soil temps (°C)
     """
     # Set Constants
-    OMEGA = 2*np.pi/365
+    OMEGA = 2 * np.pi / (YEAR_SECONDS) # Phase Frequency | Units: 1 / s
+    PHASE = np.pi / 2 + OMEGA * (timelag * DAY_SECONDS) # Phase constant
 
-    thermal_dif = thermal_dif / 100 * 86400 # convert to cm^2/day
-    phase_const = np.pi/2 + OMEGA*timelag # Phase constant
-    damp_depth = (2*thermal_dif/OMEGA)**(1/2) # Damping depth 
+    # Calculate Damping Depth
+    thermal_dif = thermal_dif / 100    # Unit Conversion: cm^2 / s
+    damp_depth = (2 * thermal_dif / OMEGA) ** 0.5 # Units: cm
 
-    depths = np.linspace(0, max_depth, Nz) # Interpolation depths
-    
-    T_soil = avg_temp + thermal_amp * np.exp(-depths / damp_depth) * np.sin(OMEGA * doy - depths / damp_depth - phase_const)
-    T_soil = T_soil 
+    # Estimate the temperatures for each depth
+    depths = np.linspace(0, max_depth, Nz) # Interpolation depths | Units: cm
+    T_soil = avg_temp + \
+        thermal_amp * np.exp(-depths / damp_depth) * \
+        np.sin(OMEGA * doy - depths / damp_depth - PHASE)
 
     return (np.asarray(depths), np.asarray(T_soil))
 
@@ -156,8 +168,8 @@ def soil_temp_at_depth_on_day(
     Args:
         max_depth: The maximum depth in centimeters to model the soil temperature
         Nz: The number of interpolated depths to calculate soil temperature at
-        avg_temp: The annual average surface temperature in Celsius
-        thermal_amp: The annual thermal amplitude of the soil surface in Celsius
+        avg_temp: The annual average surface temperature (°C)
+        thermal_amp: The annual thermal amplitude of the soil surface (°C)
         thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]
         timelag: The time lag in days (0-365) where January 1st is 0 and 365
     
@@ -183,7 +195,7 @@ def model_soil_temp_from_air_temp(
         df: pd.DataFrame,
         depth: float,
         date: str,
-        date_format: str = labels['date_format'],
+        date_format: str = LABELS['date_format'],
         thermal_dif: int = 0.203,
     ) -> np.ndarray:
     """
@@ -200,46 +212,50 @@ def model_soil_temp_from_air_temp(
         thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]
 
     Returns:
-        A numpy array containing the predicted temperatures in Celsius every 5 minutes 
+        A numpy array containing the predicted temperatures (°C) every 5 minutes 
             starting at midnight at the specified depth and a numpy array containing
             the given air temperatures
     """
-    global labels
-    OMEGA = 2 * np.pi / 1440
+    # Constants
+    global LABELS
+    OMEGA = 2 * np.pi / DAY_SECONDS # Phase Frequency | Units: 1 / s
 
-    # Parse the input date
-    target_day = pd.to_datetime(date, format=date_format).normalize()
+    # Calculate Damping Depth
+    thermal_dif = thermal_dif / 100 # Unit Conversion: cm^2 / s
+    damp_depth = (2 * thermal_dif / OMEGA) ** 0.5 # Units: cm
 
-    # Filter to only that day
-    df['timestamp'] = pd.to_datetime(df[labels['date']], format=date_format)
-    df_day = df[df['timestamp'].dt.normalize() == target_day]
+    # Find all the entries in the dataframe with the correct date and sort by time
+    target_date = pd.to_datetime(date, format=date_format).normalize()
+    dates = pd.to_datetime(df[LABELS['date_norm']], format=date_format)
+    daily_df = df[dates == target_date].sort_values(LABELS['date_time'])
+    # Raise an exception if no data for the specified date could be found
+    if len(daily_df) == 0:
+        raise ValueError(f"Could not find data in the given dataframe for:\t{date}")
 
-    # Make sure it's sorted by time
-    df_day = df_day.sort_values('timestamp')
-
-    # Extract the 5-minute air temperatures
-    air_temp = df_day[labels['5_minute_temp']].to_numpy()
-
-    # Ensure it's exactly 288 values (1 day at 5-minute intervals)
-    if len(air_temp) != 288:
-        raise ValueError(f"Expected 288 5-minute temperature values for {target_day.date()}, got {len(air_temp)}")
+    # Extract the 5-minute air temperatures and ensure all exist
+    air_temp = daily_df[LABELS['5_minute_temp']]
+    if len(air_temp) != DAY_SECONDS / (5*60):
+        raise ValueError(f"Expected 288 5-minute temperature values for {target_date.date()}, got {len(air_temp)}")
 
     # Estimate sinusoidal parameters
-    avg_temp, __, __, thermal_amp, timelag = (
-        AEM.data.get_daily_air_temp_params(df, date, date_format)
-    )
+    avg_temp = air_temp.mean()    # Units: °C
+    thermal_amp = (max(air_temp) - min(air_temp)) / 2 # Units: °C
+    min_time = daily_df.loc[air_temp.idxmin(), LABELS['date_time']]
+    timelag = (min_time.hour * 60 + min_time.minute) * 60 # Units: s
 
-    # Compute damping depth
-    thermal_dif = thermal_dif / 100 * 86400  # convert to cm²/day
-    damp_depth = (2 * thermal_dif / OMEGA) ** 0.5
+    # Generate predictions for every 5 minutes
+    time = np.arange(0, DAY_SECONDS, 5 * 60) # Units: s
+    temp_predictions = avg_temp + \
+        thermal_amp * np.exp(-depth / damp_depth) * \
+        np.sin(OMEGA * (time - timelag) - (depth / damp_depth))
 
-    # Generate predictions
-    time = np.arange(0, 1440, 5)
-    temp_predictions = avg_temp + thermal_amp * np.exp(-depth / damp_depth) * np.sin(
-        OMEGA * (time - timelag) - (depth / damp_depth)
-    )
 
-    return temp_predictions, air_temp
+    # DEBUGGING
+    soil_temp_actual = daily_df[LABELS['soil_temp4']]
+    # DEBUGGING
+
+
+    return temp_predictions, air_temp.to_numpy(), soil_temp_actual
 
 def model_soil_temp_at_depth_from_air_temp(
         df: pd.DataFrame,
@@ -265,27 +281,41 @@ def model_soil_temp_at_depth_from_air_temp(
         A tuple of (time_grid, depth_grid, temp_grid), each a 2D NumPy array.
     """
     # Constants
-    OMEGA = 2 * np.pi / 1440  # Daily frequency in radians/minute
+    global LABELS
+    OMEGA = 2 * np.pi / DAY_SECONDS # Phase Frequency | Units: 1 / s
 
-    # Get parameter estimates from air temp
-    avg_temp, __, __, thermal_amp, timelag = (
-        AEM.data.get_daily_air_temp_params(df, date, date_format)
-    )
+    # Calculate Damping Depth
+    thermal_dif = thermal_dif / 100 # Unit Conversion: cm^2 / s
+    damp_depth = (2 * thermal_dif / OMEGA) ** 0.5 # Units: cm
 
-    # Convert thermal diffusivity to cm^2/day
-    thermal_dif = thermal_dif / 100 * 86400
-    damp_depth = (2 * thermal_dif / OMEGA) ** 0.5
+    # Find all the entries in the dataframe with the correct date and sort by time
+    target_date = pd.to_datetime(date, format=date_format).normalize()
+    dates = pd.to_datetime(df[LABELS['date_norm']], format=date_format)
+    daily_df = df[dates == target_date].sort_values(LABELS['date_time'])
+    # Raise an exception if no data for the specified date could be found
+    if len(daily_df) == 0:
+        raise ValueError(f"Could not find data in the given dataframe for:\t{date}")
 
-    # Time (minutes from midnight) and depths
-    time = np.arange(0, 1440, 5)
-    depths = np.linspace(0, max_depth, Nz)
+    # Extract the 5-minute air temperatures and ensure all exist
+    air_temp = daily_df[LABELS['5_minute_temp']]
+    if len(air_temp) != DAY_SECONDS / (5*60):
+        raise ValueError(f"Expected 288 5-minute temperature values for {target_date.date()}, got {len(air_temp)}")
 
-    # Create grids for time and depth
+    # Estimate sinusoidal parameters
+    avg_temp = air_temp.mean()    # Units: °C
+    thermal_amp = (max(air_temp) - min(air_temp)) / 2 # Units: °C
+    min_time = daily_df.loc[air_temp.idxmin(), LABELS['date_time']]
+    timelag = (min_time.hour * 60 + min_time.minute) * 60 # Units: s
+
+    # Create time and depth grids
+    time = np.arange(0, DAY_SECONDS, 5)
+    depths = np.linspace(max_depth/Nz, max_depth, Nz)
     time_grid, depth_grid = np.meshgrid(time, depths)
 
-    # Equation 8.6 for temp at each depth/time point
-    temp_grid = avg_temp + thermal_amp * np.exp(-depth_grid / damp_depth) * \
-                np.sin(OMEGA * (time_grid - timelag) - depth_grid / damp_depth)
+    # Generate predictions for the given times and depths
+    temp_grid = avg_temp + \
+        thermal_amp * np.exp(-depth_grid / damp_depth) * \
+        np.sin(OMEGA * (time_grid - timelag) - depth_grid / damp_depth)
 
     return time_grid, depth_grid, temp_grid
 
@@ -302,8 +332,8 @@ def dalton(
     Potential evaporation model proposed by Dalton in 1802
     
     Args:
-        temp_min: The minimum daily temperature in Celsius
-        temp_max: The maximum daily temperature in Celsius
+        temp_min: The minimum daily temperature (°C)
+        temp_max: The maximum daily temperature (°C)
         RH_min:   The minimum daily relative humidity (range: 0.0-1.0)
         RH_max:   The maximum daily relative humidity (range: 0.0-1.0)
         wind_speed: The average daily wind speed in meters per second
@@ -339,8 +369,8 @@ def penman(
     Potential evapotranspiration model proposed by Penman in 1948
 
     Args:
-        temp_min: The minimum daily temperature in Celsius
-        temp_max: The maximum daily temperature in Celsius
+        temp_min: The minimum daily temperature (°C)
+        temp_max: The maximum daily temperature (°C)
         RH_min:   The minimum daily relative humidity (range: 0.0-1.0)
         RH_max:   The maximum daily relative humidity (range: 0.0-1.0)
         wind_speed: The average daily wind speed in meters per second
@@ -375,8 +405,8 @@ def romanenko(
     Potential evaporation model proposed by Romanenko in 1961
     
     Args:
-        temp_min: The minimum daily temperature in Celsius
-        temp_max: The maximum daily temperature in Celsius
+        temp_min: The minimum daily temperature (°C)
+        temp_max: The maximum daily temperature (°C)
         RH_min:   The minimum daily relative humidity (range: 0.0-1.0)
         RH_max:   The maximum daily relative humidity (range: 0.0-1.0)
 
@@ -408,8 +438,8 @@ def jensen_haise(
     Potential evapotranspiration model proposed by Jensen in 1963
     
     Args:
-        temp_min: The minimum daily temperature in Celsius
-        temp_max: The maximum daily temperature in Celsius
+        temp_min: The minimum daily temperature (°C)
+        temp_max: The maximum daily temperature (°C)
         doy: Day of year (0-365) where January 1st is 0 and 365
         latitude: Latitude of the location in degrees
 
@@ -440,8 +470,8 @@ def hargreaves(
     Potential evapotranspiration model proposed by Hargreaves in 1982
     
     Args:
-        temp_min: The minimum daily temperature in Celsius
-        temp_max: The maximum daily temperature in Celsius
+        temp_min: The minimum daily temperature (°C)
+        temp_max: The maximum daily temperature (°C)
         doy: Day of year (0-365) where January 1st is 0 and 365
         latitude: Latitude of the location in degrees
         
@@ -480,8 +510,8 @@ def penman_monteith(
         and revised by Monteith in 1965
     
     Args:
-        temp_min: The minimum daily temperature in Celsius
-        temp_max: The maximum daily temperature in Celsius
+        temp_min: The minimum daily temperature (°C)
+        temp_max: The maximum daily temperature (°C)
         RH_min:   The minimum daily relative humidity (range: 0.0-1.0)
         RH_max:   The maximum daily relative humidity (range: 0.0-1.0)
         p_min:    The minimum daily atmospheric pressure in Pa
@@ -572,8 +602,8 @@ def EvapoTranspiration_to_df(
         df: The DataFrame to add the evapotranspiration data to
         model_name: Name of the model to use. One of:
                 ["dalton", "penman", "romanenko", "jensen_haise", "hargreaves", "penman_monteith"]
-        temp_min:   The minimum daily temperature in Celsius
-        temp_max:   The maximum daily temperature in Celsius
+        temp_min:   The minimum daily temperature (°C)
+        temp_max:   The maximum daily temperature (°C)
         RH_min:     The minimum daily relative humidity (range: 0.0-1.0)
         RH_max:     The maximum daily relative humidity (range: 0.0-1.0)
         wind_speed: The average daily wind speed in meters per second
@@ -602,7 +632,7 @@ def EvapoTranspiration_to_df(
         raise ValueError(f"Unknown model name '{model_name}'. Must be one of: "
                          "['dalton', 'penman', 'romanenko', 'jensen_haise', 'hargreaves', 'penman_monteith'].")
 
-    df[labels['evapotranspiration'] + "-" + model_name] = pet
+    df[LABELS['evapotranspiration'] + "-" + model_name] = pet
 
 
 # Rain/Runoff Models
@@ -640,10 +670,9 @@ def rainfall_runoff_to_df(df: pd.DataFrame, cn: int = 75):
         df: The DataFrame containing the rainfall data
         cn: The curve number to be used in the runoff calculation
     """
-    df["RAIN_SUM"] = df[labels["rain"]].cumsum()
-    df["RUNOFF"] = model_runoff(df[labels["rain"]], cn=cn)
+    df["RAIN_SUM"] = df[LABELS["rain"]].cumsum()
+    df["RUNOFF"] = model_runoff(df[LABELS["rain"]], cn=cn)
     df["RUNOFF_SUM"] = df["RUNOFF"].cumsum()
-
 
 
 # Fletcher's Functions
@@ -713,11 +742,11 @@ def model_gdd(
         the average temperature over the recorded durations
         
     Args:
-        temp_avg:  The average temperature over the duration_time in Celsius
-        temp_base: The minimum temperature a given crop will grow at in Celsius
-        temp_opt: The optimal temperature a given crop will grow in Celsius, 
+        temp_avg:  The average temperature over the duration_time (°C)
+        temp_base: The minimum temperature a given crop will grow at (°C)
+        temp_opt: The optimal temperature a given crop will grow (°C), 
                             above this temperature growing will slow linearly
-        temp_upper: The maximum temperature a given crop will grow in Celsius
+        temp_upper: The maximum temperature a given crop will grow (°C)
         duration_time: The number of days that each temp_avg represents
     
     Returns:
@@ -773,20 +802,20 @@ def gdd_to_df(
 
     Args:
         df: The DataFrame to add the GDD data to
-        temp_avg:  The average temperature over the duration_time in Celsius
-        temp_base: The minimum temperature a given crop will grow at in Celsius
-        temp_optimal: The optimal temperature a given crop will grow in Celsius, 
+        temp_avg:  The average temperature over the duration_time (°C)
+        temp_base: The minimum temperature a given crop will grow at (°C)
+        temp_optimal: The optimal temperature a given crop will grow (°C), 
                             above this temperature growing will slow linearly
-        temp_upper: The maximum temperature a given crop will grow in Celsius
+        temp_upper: The maximum temperature a given crop will grow (°C)
         duration_time: The number of days that each temp_avg represents
     """
-    global labels
+    global LABELS
     
     # Calculate gdd
     gdd = model_gdd(temp_avg, temp_base, temp_opt, temp_upper, duration_time)
 
-    df[labels['gdd']] = gdd
-    df[labels['gdd_sum']] = gdd.cumsum()
+    df[LABELS['gdd']] = gdd
+    df[LABELS['gdd_sum']] = gdd.cumsum()
 
 
 # Photo Period Tools
@@ -876,7 +905,7 @@ def photoperiod_on_day(latitude: np.ndarray, doys: np.ndarray):
     return P, B, alpha, M, lmd, np.degrees(delta)
 
 
-# Additional Functions
+# Soil Water Flow Functions
 def hydraulic_conductivity(
         k_s: float,
         psi_e: float,
@@ -891,7 +920,7 @@ def hydraulic_conductivity(
         k_s: The saturated conductivity of the soil  (kg * s / m^3)
         psi_e: The air entry water potential of the soil  (J / kg)
         theta: Is the volumetric water content of the soil (m^3 / m^3)
-        theta_s: Is the saturation water content of teh soil (m^3 / m^3)
+        theta_s: Is the saturation water content of the soil (m^3 / m^3)
         b: Is the exponent of moisture release parameter
 
     Returns:
@@ -902,5 +931,49 @@ def hydraulic_conductivity(
     k_psi_m = k_s * (psi_e / psi_m) ** (2 + 3/b)
 
     return k_psi_m
+
+def cummulative_water_infultration(
+        delta_theta: float,
+        K_avg: float,
+        psi_mi: float,
+        psi_mf: float,
+        time: int,
+        Nz: int=100
+    ):
+    """
+    Calculates the cummulative vertical water infultration.
     
+    Calculates the cummulative vertical water infultration for the given soil parameters.
+        Calculations are made for equally spaced times from [time/Nz to time]
+    Args:
+        delta_theta: The Volume Fraction of water
+        K_avg: The average hydraulic conductivity of the wet soil (kg * s /m^3)
+        psi_mi: The infultration boudary's water potential (J / kg)
+        psi_mf: The wetting front's water potentail (J / kg)
+        time: The length of time to calcute the cummulative water infultration (s)
+        Nz: The number of interpolated times to calculate
+
+    
+    Returns:
+        A numpy array of length Nz representing the cummulative vertical water
+            infultration over time. Where the first value represents the 
+            infultraiton after zero time, the second value represents the
+            infultration after time/Nz time, and the last vaule represents the
+            infultration after time.
+    """
+    # Define Constants
+    WATER_DENSITY = 1000 # Units: Kg / m^3
+    LITTLE_G = 9.80665 # Units: m / s^2
+
+    if delta_theta < 0 or delta_theta > 1.0:
+        raise ValueError(f"The volume Fraction of water must be between [0,1], but {delta_theta} was provided")
+
+    # Calculate water infultration at each of the time
+    times = np.linspace(0, time, Nz)
+    water_inful = 2 * WATER_DENSITY * delta_theta * K_avg * (psi_mi - psi_mf) * times
+    water_inful =  water_inful ** 0.5 + LITTLE_G * K_avg * times
+
+    return water_inful
+
+
 

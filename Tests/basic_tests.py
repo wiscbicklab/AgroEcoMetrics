@@ -4,7 +4,7 @@ import numpy as np
 import agroecometrics as AEM
 import pandas as pd
 
-labels = AEM.settings.get_labels()
+LABELS = AEM.settings.get_labels()
 
 def air_temp_tests(df: pd.DataFrame, file_path: Path):
     """
@@ -39,21 +39,21 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_path: Path):
     Returns:
         True if the tests ran sucessfully and False otherwise
     """
-    global labels
+    global LABELS
 
     # Set Latitude and Altitude for Evapo Models
     latitude = 34.0 # Degrees
     altitude = 350.0 # m
     try:
         # Get data from data file
-        tmin = df[labels["temp_min"]]
-        tmax = df[labels["temp_max"]]
-        hmin = df[labels["hmin"]]
-        hmax = df[labels["hmax"]]
-        wind_avg = df[labels["max_gust"]]*0.5*.44704
+        tmin = df[LABELS["temp_min"]]
+        tmax = df[LABELS["temp_max"]]
+        hmin = df[LABELS["hmin"]]
+        hmax = df[LABELS["hmax"]]
+        wind_avg = df[LABELS["max_gust"]]*0.5*.44704
         doy = df["DOY"]
-        pmin = df[labels["pmin"]]*100
-        pmax = df[labels["pmax"]]*100
+        pmin = df[LABELS["pmin"]]*100
+        pmax = df[LABELS["pmax"]]*100
     except Exception as e:
         print("Error getting data from file, unable to run evapotranspiration model tests")
         print("ERROR:", e)
@@ -70,10 +70,10 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_path: Path):
         AEM.equations.hargreaves(tmin, tmax, doy, latitude),
         AEM.equations.penman_monteith(tmin, tmax, hmin, hmax, wind_avg, pmin, pmax, doy, latitude, altitude)
         ])
-        # Create model Labels for the plot
-        evapo_model_labels = ["Dalton", "Penman", "Romanenko", "Jensen-Haise", "Hargreaves", "Penman_Monteith"]
+        # Create model LABELS for the plot
+        evapo_model_LABELS = ["Dalton", "Penman", "Romanenko", "Jensen-Haise", "Hargreaves", "Penman_Monteith"]
         # Plot Mmodel data
-        AEM.visualizations.plot_evapo_data(df, file_path.joinpath("Evapo_All.png"), evapo_models, evapo_model_labels)
+        AEM.visualizations.plot_evapo_data(df, file_path.joinpath("Evapo_All.png"), evapo_models, evapo_model_LABELS)
         return True
     except Exception as e:
         print("ERROR:", e)
@@ -137,9 +137,9 @@ def gdd_tests(df: pd.DataFrame, file_path: Path):
     Returns:
         True if the tests ran sucessfully and False otherwise
     """
-    global labels
+    global LABELS
     try:
-        temp_avg = df[labels["temp_avg"]]
+        temp_avg = df[LABELS["temp_avg"]]
     except Exception as e:
         print("Error getting data from file, unable to run gdd model tests")
         print("ERROR:", e)
@@ -171,7 +171,7 @@ def photoperiod_test(file_path: Path):
     Returns:
         True if the tests ran sucessfully and False otherwise
     """
-    global labels
+    global LABELS
     try:
         AEM.visualizations.plot_yearly_photoperiod(33.4, file_path.joinpath("Yearly_photoperiod.png"))
         AEM.visualizations.plot_daily_photoperiod(np.array([1,90,180,270,360]), file_path.joinpath("Daily_photoperiod.png"))
@@ -191,10 +191,10 @@ def air_to_soil_temp_test(df: pd.DataFrame, file_path: Path):
     Returns:
         True if the tests ran sucessfully and False otherwise
     """
-    global labels 
+    global LABELS 
     try:
-        temp_predictions, air_temp = AEM.equations.model_soil_temp_from_air_temp(df, 10, "01/01/2025 12:00 AM")
-        AEM.visualizations.plot_day_soil_temp_pred(air_temp, temp_predictions, 10, file_path.joinpath("January_1_soil_temp_predictions.png"))
+        temp_predictions, air_temp, soil_temp = AEM.equations.model_soil_temp_from_air_temp(df, 10, "02/21/2025 12:00 AM", thermal_dif=.1)
+        AEM.visualizations.plot_day_soil_temp_pred(air_temp, temp_predictions, 10, file_path.joinpath("January_1_soil_temp_predictions.png"), soil_temp)
 
         time_grid, depth_grid, temp_grid = AEM.equations.model_soil_temp_at_depth_from_air_temp(df, 10, "01/01/2025 12:00 AM")
         AEM.visualizations.plot_3d_day_soil_temp_pred(time_grid, depth_grid, temp_grid, file_path.joinpath("3d_soil_temp_predictions.png"))
@@ -204,6 +204,24 @@ def air_to_soil_temp_test(df: pd.DataFrame, file_path: Path):
         traceback.print_exc()
         return False
 
+def hydraulic_conductivity_test():
+    """
+    Tests functions for predicting soil temperature from air temperature and saving plots
+
+    Args:
+        file_path: A path to the location where the plot file will be saved
+
+    Returns:
+        True if the tests ran sucessfully and False otherwise
+    """
+    global LABELS 
+    try:
+        print("Hydraulic Conductivity Test Results:\t" + str(AEM.equations.hydraulic_conductivity(.1, .1, .1, .1, 2)))
+        return True
+    except Exception as e:
+        print("ERROR:", e)
+        traceback.print_exc()
+        return False
 
 if __name__ == "__main__":
     # Get Data
@@ -216,39 +234,29 @@ if __name__ == "__main__":
 
     # Save Folder
     folder = Path("/home/scarlett/Documents/Entomology/AgroEcoMetrics/Tests/Images/")
-    if air_temp_tests(df2024, folder):
-        print("Air_Temp_Tests: Passed")
-    else:
-        print("Air_Temp_Tests: Failed")
 
-    if evapo_transpiation_tests(df2024, folder):
-        print("Evapo_Transpiration_Tests: Passed")
-    else:
-        print("Evapo_Transpiration_Tests: Failed")
+    # Air Temperature Tests
+    #print("Air_Temp_Tests Passed:\t" + str(air_temp_tests(df2024, folder)))
 
-    if rainfall_runoff_tests(df2024, folder):
-        print("Rainfall_&_Runoff_Tests: Passed")
-    else:
-        print("Rainoff_&_Runoff_Tests: Failed")
+    # EvapoTranspiration Tests
+    #print("Evapo_Transpiration_Tests Passed:\t" + str(evapo_transpiation_tests(df2024, folder)))
 
-    if soil_temp_tests(folder):
-        print("Soil_Temp_Tests: Passed")
-    else:
-        print("Soil_Temp_Tests: Failed")
+    # Rainfall & Runoff Tests
+    #print("Rainfall_&_Runoff_Tests Passed:\t" + str(rainfall_runoff_tests(df2024, folder)))
 
-    if gdd_tests(df2024, folder):
-        print("Growing_Degree_Day_Tests: Passed")
-    else:
-        print("Growing_Degree_Day_Tests: Failed")
+    # Soil Temperature Tests
+    #print("Soil_Temp_Tests Passed:\t" + str(soil_temp_tests(folder)))
+
+    # Growing Degree Day Tests
+    #print("Growing_Degree_Day_Tests Passed:\t" + str(gdd_tests(df2024, folder)))
     
-    if photoperiod_test(folder):
-        print("PhotoPeriod_Tests: Passed")
-    else:
-        print("PhotoPeriod_Tests: Failed")
+    # Photoperiod Tests
+    #print("PhotoPeriod_Tests Passed:\t" + str(photoperiod_test(folder)))
 
-    if air_to_soil_temp_test(df_5_min, folder):
-        print("Air_Soil_Temp_Conversion_Tests: Passed")
-    else:
-        print("Air_Soil_Temp_Conversion_Tests: Failed")
+    # Air to Soil Temperature Tests
+    print("Air_to_Soil_Temp_Tests Passed:\t" + str(air_to_soil_temp_test(df_5_min, folder)))
+
+    # Hydraulic Conductivity Tests
+    print("Hydraulic_Conductivity_Tests Passed:\t" + str(hydraulic_conductivity_test()))
     
 

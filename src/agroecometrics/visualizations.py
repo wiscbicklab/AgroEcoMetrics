@@ -210,6 +210,7 @@ def plot_day_soil_temp_pred(
         pred_temp: np.ndarray,
         depth: float,
         file_path: Path,
+        soil_temp: Optional[np.ndarray] = None
     ):
     """
     Creates a plot of air temperature and the predicted soil temperature on a particular date
@@ -237,9 +238,13 @@ def plot_day_soil_temp_pred(
 
     # Plot actual vs predicted temperature
     plt.figure(figsize=(8, 4))
-    plt.scatter(time, air_temp, s=5, color="gray", label="Observed")
+    plt.scatter(time, air_temp, s=5, color="gray", label="Air Temperatre")
+    
+    if soil_temp is not None:
+        plt.scatter(time, soil_temp, s=5, color="blue", label="Soil Temp 4in")
+
     plt.plot(time, pred_temp, label="Predicted", color="tomato", linewidth=1)
-    plt.ylabel(f"Soil temperature at {depth}cm  (Celsius) and Air temperature  (Celsius)")
+    plt.ylabel("Temperature  (Celsius)")
     plt.xlabel("Time (Hours)")
     plt.xticks(ticks=[0, 6, 12, 18, 24], labels=["12 AM", "6 AM", "12 PM", "6 PM", "12 AM"])
 

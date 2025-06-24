@@ -1,17 +1,17 @@
 # Labels are used to convert data references to the actual names of the data used in the csv files
 _data_labels = {
     # Date Labels
-    "date": "Date & Time Collected",
+    "date_time": "Date & Time Collected",
     "date_format": "%m/%d/%Y %I:%M %p",
 
     # Air Temperature Labels
     "temp_avg": "T_DAILY_AVG",
     "temp_min": "Daily Minimum Air Temperature (c)",
     "temp_max": "Daily Maximum Air Temperature (c)",
-    "5_minute_temp": "5 Minute Average Air Temperature (f)",
+    "5_minute_temp": "5 Minute Average Air Temperature (c)",
 
     # Soil Temperature Labels
-    "soiltemp2": "5 Minute Average Soil Temperature at 2 Inches (c)",
+    "soil_temp2": "5 Minute Average Soil Temperature at 2 Inches (c)",
     "soil_temp4": "5 Minute Average Soil Temperature at 4 Inches (c)",
     "soil_temp8": "5 Minute Average Soil Temperature at 8 Inches (c)",
     "soil_temp20": "5 Minute Average Soil Temperature at 20 Inches (c)",
@@ -37,6 +37,9 @@ _calc_labels = {
     "gdd": "GROWING_DEGREE_DAYS",
     "gdd_sum": "GROWING_DEGREE_DAYS_SUM",
     "evapo": "EVAPOTRANSPIRATION",
+    "date_norm": "NORMALIZED_DATE",
+    "doy": "DAYS_SINCE_JANUARY_1ST",
+    "year": "YEAR",
 }
 
 def get_labels():

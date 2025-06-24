@@ -8,20 +8,26 @@ import pandas as pd
 from agroecometrics import settings
 
 
-# Gets the acutal labels of columns based on the user settings
-labels = settings.get_labels()
+# Gets the acutal LABELS of columns based on the user settings
+LABELS = settings.get_labels()
 
 
 
 # Data File Functions
 def load_data(
         file_path: str, 
-        date_format: str = '%m/%d/%Y %I:%M %p',
+        date_format: str = LABELS['date_format'],
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> pd.DataFrame:
     '''
-    Loads data into a DataFrame from a given CSV file filtered by date
+    Loads data into a DataFrame from a given CSV file filtered by date and cleaned
+
+    Loads the data from between the two specificed dates inclusive. If no start or end
+        date is specified the oldest and newest dates in the data are used respectively.
+        Adss a column with the Date normalized
+        Adds a column with the DOY from January 1st. Ie, January 1st = 0 and December 31st = 364
+        Adds a column with the Year in an integer representation
 
     Args:
         file_path: The path to your csv data file
@@ -31,8 +37,11 @@ def load_data(
     
     Returns:
         A DataFrame with the information from the csv file filtered by the specified dates
+
+    Raises:
+        Exception
     '''
-    global labels
+    global LABELS
     # Check that the start date is not after the end date
     if start_date and end_date and pd.to_datetime(start_date) > pd.to_datetime(end_date):
         print("The start date must be on or before the end date")
@@ -40,24 +49,21 @@ def load_data(
     
     # Read the data from the given csv file and make the formatting consistent
     df = None
-    try:
-        df = pd.read_csv(file_path)
-        df.columns = df.columns.str.strip().str.replace("'", "")
-        df[labels['date']] = pd.to_datetime(df[labels['date']], format=date_format)
-    except Exception as e:
-        print("Exception occured trying to read file:\t" + file_path)
-        print(e.with_traceback)
-        return
+    df = pd.read_csv(file_path)
+    df.columns = df.columns.str.strip().str.replace("'", "")
+    df[LABELS['date_time']] = pd.to_datetime(df[LABELS['date_time']], format=date_format)
 
     # Filter data using the start and end dates
     if start_date:
-        df = df[df[labels['date']] >= pd.to_datetime(start_date)]
+        df = df[df[LABELS['date_time']] >= pd.to_datetime(start_date)]
     if end_date:
-        df = df[df[labels['date']] <= pd.to_datetime(end_date)]
+        df = df[df[LABELS['date_time']] <= pd.to_datetime(end_date)]
 
-    # Adds a Year and DOY column to the df
-    df['DOY'] = df[labels['date']].dt.dayofyear
-    df['YEAR'] = df[labels['date']].dt.year
+    # Adds a Year, DOY, and Normalized Date column to the df
+    df[LABELS['doy']] = df[LABELS['date_time']].dt.dayofyear
+    df[LABELS['year']] = df[LABELS['date_time']].dt.year
+    df[LABELS['date_norm']] = pd.to_datetime(df[LABELS['date_time']], format=date_format).dt.normalize()
+
 
     return df.reset_index(drop=True)
 
@@ -67,25 +73,25 @@ def interpolate_missing_data(
         method: str = "linear"
         ):
     """
-    Interpolates missing data within a DataFrame. Interpolates labels based on
+    Interpolates missing data within a DataFrame. Interpolates LABELS based on
         list of keys in label_keys or all data is label_keys is None.
 
     Args:
         df:     The DataFrame to interpolate data on
-        labels: A list of the label keys to interpolate data on.
+        LABELS: A list of the label keys to interpolate data on.
         method: The pandas interpolation type to use on the data
     """
-    global labels
+    global LABELS
     if label_keys:
         if len(label_keys) == 0:
             raise ValueError("label_keys must containa list of keys or be none")
         for key in label_keys:
-            if key not in labels:
-                raise KeyError(key + " was not found in the available labels")
-            df[labels[key]].interpolate(method=method, inplace=True)
+            if key not in LABELS:
+                raise KeyError(key + " was not found in the available LABELS")
+            df[LABELS[key]].interpolate(method=method, inplace=True)
     else:
-        for key in labels.keys:
-            df[labels[key]].interpolate(method=method, inplace=True)
+        for key in df.columns.values:
+            df[LABELS[key]].interpolate(method=method, inplace=True)
 
 # Get parameter predictions from data
 def get_yearly_air_temp_params(
@@ -118,15 +124,15 @@ def get_yearly_air_temp_params(
         thermal_amp: The thermal amplitude calculated as detailed above
         min_temp_doy: The approximated DOY that the minimum yearly temperature occurs
     """
-    global labels
+    global LABELS
 
     # Calculate mean temperature and temperature amplitude
-    avg_temp = df[labels["temp_avg"]].mean()
-    main_temp, max_temp = df.groupby(by='DOY')[labels["temp_avg"]].mean().quantile([cutoff, 1.0-cutoff])
+    avg_temp = df[LABELS["temp_avg"]].mean()
+    main_temp, max_temp = df.groupby(by='DOY')[LABELS["temp_avg"]].mean().quantile([cutoff, 1.0-cutoff])
     thermal_amp = (max_temp - main_temp) / 2
 
     # Get the index DOY index
-    doy_mins = df.groupby(by='YEAR')[labels["temp_avg"]].idxmin()
+    doy_mins = df.groupby(by='YEAR')[LABELS["temp_avg"]].idxmin()
     min_temp_doy = np.round(df.loc[doy_mins, 'DOY'].apply(circmean).mean())
 
 
@@ -161,22 +167,22 @@ def get_daily_air_temp_params(
         min_temp_time: The approximated time from midnight that the 
             minimum daily temperature occurs
     """
-    global labels
+    global LABELS
 
     # Gets the data on the target date
     target_date = pd.to_datetime(date, format=date_format)
-    daily_df = df[df[labels['date']].dt.date == target_date.date()]
+    daily_df = df[df[LABELS['date_time']].dt.date == target_date.date()]
 
     # Calculates daily average, minimum, and maximum temperature
-    avg_temp = daily_df[labels['5_minute_temp']].mean()
-    min_temp = min(daily_df[labels['5_minute_temp']])
-    max_temp = max(daily_df[labels['5_minute_temp']])
+    avg_temp = daily_df[LABELS['5_minute_temp']].mean()
+    min_temp = min(daily_df[LABELS['5_minute_temp']])
+    max_temp = max(daily_df[LABELS['5_minute_temp']])
     # Calculates thermal amplitude
     thermal_amp = (max_temp - min_temp) / 2.0
 
     # Find index of minimum temperature
-    idx_min = daily_df[labels['5_minute_temp']].idxmin()
-    min_time = daily_df.loc[idx_min, labels['date']].time()
+    idx_min = daily_df[LABELS['5_minute_temp']].idxmin()
+    min_time = daily_df.loc[idx_min, LABELS['date_time']].time()
     min_temp_time = min_time.hour * 60 + min_time.minute
 
     return avg_temp, min_temp, max_temp, thermal_amp, min_temp_time
