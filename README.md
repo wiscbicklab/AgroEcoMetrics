@@ -45,12 +45,6 @@ Install via pip:
 pip install AgroEcoMetrics
 ```
 
-Or directly from source:
-
-```bash
-pip install git+https://github.com/wiscbicklab/AgroEcoMetrics.git
-```
-
 ### Quick Example
 
 ```python
