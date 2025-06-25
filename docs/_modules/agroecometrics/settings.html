@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://wiscbicklab.github.io//AgroEcoMetrics/_modules/agroecometrics/settings.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>agroecometrics.settings - AgroEcoMetrics 0.0.3b1 documentation</title>
+        <title>agroecometrics.settings - AgroEcoMetrics 0.0.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.0.3b1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.0.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">AgroEcoMetrics 0.0.3b1 documentation</span>
+  <span class="sidebar-brand-text">AgroEcoMetrics 0.0.5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -236,33 +236,73 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for agroecometrics.settings</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Labels are used to convert a generic label for a type of data to the </span>
-<span class="c1">#       actual label used with in the csv file.</span>
-<span class="n">_labels</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;Date&quot;</span><span class="p">,</span>
+<span></span><span class="c1"># Labels are used to convert data references to the actual names of the data used in the csv files</span>
+<span class="n">_data_labels</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Date Labels</span>
+    <span class="s2">&quot;date_time&quot;</span><span class="p">:</span> <span class="s2">&quot;Date &amp; Time Collected&quot;</span><span class="p">,</span>
     <span class="s2">&quot;date_format&quot;</span><span class="p">:</span> <span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y %I:%M %p&quot;</span><span class="p">,</span>
+
+    <span class="c1"># Air Temperature Labels</span>
     <span class="s2">&quot;temp_avg&quot;</span><span class="p">:</span> <span class="s2">&quot;T_DAILY_AVG&quot;</span><span class="p">,</span>
     <span class="s2">&quot;temp_min&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Minimum Air Temperature (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;temp_max&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Maximum Air Temperature (c)&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rain&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Total Rain (mm)&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;soiltemp2&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 2 Inches (c)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;5_minute_temp&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Air Temperature (c)&quot;</span><span class="p">,</span>
+
+    <span class="c1"># Soil Temperature Labels</span>
+    <span class="s2">&quot;soil_temp2&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 2 Inches (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;soil_temp4&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 4 Inches (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;soil_temp8&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 8 Inches (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;soil_temp20&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 20 Inches (c)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;soil_temp40&quot;</span><span class="p">:</span> <span class="s2">&quot;5 Minute Average Soil Temperature at 40 Inches (c)&quot;</span><span class="p">,</span>
+
+    <span class="c1"># Humidity Labels</span>
     <span class="s2">&quot;hmin&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Minimum Relative Humidity (pct)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;hmax&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Maximum Relative Humidity (pct)&quot;</span><span class="p">,</span>
+
+    <span class="c1"># Air Pressure and Wind labels</span>
     <span class="s2">&quot;pmin&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Minimum Pressure (mb)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;pmax&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Maximum Pressure (mb)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;max_gust&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Maximum Wind Gust (m/h)&quot;</span><span class="p">,</span>
+
+    <span class="c1"># Misellaneous Labels</span>
     <span class="s2">&quot;solar_rad&quot;</span><span class="p">:</span>  <span class="s2">&quot;Daily solar radiation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rain&quot;</span><span class="p">:</span> <span class="s2">&quot;Daily Total Rain (mm)&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Calulation Labels allow shorttened references to the names that are used</span>
+<span class="c1">#   to store calculation data in the csv</span>
+<span class="n">_calc_labels</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Growing Degree Days (GDD) Labels</span>
+    <span class="s2">&quot;gdd&quot;</span><span class="p">:</span> <span class="s2">&quot;GROWING_DEGREE_DAYS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gdd_sum&quot;</span><span class="p">:</span> <span class="s2">&quot;GROWING_DEGREE_DAYS_SUM&quot;</span><span class="p">,</span>
+
+    <span class="c1"># Rainfall Lables</span>
+    <span class="s2">&quot;runoff&quot;</span><span class="p">:</span> <span class="s2">&quot;RUNOFF&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rain_sum&quot;</span><span class="p">:</span> <span class="s2">&quot;RAIN_SUM&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;runoff_sum&quot;</span><span class="p">:</span> <span class="s2">&quot;RUNOFF_SUM&quot;</span><span class="p">,</span>
+
+    <span class="c1"># Other Labels</span>
+    <span class="s2">&quot;evapo&quot;</span><span class="p">:</span> <span class="s2">&quot;EVAPOTRANSPIRATION&quot;</span><span class="p">,</span>
+
+    <span class="c1"># Date and Time Labels</span>
+    <span class="s2">&quot;date_norm&quot;</span><span class="p">:</span> <span class="s2">&quot;NORMALIZED_DATE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;doy&quot;</span><span class="p">:</span> <span class="s2">&quot;DAYS_SINCE_JANUARY_1ST&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="s2">&quot;YEAR&quot;</span><span class="p">,</span>
+
 <span class="p">}</span>
 
 <div class="viewcode-block" id="get_labels">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.settings.get_labels">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_labels</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return: The current label dictionary.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">_data_labels</span><span class="p">,</span> <span class="o">**</span><span class="n">_calc_labels</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="get_calculation_lables">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.settings.get_calculation_lables">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_calculation_lables</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return: The current labels used to store calculated data&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_calc_labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="set_labels">
@@ -270,10 +310,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">set_labels</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Override default labels with user-defined ones.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_labels</span><span class="p">:</span>
-            <span class="n">_labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_data_labels</span><span class="p">:</span>
+            <span class="n">_data_labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid label key: &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;. Allowed keys are: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">_labels</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid label key: &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;. Allowed keys are: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">_data_labels</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 </pre></div>
         </article>
@@ -307,7 +347,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=8bea76d9"></script>
+</div><script src="../../_static/documentation_options.js?v=282f96c0"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
