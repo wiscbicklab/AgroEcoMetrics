@@ -964,6 +964,7 @@ def cummulative_water_infultration(
     
     Calculates the cummulative vertical water infultration for the given soil parameters.
         Calculations are made for equally spaced times from [time/Nz to time]
+    
     Args:
         delta_theta: The Volume Fraction of water
         K_avg: The average hydraulic conductivity of the wet soil (kg * s /m^3)

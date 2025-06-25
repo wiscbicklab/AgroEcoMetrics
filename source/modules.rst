@@ -9,10 +9,18 @@ agroecometrics package
 Submodules
 ----------
 
-bio_sci_equations
+data
 ------------------
 
-.. automodule:: agroecometrics.bio_sci_equations
+.. automodule:: agroecometrics.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+equations
+------------------
+
+.. automodule:: agroecometrics.equations
    :members:
    :undoc-members:
    :show-inheritance:
