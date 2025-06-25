@@ -19,7 +19,7 @@ def air_temp_tests(df: pd.DataFrame, file_path: Path):
     """
     try:
         # Air Temperature models
-        air_temp_pred = AEM.equations.model_air_temp(df2024)
+        air_temp_pred = AEM.equations.model_air_temp(df)
         AEM.visualizations.plot_air_temp(df, air_temp_pred, file_path.joinpath("air_temp_plot.png"))
         return True
     except Exception as e:
