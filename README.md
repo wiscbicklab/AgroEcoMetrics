@@ -35,6 +35,26 @@ Contains models and equations for ecological and agricultural analysis, includin
 - **Water Movement Models**: Infiltration and hydraulic conductivity
 - **Crop Models**: Calculate Growing Degree Days (GDD)
 
+### `agroecometrics.visualizations`
+
+Provides methods for creating plots from the calulations made in equations.
+
+- Rainfall and Runoff plot
+- Air Temperature plots
+- Soil Temperature plots and 3d mesh graphs
+- Photoperiod Prediction plots
+
+### `agroecometrics.settings`
+
+Used to have consistent references to data within the dataframe.
+The example below shows how to print the current labels and to change labels
+
+```python
+data_labels = AEM.settings.get_labels()
+print(data_labels)
+AEM.settings.set_labels({'temp_avg': 'Temperature', 'date_time': 'Date'})
+```
+
 ## Getting Started
 
 ### Installation
