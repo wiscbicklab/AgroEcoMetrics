@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional, Tuple
 from scipy.stats import circmean
 
@@ -11,11 +12,35 @@ from agroecometrics import settings
 # Gets the acutal LABELS of columns based on the user settings
 LABELS = settings.get_labels()
 
+####    UTIL FUNCTIONS    ####
+def csv_file_exists(file_path: Path):
+    """
+    Checks is the a Path to a csv file is valid
+    
+    Args:
+        file_path: The Path to the csv file
+    
+    Returns:
+        True if the csv file at the given Path already exists and False otherwise
 
+    Raises:
+        TypeError: If file_path is not a Path object.
+        ValueError: If the file extension is not '.csv'.
+        FileNotFoundError: If the parent directory does not exist.
+
+    """
+    if not isinstance(file_path, Path):
+        raise TypeError("file_path must be a pathlib.Path object.")
+    if file_path.suffix.lower() != ".csv":
+        raise ValueError("The filename must end with '.csv'.")
+    if file_path.parent.exists():
+        return file_path.exists()
+    else:
+        raise FileNotFoundError(f"The directory '{file_path.parent}' does not exist.")
 
 # Data File Functions
 def load_data(
-        file_path: str, 
+        file_path: Path, 
         date_format: str = LABELS['date_format'],
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
@@ -39,13 +64,17 @@ def load_data(
         A DataFrame with the information from the csv file filtered by the specified dates
 
     Raises:
-        Exception
+        TypeError: If file_path is not a Path object.
+        ValueError: If the file extension is not '.csv'.
+        FileNotFoundError: If the file could not be found.
     '''
     global LABELS
-    # Check that the start date is not after the end date
+
+    # Check Parameters
+    if not csv_file_exists(file_path):
+        raise FileNotFoundError(f"The file, {file_path},  that you are trying to load does not exist.")
     if start_date and end_date and pd.to_datetime(start_date) > pd.to_datetime(end_date):
-        print("The start date must be on or before the end date")
-        return
+        raise ValueError("The end date must be after the start date.\nStart Date:\t{start_date}\nEnd Date:\t{end_date}")
     
     # Read the data from the given csv file and make the formatting consistent
     df = None
@@ -60,7 +89,7 @@ def load_data(
         df = df[df[LABELS['date_time']] <= pd.to_datetime(end_date)]
 
     # Adds a Year, DOY, and Normalized Date column to the df
-    df[LABELS['doy']] = df[LABELS['date_time']].dt.dayofyear
+    df[LABELS['doy']] = df[LABELS['date_time']].dt.dayofyear-1
     df[LABELS['year']] = df[LABELS['date_time']].dt.year
     df[LABELS['date_norm']] = pd.to_datetime(df[LABELS['date_time']], format=date_format).dt.normalize()
 
@@ -93,96 +122,38 @@ def interpolate_missing_data(
         for key in df.columns.values:
             df[LABELS[key]].interpolate(method=method, inplace=True)
 
-# Get parameter predictions from data
-def get_yearly_air_temp_params(
+def save_data(
         df: pd.DataFrame,
-        cutoff: float=0.05
-    ) -> Tuple[float, float, float, float, int]:
+        file_path: Path
+    ) -> Path:
     """
-    Estimates air temperature parameters for yearly fluctuation given air temperature data
-    
-    Creates parameter estimates for the following equation:
-        T(0, t) = T_ave + A(0) * sin[OMEGA * (t - t0)]
-    Average temperature is predicted using the mean of the average temperature of all data
-    Minimum temperature is predicted by averaging the temperature on each DOY and getting
-        the lower percentile defined by the cutoff
-    Maximum temperature is predicted by averaging the temperature on each DOY and getting
-        the upper percentile defined by the 1 - cutoff
-    Thermal Amplitude is calculated as half the difference between the calulated
-        minimum and maximum temperature
+    Saves your DataFrame to the given csv file
 
     Args:
-        df: DataFrame containing temperature data, must contain temp_avg as defined in settings.
-        cutoff: A float ranging from 0 to 0.5 which determines what percentiles to use
-            for minimum and maximum temperature calculations. The default cutoff=0.05 and would
-            calculate 5th and 95th percentiles
+        df: The dataframe to be saved
+        file_path: A Path to where you would like to save the data
 
-    Returns:
-        T_avg: The average temperature over all of the data
-        T_min: The minimum temperature calculated as detailed above
-        T_max: The maximum temperature calculated as detailed above
-        thermal_amp: The thermal amplitude calculated as detailed above
-        min_temp_doy: The approximated DOY that the minimum yearly temperature occurs
+    Raises:
+        TypeError: If file_path is not a Path object.
+        ValueError: If the file extension is not '.csv'.
+        FileNotFoundError: If the parent directory does not exist.
+        FileExistsError: If the file already exists and the user selects not to override it
     """
     global LABELS
 
-    # Calculate mean temperature and temperature amplitude
-    avg_temp = df[LABELS["temp_avg"]].mean()
-    main_temp, max_temp = df.groupby(by='DOY')[LABELS["temp_avg"]].mean().quantile([cutoff, 1.0-cutoff])
-    thermal_amp = (max_temp - main_temp) / 2
-
-    # Get the index DOY index
-    doy_mins = df.groupby(by='YEAR')[LABELS["temp_avg"]].idxmin()
-    min_temp_doy = np.round(df.loc[doy_mins, 'DOY'].apply(circmean).mean())
-
-
-    return avg_temp, main_temp, max_temp, thermal_amp, min_temp_doy
-
-def get_daily_air_temp_params(
-        df: pd.DataFrame,
-        date: str,
-        date_format: str = '%m/%d/%Y %I:%M %p',
-    ) -> Tuple[float, float, float, float, int]:
-    """
-    Estimates air temperature parameters for daily fluctuation on a given date
+    # Check Parameters
+    if csv_file_exists(file_path):
+        print("The file {file_path} already exists.")
+        usr_input = input("Are you sure you want OVERWRITE the file(y/n):  ")
+        if not usr_input or usr_input != "y":
+            raise FileExistsError(f"The file, {file_path}, already exists.")
     
-    Creates parameter estimates for the following equation:
-        T(0, t) = T_ave + A(0) * sin[OMEGA * (t - t0)]
-    Average temperature is predicted using the mean of all the temperature averages for the given date
-    Minimum temperature is predicted by getting the minimum temperature for the given date
-    Maximum temperature is predicted by getting the maximum temperature for the given date
-    Thermal Amplitude is calculated as half the difference between the calulated
-        minimum and maximum temperature
+    # Save DataFrame
+    df.to_csv(file_path, index=False)
 
-    Args:
-        df: DataFrame containing temperature data, must contain 5_minute_temp as defined in settings.
-        date: Is the date which parameters will be estimated for.
-        date_format: Is the format that the date variable and data use for the date.
+    return file_path
 
-    Returns:
-        T_avg: The average temperature for the given day
-        T_min: The minimum temperature for the given day
-        T_max: The maximum temperature for the given day
-        thermal_amp: The thermal amplitude calculated as detailed above
-        min_temp_time: The approximated time from midnight that the 
-            minimum daily temperature occurs
-    """
-    global LABELS
 
-    # Gets the data on the target date
-    target_date = pd.to_datetime(date, format=date_format)
-    daily_df = df[df[LABELS['date_time']].dt.date == target_date.date()]
 
-    # Calculates daily average, minimum, and maximum temperature
-    avg_temp = daily_df[LABELS['5_minute_temp']].mean()
-    min_temp = min(daily_df[LABELS['5_minute_temp']])
-    max_temp = max(daily_df[LABELS['5_minute_temp']])
-    # Calculates thermal amplitude
-    thermal_amp = (max_temp - min_temp) / 2.0
 
-    # Find index of minimum temperature
-    idx_min = daily_df[LABELS['5_minute_temp']].idxmin()
-    min_time = daily_df.loc[idx_min, LABELS['date_time']].time()
-    min_temp_time = min_time.hour * 60 + min_time.minute
 
-    return avg_temp, min_temp, max_temp, thermal_amp, min_temp_time

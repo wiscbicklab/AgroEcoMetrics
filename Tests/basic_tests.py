@@ -51,7 +51,7 @@ def evapo_transpiation_tests(df: pd.DataFrame, file_path: Path):
         hmin = df[LABELS["hmin"]]
         hmax = df[LABELS["hmax"]]
         wind_avg = df[LABELS["max_gust"]]*0.5*.44704
-        doy = df["DOY"]
+        doy = df[LABELS['doy']]
         pmin = df[LABELS["pmin"]]*100
         pmax = df[LABELS["pmax"]]*100
     except Exception as e:
@@ -147,11 +147,11 @@ def gdd_tests(df: pd.DataFrame, file_path: Path):
         return False
     
     try:
-        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10.0)
+        AEM.equations.gdd_to_df(df, temp_avg, 10.0)
         AEM.visualizations.plot_gdd(df, file_path.joinpath("gdd_basic.png"))
         AEM.visualizations.plot_gdd_sum(df, file_path.joinpath("gdd_basic_sum.png"))
 
-        AEM.equations.gdd_to_df(df, temp_avg=temp_avg, temp_base=10.0, temp_opt=22.0, temp_upper=28.0)
+        AEM.equations.gdd_to_df(df, temp_avg, 10.0, temp_opt=22.0, temp_upper=28.0)
         AEM.visualizations.plot_gdd(df, file_path.joinpath("gdd_advanced.png"))
         AEM.visualizations.plot_gdd_sum(df, file_path.joinpath("gdd_advanced_sum.png"))
 
@@ -193,11 +193,12 @@ def air_to_soil_temp_test(df: pd.DataFrame, file_path: Path):
     """
     global LABELS 
     try:
-        temp_predictions, air_temp, soil_temp = AEM.equations.model_soil_temp_from_air_temp(df, 10, "02/21/2025 12:00 AM", thermal_dif=.1)
-        AEM.visualizations.plot_day_soil_temp_pred(air_temp, temp_predictions, 10, file_path.joinpath("January_1_soil_temp_predictions.png"), soil_temp)
+        for i in range(10, 31):
+            temp_predictions, air_temp, soil_temp = AEM.equations.model_soil_temp_from_air_temp(df, 10, f"07/{i}/2024 12:00 AM")
+            AEM.visualizations.plot_daily_soil_temp(air_temp, temp_predictions, 10, file_path.joinpath(f"July_Soil_Predictions/July_{i}_soil_temp_predictions.png"), soil_temp)
 
-        time_grid, depth_grid, temp_grid = AEM.equations.model_soil_temp_at_depth_from_air_temp(df, 10, "01/01/2025 12:00 AM")
-        AEM.visualizations.plot_3d_day_soil_temp_pred(time_grid, depth_grid, temp_grid, file_path.joinpath("3d_soil_temp_predictions.png"))
+        time_grid, depth_grid, temp_grid = AEM.equations.model_soil_temp_at_depth_from_air_temp(df, 10, "07/21/2024 12:00 AM")
+        AEM.visualizations.plot_3d_daily_soil_temp(time_grid, depth_grid, temp_grid, file_path.joinpath("3d_soil_temp_predictions.png"))
         return True
     except Exception as e:
         print("ERROR:", e)
@@ -216,7 +217,9 @@ def hydraulic_conductivity_test():
     """
     global LABELS 
     try:
-        print("Hydraulic Conductivity Test Results:\t" + str(AEM.equations.hydraulic_conductivity(.1, .1, .1, .1, 2)))
+        calc = AEM.equations.hydraulic_conductivity(.1, .1, .1, .1, 2)
+        if calc != 0.1:
+            return False
         return True
     except Exception as e:
         print("ERROR:", e)
@@ -225,38 +228,41 @@ def hydraulic_conductivity_test():
 
 if __name__ == "__main__":
     # Get Data
-    data_file = "Tests/Data/Marshfield_All_Data.csv"
+    data_file = Path("Tests/Data/Marshfield_All_Data.csv")
     df = AEM.data.load_data(data_file)
     df2023 = AEM.data.load_data(data_file, start_date="2023-01-01", end_date="2023-12-31")
     df2024 = AEM.data.load_data(data_file, start_date="2024-01-01", end_date="2024-12-31")
     df2025 = AEM.data.load_data(data_file, start_date="2025-01-01", end_date="2025-12-31")
-    df_5_min = AEM.data.load_data("Tests/Data/Arlington_Daily_Data.csv")
+    df_5_min = AEM.data.load_data(Path("Tests/Data/Arlington_Daily_Data_2.csv"))
 
     # Save Folder
     folder = Path("/home/scarlett/Documents/Entomology/AgroEcoMetrics/Tests/Images/")
 
     # Air Temperature Tests
-    #print("Air_Temp_Tests Passed:\t" + str(air_temp_tests(df2024, folder)))
+    print("Air_Temp_Tests Passed:\t\t\t" + str(air_temp_tests(df2024, folder)))
 
     # EvapoTranspiration Tests
-    #print("Evapo_Transpiration_Tests Passed:\t" + str(evapo_transpiation_tests(df2024, folder)))
+    print("Evapo_Transpiration_Tests Passed:\t" + str(evapo_transpiation_tests(df2024, folder)))
 
     # Rainfall & Runoff Tests
-    #print("Rainfall_&_Runoff_Tests Passed:\t" + str(rainfall_runoff_tests(df2024, folder)))
+    print("Rainfall_&_Runoff_Tests Passed:\t\t" + str(rainfall_runoff_tests(df2024, folder)))
 
     # Soil Temperature Tests
-    #print("Soil_Temp_Tests Passed:\t" + str(soil_temp_tests(folder)))
+    print("Soil_Temp_Tests Passed:\t\t\t" + str(soil_temp_tests(folder)))
 
     # Growing Degree Day Tests
-    #print("Growing_Degree_Day_Tests Passed:\t" + str(gdd_tests(df2024, folder)))
+    print("Growing_Degree_Day_Tests Passed:\t" + str(gdd_tests(df2024, folder)))
     
     # Photoperiod Tests
-    #print("PhotoPeriod_Tests Passed:\t" + str(photoperiod_test(folder)))
+    print("PhotoPeriod_Tests Passed:\t\t" + str(photoperiod_test(folder)))
 
     # Air to Soil Temperature Tests
-    print("Air_to_Soil_Temp_Tests Passed:\t" + str(air_to_soil_temp_test(df_5_min, folder)))
+    print("Air_to_Soil_Temp_Tests Passed:\t\t" + str(air_to_soil_temp_test(df_5_min, folder)))
 
     # Hydraulic Conductivity Tests
     print("Hydraulic_Conductivity_Tests Passed:\t" + str(hydraulic_conductivity_test()))
+
+    # Attempt to save the updated DataFrame
+    #AEM.data.save_data(df2024, Path("/home/scarlett/Documents/Entomology/AgroEcoMetrics/Tests/Data/Saved_Test_Data.cSv"))
     
 

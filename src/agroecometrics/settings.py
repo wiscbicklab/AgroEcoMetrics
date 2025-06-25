@@ -34,12 +34,23 @@ _data_labels = {
 # Calulation Labels allow shorttened references to the names that are used
 #   to store calculation data in the csv
 _calc_labels = {
+    # Growing Degree Days (GDD) Labels
     "gdd": "GROWING_DEGREE_DAYS",
     "gdd_sum": "GROWING_DEGREE_DAYS_SUM",
+
+    # Rainfall Lables
+    "runoff": "RUNOFF",
+    "rain_sum": "RAIN_SUM",
+    "runoff_sum": "RUNOFF_SUM",
+
+    # Other Labels
     "evapo": "EVAPOTRANSPIRATION",
+
+    # Date and Time Labels
     "date_norm": "NORMALIZED_DATE",
     "doy": "DAYS_SINCE_JANUARY_1ST",
     "year": "YEAR",
+
 }
 
 def get_labels():

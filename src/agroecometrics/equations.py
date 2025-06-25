@@ -16,25 +16,25 @@ YEAR_SECONDS = DAY_SECONDS*365
 # Helper Functions
 def compute_esat(temp: np.ndarray) -> np.ndarray:
     """
-    Function that computes saturation vapor pressure based Tetens formula
+    Computes saturation vapor pressure based Tetens formula
     
     Args:
-        temp: Temperature (°C) to calculate the saturation vapor pressure on
+        temp: Temperature to calculate the saturation vapor pressure (°C)
     
     Returns:
-        Computed saturation vapor pressure in kPa
+        Computed saturation vapor pressure (kPa)
     """
     e_sat = 0.6108 * np.exp(17.27 * temp/(temp+237.3)) 
     return e_sat
 
 def compute_Ra(doy: np.ndarray, latitude: float) -> np.ndarray:
     """
-    Function that computes extra-terrestrial solar radiation
-        based on the FAO Penman-Monteith method
+    Computes extra-terrestrial solar radiation using the FAO Penman-Monteith method
     
     Args:
         doy: Day of year (0-365) where January 1st is 0 and 365
-        latitude: Latitude of the location in degrees
+        latitude: Latitude in decimal degress. Where the northern hemisphere is 
+            positive and the southern hemisphere is negative
 
     Returns:
         Extra-terrestrial solar radiation (Ra) in MJ/m²/day
@@ -51,35 +51,40 @@ def compute_Ra(doy: np.ndarray, latitude: float) -> np.ndarray:
 # Air Temperature model
 def model_air_temp(df: pd.DataFrame) -> np.ndarray:
     '''
-    Uses the air temperature data to find parameter estimates for the air temperature model
-        and creates the temperature predictions with the model
+    Creates an Air temperature model and creates air temperature estimates using model
 
     Args:
         df: DataFrame containing temperature data
     
     Returns: 
-        A numpy array of predicted daily temperatures
+        A numpy array of predicted daily temperatures over the period of the dataframe
     '''
     global LABELS
-    # Get Parameters
-    # Extract the 5-minute air temperatures and ensure all exist
-    air_temp = df[LABELS['5_minute_temp']]
+
+    # Check Parameters
+    if LABELS['temp_avg'] not in df.columns:
+        raise ValueError(f"{LABELS['temp_avg']} was not found in the df. Please check your temp_avg label.")
+    if LABELS['date_time'] not in df.columns:
+        raise ValueError(f"{LABELS['date_time']} was not found in the df. Please check your date_time label.")
+    
+    # Extract air temperatures
+    air_temp = df[LABELS['temp_avg']]
 
     # Estimate sinusoidal parameters
     avg_temp = air_temp.mean()    # Units: °C
     thermal_amp = (max(air_temp) - min(air_temp)) / 2 # Units: °C
-    min_time = df.loc[air_temp.idxmin(), LABELS['date_time']]
-    timelag = (min_time.hour * 60 + min_time.minute) * 60 # Units: s    
+    min_date = df.loc[air_temp.idxmin(), LABELS['date_time']] # Datetime object
+    min_doy = (min_date - pd.Timestamp(min_date.year, 1, 1)).days # Units: Days
 
     # Generate daily temperature predictions using the model
-    T_pred = avg_temp + thermal_amp * np.cos(2 * np.pi * ((df['DOY'] - min_temp_doy) / 365) + np.pi)
+    T_pred = avg_temp + thermal_amp * np.cos(2 * np.pi * ((df[LABELS['doy']] - min_doy) / 365) + np.pi)
 
     return np.asarray(T_pred)
 
 
 # Soil Temperature models
 def soil_temp_at_depth(
-        depth: np.ndarray,
+        depth: int,
         avg_temp: int=25,
         thermal_amp: int = 10,
         thermal_dif: float = 0.203,
@@ -89,11 +94,11 @@ def soil_temp_at_depth(
     Models soil temperature over one year at the given depth
 
     Args:
-        depth: The depth in meters to model the soil temperature
+        depth: The depth to model the soil temperature (m)
         avg_temp: The annual average surface temperature (°C)
         thermal_amp: The annual thermal amplitude of the soil surface (°C)
-        thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]
-        time_lag: The time lag in days (0-365) where January 1st is 0 and 365
+        thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument (mm^2 / s)
+        time_lag: The time lag between Jaunary 1st and the coldest day of the year (days)
 
     Return:
         Predicted soil temperature at the given depth for each day of the year (°C)
@@ -107,12 +112,12 @@ def soil_temp_at_depth(
     damp_depth = (2*thermal_dif/OMEGA)**(1/2) # Units: cm
 
     # Estimate the temperatures for each day of the year
-    doy = np.arange(0,366)*DAY_SECONDS # Units: s
-    T_soil = avg_temp + \
+    doy = np.arange(0,365)*DAY_SECONDS # Units: s
+    soil_temp = avg_temp + \
         thermal_amp * np.exp(-depth / damp_depth) * \
         np.sin(OMEGA * doy - depth / damp_depth - PHASE)
     
-    return  np.asarray(T_soil)
+    return  np.asarray(soil_temp)
 
 def soil_temp_on_day(
         doy: int,
@@ -329,7 +334,7 @@ def dalton(
         wind_speed: np.ndarray
     ) -> np.ndarray:
     """
-    Potential evaporation model proposed by Dalton in 1802
+    Computes Evapotranspiration using the Dalton model 
     
     Args:
         temp_min: The minimum daily temperature (°C)
@@ -366,7 +371,7 @@ def penman(
         wind_speed: np.ndarray
     ) -> np.ndarray:
     """
-    Potential evapotranspiration model proposed by Penman in 1948
+    Computes evapotranspiration using the Penman model
 
     Args:
         temp_min: The minimum daily temperature (°C)
@@ -435,13 +440,14 @@ def jensen_haise(
         latitude: np.ndarray
     ) -> np.ndarray:
     """
-    Potential evapotranspiration model proposed by Jensen in 1963
+    Computes evapotranspiration using the Jensen model
     
     Args:
         temp_min: The minimum daily temperature (°C)
         temp_max: The maximum daily temperature (°C)
         doy: Day of year (0-365) where January 1st is 0 and 365
-        latitude: Latitude of the location in degrees
+        latitude: Latitude in decimal degress. Where the northern hemisphere is 
+            positive and the southern hemisphere is negative
 
     Returns:
         The Jensen-Haise models predictions for evapotranspiration clipped to a minimum of zero
@@ -467,13 +473,14 @@ def hargreaves(
         latitude: float
     ) -> np.ndarray:
     """
-    Potential evapotranspiration model proposed by Hargreaves in 1982
+    Computes evapotranspiration using the Hargreaves model
     
     Args:
         temp_min: The minimum daily temperature (°C)
         temp_max: The maximum daily temperature (°C)
         doy: Day of year (0-365) where January 1st is 0 and 365
-        latitude: Latitude of the location in degrees
+        latitude: Latitude in decimal degress. Where the northern hemisphere is 
+            positive and the southern hemisphere is negative
         
     Returns:
         The Hargreaves models predictions for evapotranspiration clipped to a minimum of zero
@@ -506,8 +513,7 @@ def penman_monteith(
         wind_height: int = 1.5,
     ) -> np.ndarray:
     """
-    Potential evapotranspiration model proposed by Penman in 1948 
-        and revised by Monteith in 1965
+    PComputer evapotranspiration using the penman-monteith model
     
     Args:
         temp_min: The minimum daily temperature (°C)
@@ -518,7 +524,8 @@ def penman_monteith(
         p_max:    The maximum daily atmospheric pressure in Pa
         wind_speed: The average daily wind speed in meters per second
         doy:      Day of year (0-365) where January 1st is 0 and 365
-        latitude: Latitude of the location in degrees
+        latitude: Latitude in decimal degress. Where the northern hemisphere is 
+            positive and the southern hemisphere is negative
         altitude: Altitude of the location in meters
         wind_height: Height of measurment for wind speed
         
@@ -600,7 +607,7 @@ def EvapoTranspiration_to_df(
 
     Args:
         df: The DataFrame to add the evapotranspiration data to
-        model_name: Name of the model to use. One of:
+        model_name: Name of the model to use. Options:
                 ["dalton", "penman", "romanenko", "jensen_haise", "hargreaves", "penman_monteith"]
         temp_min:   The minimum daily temperature (°C)
         temp_max:   The maximum daily temperature (°C)
@@ -610,7 +617,8 @@ def EvapoTranspiration_to_df(
         p_min:      The minimum daily atmospheric pressure in Pa
         p_max:      The maximum daily atmospheric pressure in Pa
         doy:        Day of year (0-365) where January 1st is 0 and 365
-        latitude:   Latitude of the location in degrees
+        latitude:   Latitude in decimal degress. Where the northern hemisphere is 
+            positive and the southern hemisphere is negative
         altitude:   Altitude of the location in meters
         wind_height: Height of measurement for wind speed in meters
     """
@@ -663,16 +671,22 @@ def model_runoff(precip: np.ndarray, cn: int = 75) -> pd.DataFrame:
 
 def rainfall_runoff_to_df(df: pd.DataFrame, cn: int = 75):
     """
-    Computes cumulative rainfall, cummulative runoff, and daily runoff and adds
-        the computed data to the given DataFrame
+    Adds rainfall sum, runoff sum, and runoff to the DataFrame
 
     Args:
         df: The DataFrame containing the rainfall data
         cn: The curve number to be used in the runoff calculation
     """
-    df["RAIN_SUM"] = df[LABELS["rain"]].cumsum()
-    df["RUNOFF"] = model_runoff(df[LABELS["rain"]], cn=cn)
-    df["RUNOFF_SUM"] = df["RUNOFF"].cumsum()
+    global LABELS
+
+    # Check Parameters
+    if LABELS['rain'] not in df.columns:
+        raise ValueError(f"{LABELS['rain']} was not found in the df. Please check your rain label.")
+    
+    # Add data to the df
+    df[LABELS["rain_sum"]] = df[LABELS["rain"]].cumsum()
+    df[LABELS["runoff"]] = model_runoff(df[LABELS["rain"]], cn=cn)
+    df[LABELS["runoff_sum"]] = df[LABELS["runoff"]].cumsum()
 
 
 # Fletcher's Functions
@@ -737,6 +751,8 @@ def model_gdd(
         duration_time: float = 1.0
     ) -> np.ndarray:
     """
+    Model how many growing degree days have passed
+
     Models Growing Degree days using a minimum base temperature, an optional 
         optimal temperature, an optional maximum growing temperature, and 
         the average temperature over the recorded durations
@@ -819,13 +835,13 @@ def gdd_to_df(
 
 
 # Photo Period Tools
-def photoperiod_at_latitude(phi: float, doy: np.ndarray):
+def photoperiod_at_latitude(latitude: float, doy: np.ndarray):
     """
-    Function to compute photoperiod or daylight hours. This function is not accurate
-    near polar regions.
+    Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.
 
     Args:
-        phi: Latitude in decimal degress. Where the northern Hemisphere is positive
+        latitude: Latitude in decimal degress. Where the northern hemisphere is 
+            positive and the southern hemisphere is negative
         doy: np.ndarray of the days of year (0-365) where January 1st is 0 and 365
 
     Returns:
@@ -838,7 +854,7 @@ def photoperiod_at_latitude(phi: float, doy: np.ndarray):
         Delta
     """
     # Convert latitude to radians
-    phi = np.radians(phi)
+    latitude = np.radians(latitude)
     
     # Angle of the sun below the horizon. Civil twilight is -4.76 degrees.
     light_intensity = 2.206 * 10**-3
@@ -852,22 +868,22 @@ def photoperiod_at_latitude(phi: float, doy: np.ndarray):
     M = 0.9856*doy - 3.251 # Eq. [4].
     
     # Declination of sun in degrees
-    lmd = M + 1.916*np.sin(np.radians(M)) + 0.020*np.sin(np.radians(2*M)) + 282.565 # Eq. [3]. Lambda
+    Lambda = M + 1.916*np.sin(np.radians(M)) + 0.020*np.sin(np.radians(2*M)) + 282.565 # Eq. [3]. Lambda
     C = np.sin(np.radians(23.44)) # 23.44 degrees is the orbital plane of Earth around the Sun
-    delta = np.arcsin(C*np.sin(np.radians(lmd))) # Eq. [2].
+    delta = np.arcsin(C*np.sin(np.radians(Lambda))) # Eq. [2].
 
     # Calculate daylength in hours, defining sec(x) = 1/cos(x)
-    P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(phi)) * (1/np.cos(delta)) - np.tan(phi) * np.tan(delta) ) ) # Eq. [1].
+    P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(latitude)) * (1/np.cos(delta)) - np.tan(latitude) * np.tan(delta) ) ) # Eq. [1].
 
-    return P, B, alpha, M, lmd, np.degrees(delta)
+    return P, B, alpha, M, Lambda, np.degrees(delta)
     
 def photoperiod_on_day(latitude: np.ndarray, doys: np.ndarray):
     """
-    Function to compute photoperiod or daylight hours. This function is not accurate
-    near polar regions.
+    Computes photoperiod for a given near polar regions.
 
     Args:
-        latitude: Latitude in decimal degress. Where the northern Hemisphere is positive
+        latitude: Latitude in decimal degress. Where the northern hemisphere is 
+            positive and the southern hemisphere is negative
         doys: The day of year (0-365) where January 1st is 0 and 365 to perform the calculation
 
     Returns:
@@ -876,8 +892,11 @@ def photoperiod_on_day(latitude: np.ndarray, doys: np.ndarray):
         The zenithal distance of the sun in degrees
         The mean anomaly of the sun
         The declination of the sun in degrees
-        Lambda
-        Delta
+        Lambda from the equation
+        Delta from the equation
+    
+    References:
+        Keisling, T.C., 1982. Calculation of the Length of Day 1. Agronomy Journal, 74(4), pp.758-759.
     """
     # Convert latitude to radians and convert shapes
     latitude = np.radians(np.asarray(latitude)).reshape(-1, 1)  # shape (N, 1)
@@ -895,14 +914,14 @@ def photoperiod_on_day(latitude: np.ndarray, doys: np.ndarray):
     M = 0.9856*doys - 3.251 # Eq. [4].
     
     # Declination of sun in degrees
-    lmd = M + 1.916*np.sin(np.radians(M)) + 0.020*np.sin(np.radians(2*M)) + 282.565 # Eq. [3]. Lambda
+    Lambda = M + 1.916*np.sin(np.radians(M)) + 0.020*np.sin(np.radians(2*M)) + 282.565 # Eq. [3]. Lambda
     C = np.sin(np.radians(23.44)) # 23.44 degrees is the orbital plane of Earth around the Sun
-    delta = np.arcsin(C*np.sin(np.radians(lmd))) # Eq. [2].
+    delta = np.arcsin(C*np.sin(np.radians(Lambda))) # Eq. [2].
 
     # Calculate daylength in hours, defining sec(x) = 1/cos(x)
     P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(latitude)) * (1/np.cos(delta)) - np.tan(latitude) * np.tan(delta) ) ) # Eq. [1].
 
-    return P, B, alpha, M, lmd, np.degrees(delta)
+    return P, B, alpha, M, Lambda, np.degrees(delta)
 
 
 # Soil Water Flow Functions
