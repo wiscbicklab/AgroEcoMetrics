@@ -175,7 +175,7 @@ def soil_temp_on_day(
 
     return (np.asarray(soil_depths), np.asarray(soil_temp))
 
-def soil_temp_at_depth_on_day(
+def yearly_soil_temp_at_depth(
         max_depth: int,
         interpolations: int = 1000,
         avg_temp: int = 25,
@@ -533,7 +533,7 @@ def penman_monteith(
         wind_height: int = 1.5,
     ) -> np.ndarray:
     """
-    PComputer evapotranspiration using the penman-monteith model
+    Computed evapotranspiration using the penman-monteith model
     
     Args:
         temp_min: The minimum daily temperature (°C)
@@ -608,7 +608,7 @@ def penman_monteith(
 
 def EvapoTranspiration_to_df(
         df: pd.DataFrame,
-        model_name: str,
+        model_names: list[str],
         temp_min: Optional[np.ndarray] = None,
         temp_max: Optional[np.ndarray] = None,
         RH_min: Optional[np.ndarray] = None,
@@ -627,7 +627,7 @@ def EvapoTranspiration_to_df(
 
     Args:
         df: The DataFrame to add the evapotranspiration data to
-        model_name: Name of the model to use. Options:
+        model_names: Name of the model to use. Options:
                 ["dalton", "penman", "romanenko", "jensen_haise", "hargreaves", "penman_monteith"]
         temp_min:   The minimum daily temperature (°C)
         temp_max:   The maximum daily temperature (°C)
@@ -642,25 +642,26 @@ def EvapoTranspiration_to_df(
         altitude:   Altitude of the location in meters
         wind_height: Height of measurement for wind speed in meters
     """
-    model_name = model_name.lower()
-    if model_name == "dalton":
-        pet = dalton(temp_min, temp_max, RH_min, RH_max, wind_speed)
-    elif model_name == "penman":
-        pet = penman(temp_min, temp_max, RH_min, RH_max, wind_speed)
-    elif model_name == "romanenko":
-        pet = romanenko(temp_min, temp_max, RH_min, RH_max)
-    elif model_name == "jensen_haise":
-        pet = jensen_haise(temp_min, temp_max, doy, latitude)
-    elif model_name == "hargreaves":
-        pet = hargreaves(temp_min, temp_max, doy, latitude)
-    elif model_name == "penman_monteith":
-        pet = penman_monteith(temp_min, temp_max, RH_min, RH_max, p_min, p_max,
-                              wind_speed, doy, latitude, altitude, wind_height)
-    else:
-        raise ValueError(f"Unknown model name '{model_name}'. Must be one of: "
-                         "['dalton', 'penman', 'romanenko', 'jensen_haise', 'hargreaves', 'penman_monteith'].")
+    for model_name in model_names:
+        model_name = model_name.lower()
+        if model_name == "dalton":
+            pet = dalton(temp_min, temp_max, RH_min, RH_max, wind_speed)
+        elif model_name == "penman":
+            pet = penman(temp_min, temp_max, RH_min, RH_max, wind_speed)
+        elif model_name == "romanenko":
+            pet = romanenko(temp_min, temp_max, RH_min, RH_max)
+        elif model_name == "jensen_haise":
+            pet = jensen_haise(temp_min, temp_max, doy, latitude)
+        elif model_name == "hargreaves":
+            pet = hargreaves(temp_min, temp_max, doy, latitude)
+        elif model_name == "penman_monteith":
+            pet = penman_monteith(temp_min, temp_max, RH_min, RH_max, p_min, p_max,
+                                wind_speed, doy, latitude, altitude, wind_height)
+        else:
+            raise ValueError(f"Unknown model name '{model_name}'. Must be one of: "
+                            "['dalton', 'penman', 'romanenko', 'jensen_haise', 'hargreaves', 'penman_monteith'].")
 
-    df[LABELS['evapotranspiration'] + "-" + model_name] = pet
+        df[LABELS['evapotranspiration'] + "-" + model_name] = pet
 
 
 # Rain/Runoff Models

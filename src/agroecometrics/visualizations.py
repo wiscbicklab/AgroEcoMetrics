@@ -246,7 +246,7 @@ def plot_daily_soil_temp(
 
     # Create Plot
     plt.figure(figsize=(8, 4))
-    plt.scatter(time, air_temp, s=5, color="gray", label="Air Temperatre")
+    plt.scatter(time, air_temp, s=5, color="gray", label="Air Temperature")
     plt.plot(time, pred_temp, label=f"Predicted: {depth}in", color="tomato", linewidth=1)
 
     # Add Optional actual soil temperature

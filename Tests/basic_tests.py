@@ -118,7 +118,7 @@ def soil_temp_tests(file_path: Path):
         T_day, depths = AEM.equations.soil_temp_on_day(10, 500)
         AEM.visualizations.plot_day_soil_temp(T_day, depths, file_path.joinpath("day150_temp.png"))
 
-        doy_grid, z_grid, t_grid = AEM.equations.soil_temp_at_depth_on_day(500)
+        doy_grid, z_grid, t_grid = AEM.equations.yearly_soil_temp_at_depth(500)
         AEM.visualizations.plot_3d_soil_temp(doy_grid, z_grid, t_grid, file_path.joinpath("soil_temp_3d.png"))
         return True
     except Exception as e:
