@@ -17,3 +17,13 @@ dist/
 *.egg
 source/
 docs/
+
+# Ignore Example Code
+Tests/air_temp_example.py
+Tests/case_study_example.py
+Tests/gdd_example.py
+Tests/soil_temp_example.py
+
+
+
+
