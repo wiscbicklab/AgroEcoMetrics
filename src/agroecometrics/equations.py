@@ -8,8 +8,7 @@ from agroecometrics import settings
 import agroecometrics as AEM
 
 
-# Gets the acutal LABELS of columns based on the user settings
-LABELS = settings.get_labels()
+# Constants Representing the number of seconds in a Day and Year
 DAY_SECONDS = 24*60*60
 YEAR_SECONDS = DAY_SECONDS*365
 
@@ -51,7 +50,7 @@ def __compute_solar_radiation(doy: np.ndarray, lat: float) -> np.ndarray:
     return Ra
 
 # Air Temperature model
-def model_air_temp(df: pd.DataFrame) -> np.ndarray:
+def model_air_temp(air_temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
     '''
     Creates an air temperature model and creates air temperature estimates using model.
 
@@ -60,33 +59,29 @@ def model_air_temp(df: pd.DataFrame) -> np.ndarray:
         Creates a temperature estimate for each day in the df using the model
 
     Args:
-        df: DataFrame containing columns for the label keys 'temp_avg' and 'date_time'.
+        air_temps: The daily average air temperature (°C)
+        date_times: The datetime corresponding to each air temperature measurement
     
     Returns: 
         A numpy array of predicted daily temperatures over the period of the dataframe
-
-    Raises:
-        KeyError: If the keys for 'temp_avg' or 'date_time' can't be found in the data
     '''
-    global LABELS
-
-    # Check Parameters
-    if LABELS['temp_avg'] not in df.columns:
-        raise KeyError(f"{LABELS['temp_avg']} was not found in the df. Please check your temp_avg label.")
-    if LABELS['date_time'] not in df.columns:
-        raise KeyError(f"{LABELS['date_time']} was not found in the df. Please check your date_time label.")
-    
-    # Extract air temperatures
-    air_temp = df[LABELS['temp_avg']]
-
     # Estimate sinusoidal parameters
-    avg_temp = air_temp.mean()    # Units: °C
-    thermal_amp = (max(air_temp) - min(air_temp)) / 2 # Units: °C
-    min_date = df.loc[air_temp.idxmin(), LABELS['date_time']] # Datetime object
-    min_doy = (min_date - pd.Timestamp(min_date.year, 1, 1)).days # Units: Days
+    avg_temp = np.mean(air_temps)    # Mean Temperature | Units: °C
+    thermal_amp = (np.max(air_temps) - np.min(air_temps)) / 2  # | Units: °C
 
-    # Generate daily temperature predictions using the model
-    pred_temp = avg_temp + thermal_amp * np.cos(2 * np.pi * ((df[LABELS['doy']] - min_doy) / 365) + np.pi)
+    # Find day of year of minimum temperature (phase shift)
+    min_idx = np.argmin(air_temps)
+    min_date = pd.to_datetime(date_times[min_idx])
+    time_lag = (min_date - pd.Timestamp(min_date.year, 1, 1)).days  # days since Jan 1
+
+    # Convert all dates to day of year
+    date_times = pd.to_datetime(date_times)
+    doys = (date_times - pd.to_datetime([pd.Timestamp(dt.year, 1, 1) for dt in date_times])).days
+
+    # Generate sinusoidal temperature predictions
+    pred_temp = avg_temp + thermal_amp * np.cos(
+        2 * np.pi * ((doys - time_lag) / 365.0) + np.pi
+    )
 
     return np.asarray(pred_temp)
 
@@ -120,7 +115,7 @@ def soil_temp_at_depth(
     PHASE = np.pi/2 + phase_frequency * (time_lag * DAY_SECONDS) # Phase constant | Units: None
 
     # Calculate Damping Depth
-    thermal_diffusivity = thermal_diffusivity / 100    # Unit Conversion: cm^2 / s
+    thermal_diffusivity = thermal_diffusivity / 100    # Unit Conversion | Units: cm^2 / s
     damp_depth = (2*thermal_diffusivity/phase_frequency)**(1/2) # Units: cm
 
     # Estimate the temperatures for each day of the year
@@ -164,7 +159,7 @@ def soil_temp_on_day(
     PHASE = np.pi / 2 + phase_frequency * (timelag * DAY_SECONDS) # Phase constant | Units: None
 
     # Calculate Damping Depth
-    thermal_diffusivity = thermal_diffusivity / 100    # Unit Conversion: cm^2 / s
+    thermal_diffusivity = thermal_diffusivity / 100    # Unit Conversion | Units: cm^2 / s
     damp_depth = (2 * thermal_diffusivity / phase_frequency) ** 0.5 # Units: cm
 
     # Estimate the temperatures for each depth
@@ -210,7 +205,7 @@ def yearly_soil_temp_at_depth(
     phase_frequency = 2 * np.pi / 365 # Phase Frequency | Units: 1 / s
     PHASE = np.pi/2 + phase_frequency*timelag # Phase constant | Units: None
 
-    thermal_diffusivity = thermal_diffusivity / 100 * 86400 # convert to cm^2/day
+    thermal_diffusivity = thermal_diffusivity / 100 * 86400 # Unit conversion | Units: cm^2/day
     damp_depth = (2*thermal_diffusivity/phase_frequency)**(1/2) # Damping depth 
 
     doys = np.arange(1,366)
@@ -222,25 +217,21 @@ def yearly_soil_temp_at_depth(
     return doy_grid, depth_grid, temp_grid
 
 def model_soil_temp_from_air_temp(
-        df: pd.DataFrame,
+        air_temps: np.ndarray,
         depth: float,
-        date: str,
-        date_format: str = LABELS['date_format'],
         thermal_diffusivity: int = 0.203,
     ) -> np.ndarray:
     """
-    Creates temperature predictions for every 5 minutes for a modeled date
+    Creates soil temperature predictions for each air temperature provided over the course of a day
 
     Estimates the parameters for a sinusodial function modeling the daily surface temperature.
         Uses the parameter estimations to create a model of soil temperatures at different depths.
         Predicts the soil temperatue at the given depth for each air temperature provided
 
     Args:
-        df: DataFrame containing temperature data, must contain 5_minute_temp as defined in settings.
-        depth: The depth in centimeters to model the soil temperature
-        date: Is the date which parameters will be estimated for.
-        date_format: Is the format that the date variable and data use for the date.
-        thermal_diffusivity: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]
+        air_temps: The soil surface air temperatures for a given day (°C).
+        depth: The depth to model the soil temperature (cm).
+        thermal_diffusivity: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s].
 
     Returns:
         A numpy array containing the predicted temperatures (°C) every 5 minutes 
@@ -248,34 +239,24 @@ def model_soil_temp_from_air_temp(
             the given air temperatures
     """
     # Constants
-    global LABELS
     phase_frequency = 2 * np.pi / DAY_SECONDS # Phase Frequency | Units: 1 / s
 
     # Calculate Damping Depth
     thermal_diffusivity = thermal_diffusivity / 100 # Unit Conversion: cm^2 / s
     damp_depth = (2 * thermal_diffusivity / phase_frequency) ** 0.5 # Units: cm
 
-    # Find all the entries in the dataframe with the correct date and sort by time
-    target_date = pd.to_datetime(date, format=date_format).normalize()
-    dates = pd.to_datetime(df[LABELS['date_norm']], format=date_format)
-    daily_df = df[dates == target_date].sort_values(LABELS['date_time'])
-    # Raise an exception if no data for the specified date could be found
-    if len(daily_df) == 0:
-        raise ValueError(f"Could not find data in the given dataframe for:\t{date}")
-
-    # Extract the 5-minute air temperatures and ensure all exist
-    air_temp = daily_df[LABELS['5_minute_temp']]
-    if len(air_temp) != DAY_SECONDS / (5*60):
-        raise ValueError(f"Expected 288 5-minute temperature values for {target_date.date()}, got {len(air_temp)}")
+    measurement_offset = DAY_SECONDS/len(air_temps)
 
     # Estimate sinusoidal parameters
-    avg_temp = air_temp.mean()    # Units: °C
-    thermal_amp = (max(air_temp) - min(air_temp)) / 2 # Units: °C
-    min_time = daily_df.loc[air_temp.idxmin(), LABELS['date_time']]
-    timelag = (min_time.hour * 60 + min_time.minute) * 60 # Units: s
+    avg_temp = np.mean(air_temps)    # Units: °C
+    thermal_amp = (max(air_temps) - min(air_temps)) / 2 # Units: °C
 
-    # Generate predictions for every 5 minutes
-    times = np.arange(0, DAY_SECONDS, 5 * 60) # Units: s
+    # Find TimeLag
+    min_idx = np.argmin(air_temps)
+    timelag = min_idx*measurement_offset
+
+    # Generate predictions for every air temperature provided
+    times = [i*measurement_offset for i in len(air_temps)] # Units: s
     temp_predictions = avg_temp + \
         thermal_amp * np.exp(-depth / damp_depth) * \
         np.sin(phase_frequency * (times - timelag) - (depth / damp_depth))
@@ -283,11 +264,9 @@ def model_soil_temp_from_air_temp(
     return temp_predictions
 
 def model_soil_temp_at_depth_from_air_temp(
-        df: pd.DataFrame,
+        air_temps: np.ndarray,
         max_depth: float,
-        date: str,
         interpolations: int = 1000,
-        date_format: str = '%m/%d/%Y %I:%M %p',
         thermal_diffusivity: float = 0.203
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -295,47 +274,36 @@ def model_soil_temp_at_depth_from_air_temp(
     using air temperature data to parameterize a sinusoidal model.
 
     Args:
-        df: DataFrame containing temperature data; must contain '5_minute_temp' and datetime.
-        max_depth: Maximum depth in centimeters to model the soil temperature.
-        date: The date (string) for which parameters will be estimated.
+        air_temps: The soil surface air temperatures for a given day (°C).
+        max_depth: Maximum depth to model the soil temperature (cm).
         interpolations: Number of interpolated depth points.
-        date_format: The format used for the date string.
         thermal_diffusivity: Thermal diffusivity [mm^2/s] from KD2 Pro instrument.
 
     Returns:
         A tuple of (time_grid, depth_grid, temp_grid), each a 2D NumPy array.
     """
     # Constants
-    global LABELS
     phase_frequency = 2 * np.pi / DAY_SECONDS # Phase Frequency | Units: 1 / s
 
     # Calculate Damping Depth
     thermal_diffusivity = thermal_diffusivity / 100 # Unit Conversion: cm^2 / s
     damp_depth = (2 * thermal_diffusivity / phase_frequency) ** 0.5 # Units: cm
 
-    # Find all the entries in the dataframe with the correct date and sort by time
-    target_date = pd.to_datetime(date, format=date_format).normalize()
-    dates = pd.to_datetime(df[LABELS['date_norm']], format=date_format)
-    daily_df = df[dates == target_date].sort_values(LABELS['date_time'])
-    # Raise an exception if no data for the specified date could be found
-    if len(daily_df) == 0:
-        raise ValueError(f"Could not find data in the given dataframe for:\t{date}")
 
-    # Extract the 5-minute air temperatures and ensure all exist
-    air_temp = daily_df[LABELS['5_minute_temp']]
-    if len(air_temp) != DAY_SECONDS / (5*60):
-        raise ValueError(f"Expected 288 5-minute temperature values for {target_date.date()}, got {len(air_temp)}")
+    measurement_offset = DAY_SECONDS/len(air_temps)
 
     # Estimate sinusoidal parameters
-    avg_temp = air_temp.mean()    # Units: °C
-    thermal_amp = (max(air_temp) - min(air_temp)) / 2 # Units: °C
-    min_time = daily_df.loc[air_temp.idxmin(), LABELS['date_time']]
-    timelag = (min_time.hour * 60 + min_time.minute) * 60 # Units: s
+    avg_temp = np.mean(air_temps)    # Units: °C
+    thermal_amp = (max(air_temps) - min(air_temps)) / 2 # Units: °C
+
+    # Find TimeLag
+    min_idx = np.argmin(air_temps)
+    timelag = min_idx*measurement_offset
 
     # Create time and depth grids
-    time = np.arange(0, DAY_SECONDS, 5)
+    times = [i*measurement_offset for i in len(air_temps)] # Units: s
     depths = np.linspace(max_depth/interpolations, max_depth, interpolations)
-    time_grid, depth_grid = np.meshgrid(time, depths)
+    time_grid, depth_grid = np.meshgrid(times, depths)
 
     # Generate predictions for the given times and depths
     temp_grid = avg_temp + \
@@ -364,7 +332,7 @@ def dalton(
         wind_speed: The average daily wind speed in meters per second
 
     Returns:
-        The Dalton models predictions for evapotranspiration clipped to a minimum of zero
+        The Dalton models predictions for evapotranspiration clipped to a minimum of zero (mm/day)
     """
     # Ensures parameter saftey
     if not isinstance(temp_min, float) and not \
@@ -606,110 +574,30 @@ def penman_monteith(
 
     return np.round(PET,2)
 
-def EvapoTranspiration_to_df(
-        df: pd.DataFrame,
-        model_names: list[str],
-        temp_min: Optional[np.ndarray] = None,
-        temp_max: Optional[np.ndarray] = None,
-        RH_min: Optional[np.ndarray] = None,
-        RH_max: Optional[np.ndarray] = None,
-        wind_speed: Optional[np.ndarray] = None,
-        p_min: Optional[np.ndarray] = None,
-        p_max: Optional[np.ndarray] = None,
-        doy: Optional[np.ndarray] = None,
-        latitude: Optional[float] = None,
-        altitude: Optional[float] = None,
-        wind_height: int = 1.5
-    ) -> pd.DataFrame:
-    """
-    Adds daily evapotranspiration and its cumulative sum to the given DataFrame 
-    using a specified model and its required parameters.
-
-    Args:
-        df: The DataFrame to add the evapotranspiration data to
-        model_names: Name of the model to use. Options:
-                ["dalton", "penman", "romanenko", "jensen_haise", "hargreaves", "penman_monteith"]
-        temp_min:   The minimum daily temperature (°C)
-        temp_max:   The maximum daily temperature (°C)
-        RH_min:     The minimum daily relative humidity (range: 0.0-1.0)
-        RH_max:     The maximum daily relative humidity (range: 0.0-1.0)
-        wind_speed: The average daily wind speed in meters per second
-        p_min:      The minimum daily atmospheric pressure in Pa
-        p_max:      The maximum daily atmospheric pressure in Pa
-        doy:        Day of year (0-365) where January 1st is 0 and 365
-        latitude:   Latitude in decimal degress. Where the northern hemisphere is 
-            positive and the southern hemisphere is negative
-        altitude:   Altitude of the location in meters
-        wind_height: Height of measurement for wind speed in meters
-    """
-    for model_name in model_names:
-        model_name = model_name.lower()
-        if model_name == "dalton":
-            pet = dalton(temp_min, temp_max, RH_min, RH_max, wind_speed)
-        elif model_name == "penman":
-            pet = penman(temp_min, temp_max, RH_min, RH_max, wind_speed)
-        elif model_name == "romanenko":
-            pet = romanenko(temp_min, temp_max, RH_min, RH_max)
-        elif model_name == "jensen_haise":
-            pet = jensen_haise(temp_min, temp_max, doy, latitude)
-        elif model_name == "hargreaves":
-            pet = hargreaves(temp_min, temp_max, doy, latitude)
-        elif model_name == "penman_monteith":
-            pet = penman_monteith(temp_min, temp_max, RH_min, RH_max, p_min, p_max,
-                                wind_speed, doy, latitude, altitude, wind_height)
-        else:
-            raise ValueError(f"Unknown model name '{model_name}'. Must be one of: "
-                            "['dalton', 'penman', 'romanenko', 'jensen_haise', 'hargreaves', 'penman_monteith'].")
-
-        df[LABELS['evapotranspiration'] + "-" + model_name] = pet
-
-
 # Rain/Runoff Models
-def model_runoff(precip: np.ndarray, cn: int = 75) -> pd.DataFrame:
+def model_runoff(rainfall: np.ndarray, curve_number: int = 75) -> pd.DataFrame:
     '''
     Uses Curve Number to estimate runoff from rainfall
 
     Args:
-        precip: The daily amount of precipitation in millimeters
-        cn: The curve number to use in the calculation
+        precipitation: The daily amount of precipitation in millimeters
+        curve_number: The curve number to use in the calculation
 
     Returns:
         The estimated runoff
     '''
-    # Convert precitation to inches
-    precip_inch = precip / 25.4
+    rainfall = rainfall / 25.4 # Unit Conversion | Units: In
 
     # Model Calulations
-    runoff = np.zeros_like(precip_inch)
-    S02 = 1000 / cn - 10
+    runoff = np.zeros_like(rainfall)
+    S02 = 1000 / curve_number - 10
     S005 = 1.33 * S02**1.15
     Lambda = 0.05
     Ia = S005 * Lambda
-    idx = precip_inch > Ia
-    runoff[idx] = (precip_inch[idx] - Ia)**2 / (precip_inch[idx] - Ia + S005)
+    idx = rainfall > Ia
+    runoff[idx] = (rainfall[idx] - Ia)**2 / (rainfall[idx] - Ia + S005)
 
-    return runoff * 25.4 # Convert runoff back to millimeters
-
-def rainfall_runoff_to_df(df: pd.DataFrame, cn: int = 75) -> pd.DataFrame:
-    """
-    Adds rainfall sum, runoff sum, and runoff to the DataFrame
-
-    Args:
-        df: The DataFrame containing the rainfall data
-        cn: The curve number to be used in the runoff calculation
-    """
-    global LABELS
-
-    # Check Parameters
-    if LABELS['rain'] not in df.columns:
-        raise ValueError(f"{LABELS['rain']} was not found in the df. Please check your rain label.")
-    
-    # Add data to the df
-    df[LABELS["rain_sum"]] = df[LABELS["rain"]].cumsum()
-    df[LABELS["runoff"]] = model_runoff(df[LABELS["rain"]], cn=cn)
-    df[LABELS["runoff_sum"]] = df[LABELS["runoff"]].cumsum()
-
-    return df
+    return runoff * 25.4 # Unit Conversion | Units: mm
 
 
 # Growing Degree Days
@@ -719,7 +607,7 @@ def model_gdd(
         temp_opt: Optional[float] = None,
         temp_upper: Optional[float] = None,
         time_duration: float = 1.0
-    ) -> np.ndarray:
+    ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Model how many growing degree days have passed
 
@@ -736,7 +624,9 @@ def model_gdd(
         time_duration: The number of days that each temp_avg represents
     
     Returns:
-        An np.ndarray with the calculated Growing Degree Days for each daily temperature
+        A tuple containing two np.ndarray's
+        The first contains Growing Degree Days for each daily temperature
+        The second contains the cummulative sum of Growing Degree Days for each daily temperature
     """
     # Validate parameter input
     if(time_duration <= 0):
@@ -770,42 +660,7 @@ def model_gdd(
     gdd[above_opt] = np.maximum(0, 
         gdd_max * (temp_upper - temp_avg[above_opt]) / (temp_upper - temp_opt),)
     
-    return gdd
-
-def gdd_to_df(
-        df: pd.DataFrame,
-        temp_avg: np.ndarray,
-        temp_base: float,
-        temp_opt: Optional[float] = None,
-        temp_upper: Optional[float] = None,
-        time_duration: float = 1
-    ) -> pd.DataFrame:
-    """
-    Models Growing Degeree Days.
-
-    Models Growing Degree days using a minimum base temperature, an optional 
-        optimal temperature, an optional maximum growing temperature, and 
-        the average temperature over the recorded durations.
-        Adds the Growing Degree days and cummulative GDD to the given DataFrame.
-
-    Args:
-        df: The DataFrame to add the GDD data to
-        temp_avg:  The average temperature over the duration_time (°C)
-        temp_base: The minimum temperature a given crop will grow at (°C)
-        temp_optimal: The optimal temperature a given crop will grow (°C), 
-                            above this temperature growing will slow linearly
-        temp_upper: The maximum temperature a given crop will grow (°C)
-        time_duration: The number of days that each temp_avg represents
-    """
-    global LABELS
-    
-    # Calculate gdd
-    gdd = model_gdd(temp_avg, temp_base, temp_opt, temp_upper, time_duration)
-
-    df[LABELS['gdd']] = gdd
-    df[LABELS['gdd_sum']] = gdd.cumsum()
-
-    return df
+    return gdd, gdd.cumsum()
 
 
 # Photo Period Tools

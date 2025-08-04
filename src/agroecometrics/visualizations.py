@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 from agroecometrics import equations, settings
 
 # Gets the acutal labels of columns based on the user settings
-LABELS = settings.get_labels()
 
 
 ####    UTIL FUNCTIONS    ####
@@ -21,6 +20,9 @@ def __check_png_filename(file_path: Path):
 
     Args:
         file_path: A Path object representing the output file path.
+
+    Returns:
+        True if the file_path is a png file whose parent folder exists
     
     Raises:
         TypeError: If file_path is not a Path object.
@@ -33,8 +35,9 @@ def __check_png_filename(file_path: Path):
         raise ValueError("The filename must end with '.png'.")
     if file_path.parent and not file_path.parent.exists():
         raise FileNotFoundError(f"The directory '{file_path.parent}' does not exist.")
+    return True
 
-def save_plot(file_path: Path):
+def save_plot(file_path: Path) -> Path:
     """
     Prepares plot to be saved and saves it.
 
@@ -43,6 +46,9 @@ def save_plot(file_path: Path):
 
     Args:
         file_path: A Path object representing the output file path.
+
+    Returns:
+        The resolved file path where the plot was saved
 
     Raises:
         TypeError: If file_path is not a Path object.
@@ -58,16 +64,24 @@ def save_plot(file_path: Path):
     plt.savefig(file_path, dpi=300, bbox_inches="tight", pad_inches=0.4)
     plt.close()
 
+    return file_path.resolve()
+
 
 ####    AIR TEMPERATURE PLOTS    ####
 
-def plot_air_temp(df: pd.DataFrame, T_pred: np.ndarray, file_path: Path):
+def plot_air_temp(
+        air_temps: np.ndarray,
+        predicted_temps: np.ndarray,
+        date_times: np.ndarray,
+        file_path: Path
+    ) -> Path:
     """
-    Creates a plot of air temperature over the time
+    Creates a plot of air temperature over the time.
 
     Args:
-        df: DataFrame with temperature data
-        T_pred: Predicted temperature array
+        air_temps: The actually air temperatures.
+        predicted_temps: The predicted air temperatures.
+        date_times: The datetime objects corresponding to the each actual and predicted temp.
         file_path: A Path object representing the output file path.
 
     Returns: 
@@ -79,28 +93,24 @@ def plot_air_temp(df: pd.DataFrame, T_pred: np.ndarray, file_path: Path):
         FileNotFoundError: If the parent directory does not exist.
     """
     global LABELS
-    
-    # Validate parameters
-    if LABELS['date_norm'] not in df.columns:
-        raise ValueError(f"Date column not found in df. Date column name currently set to {LABELS['date_norm']}")
-    if LABELS['temp_avg'] not in df.columns:
-        raise ValueError(f"Air Temperature column not found in df. Air Temperature column name is currently set to{LABELS['temp_avg']}")
     __check_png_filename(file_path)
 
     # Plot actual vs predicted temperature
     plt.figure(figsize=(8, 4))
-    plt.scatter(df[LABELS['date_norm']], df[LABELS["temp_avg"]], s=5, color="gray", label="Observed")
-    plt.plot(df[LABELS['date_norm']], T_pred, label="Predicted", color="tomato", linewidth=1)
+    plt.scatter(date_times, air_temps, s=5, color="gray", label="Observed")
+    plt.plot(date_times, predicted_temps, label="Predicted", color="tomato", linewidth=1)
     plt.ylabel("Air temperature (Celsius)")
     plt.xlabel("Date")
     
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 
 ####    SOIL TEMPERATURE PLOTS    ####
 
-def plot_yearly_soil_temp(soil_temp: np.ndarray, file_path: Path):
+def plot_yearly_soil_temp(
+        soil_temp: np.ndarray,
+        file_path: Path
+    ) -> Path:
     """
     Creates a plot of modeled soil temperature over a year's time
 
@@ -126,14 +136,13 @@ def plot_yearly_soil_temp(soil_temp: np.ndarray, file_path: Path):
     plt.ylabel("Surface Soil Temperature (Celsius)")
     plt.xlabel("Day of Year")
    
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 def plot_day_soil_temp(
         soil_temp: np.ndarray,
         depths: int,
         file_path: Path,
-    ):
+    ) -> Path:
     """
     Creates a plot of modeled soil temperature at a given depth
 
@@ -159,15 +168,14 @@ def plot_day_soil_temp(
     plt.ylabel("Soil temperature (Celsius)")
     plt.xlabel("Soil Depth (Centimeters)")
     
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 def plot_3d_soil_temp(
         doy_grid: np.ndarray,
         z_grid: np.ndarray, 
         t_grid: np.ndarray,
         file_path: Path
-    ):
+    ) -> Path:
     """
     Creates a 3d plot of soil temperature at different depths over the course of a year
 
@@ -206,8 +214,7 @@ def plot_3d_soil_temp(
     # Set position of the 3D plot
     ax.view_init(elev=30, azim=35)
 
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 def plot_daily_soil_temp(
         air_temp: np.ndarray,
@@ -215,7 +222,7 @@ def plot_daily_soil_temp(
         depth: int,
         file_path: Path,
         soil_temp: Optional[np.ndarray] = None
-    ):
+    ) -> Path:
     """
     Creates a plot of air temperature and the predicted soil temperature on a particular date
 
@@ -258,16 +265,14 @@ def plot_daily_soil_temp(
     plt.xlabel("Time (Hours)")
     plt.xticks(ticks=[0, 6, 12, 18, 24], labels=["12 AM", "6 AM", "12 PM", "6 PM", "12 AM"])
 
-    
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 def plot_3d_daily_soil_temp(
         time_grid: np.ndarray,
         depth_grid: np.ndarray,
         temp_grid: np.ndarray,
         file_path: Path,
-    ):
+    ) -> Path:
     """
     Creates a 3D plot of predicted soil temperature over the course of a single day at different depths.
 
@@ -311,13 +316,17 @@ def plot_3d_daily_soil_temp(
     ax.view_init(elev=30, azim=35)
 
     # Save and return path
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 
 ####    RAILFALL PLOTS    ####
 
-def plot_rainfall(df: pd.DataFrame, file_path: Path):
+def plot_rainfall(
+        rainfall: np.ndarray,
+        runnoff: np.ndarray,
+        date_times: np.ndarray,
+        file_path: Path
+    ) -> Path:
     """
     Creates a plot of rainfall and runoff over time.
 
@@ -330,38 +339,28 @@ def plot_rainfall(df: pd.DataFrame, file_path: Path):
 
     Raises:
         TypeError: If file_path is not a Path object.
-        ValueError: If the file extension is not '.png' or if the needed label(s) isn't found in the df
+        ValueError: If the file extension is not '.png' or the rainfall, runnoff, and date_times parameters are not the same length
         FileNotFoundError: If the parent directory does not exist.
     """
-    global LABELS
-
-    # Check Parameters
-    if LABELS['date_norm'] not in df.columns:
-        raise ValueError(f"Date column not found in df. Date column name currently set to {LABELS['date_norm']}")
-    if LABELS['rain'] not in df.columns:
-        raise ValueError(f"{LABELS['rain']} not found in the df. Please run the rainfall model first.")
-    if LABELS['runoff'] not in df.columns:
-        raise ValueError(f"{LABELS['runoff']} not found in the df. Please run the rainfall model first.")
     __check_png_filename(file_path)
 
     # Create plot with rain and runoff data
     plt.figure(figsize=(6, 4))
-    plt.plot(df[LABELS['date_norm']], df[LABELS['rain']], color="navy", label="Rainfall")
-    plt.plot(df[LABELS['date_norm']], df[LABELS['runoff']], color="tomato", label="Runoff")
+    plt.plot(date_times, rainfall, color="navy", label="Rainfall")
+    plt.plot(date_times, runnoff, color="tomato", label="Runoff")
     plt.ylabel("Rainfall or Runoff (mm)")
 
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 
 ####    EVAPOTRANSPIRATION PLOTS    ####
 
 def plot_evapo_data(
-        df: pd.DataFrame,
+        evapotranspiration: np.ndarray,
+        date_times: np.ndarray,
         file_path: Path,
-        model_data: np.ndarray,
-        model_labels: list[str]
-    ):
+        model_label: str="EvapoTranspiration",
+    ) -> Path:
     """
     Creates a plot of different evapotraspiration data over time
 
@@ -370,10 +369,10 @@ def plot_evapo_data(
       Creates a legend of the model names and colors.
 
     Args:
-        df: The DataFrame that the evapotranspiration models were run on.
+        evapotranspiration: The evapotranspiration (mm/day)
+        date_times: The datetime objects corresponding to the each actual and predicted temp.
         file_path: A Path object representing the output file path.
-        model_data: Is a 2d numpy array of size len(model_labels) x #of days 
-        model_labels: Is a list of the names of the models used in model data.
+        model_label: Is the label to use on the x-axis for the model
     
     Returns: 
         The filename where the plot was saved
@@ -383,41 +382,34 @@ def plot_evapo_data(
         ValueError: If the file extension is not '.png' or if the needed label(s) isn't found in the df
         FileNotFoundError: If the parent directory does not exist.
     """
-    global LABELS
-
-    # Check Parameters
-    if len(model_data) != len(model_labels):
-        raise ValueError("You must provide the same number of model labels and model data")
-    if LABELS['date_norm'] not in df.columns:
-        raise ValueError(f"Date column not found in df. Date column name currently set to {LABELS['date_norm']}")
     __check_png_filename(file_path)
 
 
     # Generates a new Plot
     plt.figure(figsize=(10,4))
 
-    # Loop through and plot data from different models
-    for i in range(len(model_data)):
-        data = model_data[i]
-        data_label = model_labels[i]
-        plt.plot(df[LABELS['date_norm']], data, label=data_label)
+    plt.plot(date_times, evapotranspiration, label=model_label)
     
     # Adds plot label
     plt.ylabel("Evapotranspiration (mm/day)")
     plt.xlabel("Date")
     
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 
 ####    GROWING DEGREE DAYS PLOTS    ####
 
-def plot_gdd(df: pd.DataFrame, file_path: Path):
+def plot_gdd(
+        gdd: np.ndarray,
+        date_times: np.ndarray,
+        file_path: Path
+    ) -> Path:
     """
     Creates a plot of the Growing Degree Days that occured over each time segment in the data
 
     Args:
-        df: The DataFrame that Growing Degree Days was calculated on.
+        gdd: The Growing Degree Days that occured 
+        date_times: The datetime objects corresponding to the each actual and predicted temp.
         file_path: A Path object representing the output file path.
 
     Returns:
@@ -428,32 +420,27 @@ def plot_gdd(df: pd.DataFrame, file_path: Path):
         ValueError: If the file extension is not '.png' or if the needed label(s) isn't found in the df
         FileNotFoundError: If the parent directory does not exist.
     """
-    global LABELS
-    # Check Parameters
-    if LABELS['gdd'] not in df.columns:
-        raise ValueError(f"{LABELS['gdd']} was not found in the df. Please run the growing degree days model first")
-    if LABELS['date_norm'] not in df.columns:
-        raise ValueError(f"Date column not found in df. Date column name currently set to {LABELS['date_norm']}")
     __check_png_filename(file_path)
-
-    # Extract GDD data
-    gdd_data = df[LABELS['gdd']]
 
     # Create plot
     plt.figure(figsize=(6, 4))
-    plt.plot(df[LABELS["date_norm"]], gdd_data)
+    plt.plot(date_times, gdd)
     plt.xlabel("Date")
     plt.ylabel(f'Growing degree days {chr(176)}C-d)')
 
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
     
-def plot_gdd_sum(df: pd.DataFrame, file_path: Path):
+def plot_gdd_sum(
+        gdd_sum: np.ndarray,
+        date_times: np.ndarray,
+        file_path: Path
+    ) -> Path:
     """
     Creates a plot of the Cumulative Growing Degree Days that occured over the data
 
     Args:
-        df: The DataFrame that Growing Degree Days was calculated on.
+        gdd_sum: The cummulative Growing Degree Days that have occured since the start of the data.
+        date_times: The datetime objects corresponding to the each actual and predicted temp.
         file_path: A Path object representing the output file path.
 
     Returns:
@@ -464,26 +451,15 @@ def plot_gdd_sum(df: pd.DataFrame, file_path: Path):
         ValueError: If the file extension is not '.png' or if the needed label isn't found in the df
         FileNotFoundError: If the parent directory does not exist.
     """
-    global LABELS
-
-    # Check parameters
-    if LABELS['gdd_sum'] not in df.columns:
-        raise ValueError(f"{LABELS['gdd_sum']} was not found in the df. Please run the growing degree days ")
-    if LABELS['date_norm'] not in df.columns:
-        raise ValueError(f"Date column not found in df. Date column name currently set to {LABELS['date_norm']}")
     __check_png_filename(file_path)
-
-    # Extract GDD data
-    gdd_sum_data = df[LABELS['gdd_sum']]
 
     # Create plot
     plt.figure(figsize=(6,2))
-    plt.plot(df[LABELS['date_norm']], gdd_sum_data)
+    plt.plot(date_times, gdd_sum)
     plt.xlabel("Date")
     plt.ylabel(f'Growing degree days sum {chr(176)}C-d)')
 
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
     
 ####    PHOTOPERIOD PLOTS    ####
 
@@ -504,11 +480,8 @@ def plot_yearly_photoperiod(latitude: float, file_path: Path):
         ValueError: If the file extension is not '.png'.
         FileNotFoundError: If the parent directory does not exist.
     """
-    global LABELS
-
     # Check Parameters
     __check_png_filename(file_path)
-
 
     # Set up plot with Title and axes
     doy = np.arange(0,366)
@@ -522,8 +495,7 @@ def plot_yearly_photoperiod(latitude: float, file_path: Path):
 
     plt.plot(doy, photoperiods, color='k')
 
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
     """
@@ -541,8 +513,6 @@ def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
         ValueError: If the file extension is not '.png'.
         FileNotFoundError: If the parent directory does not exist.
     """
-    global LABELS
-
     # Check Parameters
     __check_png_filename(file_path)
 
@@ -559,8 +529,7 @@ def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
         photoperiod, *_ = equations.photoperiod_on_day(latitudes, doy)
         plt.plot(latitudes, photoperiod, label=f'DOY {doy}')
     
-    save_plot(file_path)
-    return file_path.resolve()
+    return save_plot(file_path)
 
 
 
