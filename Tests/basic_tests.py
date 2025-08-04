@@ -229,11 +229,11 @@ def hydraulic_conductivity_test():
 if __name__ == "__main__":
     # Get Data
     data_file = Path("Tests/Data/Marshfield_All_Data.csv")
-    df = AEM.data.load_data(data_file)
-    df2023 = AEM.data.load_data(data_file, start_date="2023-01-01", end_date="2023-12-31")
-    df2024 = AEM.data.load_data(data_file, start_date="2024-01-01", end_date="2024-12-31")
-    df2025 = AEM.data.load_data(data_file, start_date="2025-01-01", end_date="2025-12-31")
-    df_5_min = AEM.data.load_data(Path("Tests/Data/Arlington_Daily_Data_2.csv"))
+    df = AEM.data.load_data_csv(data_file)
+    df2023 = AEM.data.load_data_csv(data_file, start_date="2023-01-01", end_date="2023-12-31")
+    df2024 = AEM.data.load_data_csv(data_file, start_date="2024-01-01", end_date="2024-12-31")
+    df2025 = AEM.data.load_data_csv(data_file, start_date="2025-01-01", end_date="2025-12-31")
+    df_5_min = AEM.data.load_data_csv(Path("Tests/Data/Arlington_Daily_Data_2.csv"))
 
     # Save Folder
     folder = Path("/home/scarlett/Documents/Entomology/AgroEcoMetrics/Tests/Images/")

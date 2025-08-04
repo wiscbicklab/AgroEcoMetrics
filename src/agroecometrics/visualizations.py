@@ -15,7 +15,7 @@ LABELS = settings.get_labels()
 
 ####    UTIL FUNCTIONS    ####
 
-def check_png_filename(file_path: Path):
+def __check_png_filename(file_path: Path):
     """
     Validates that the provided file path ends with '.png' and that the directory exists.
 
@@ -50,7 +50,7 @@ def save_plot(file_path: Path):
         FileNotFoundError: If the parent directory does not exist.
     """
     # Validate input parameters
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
     
     handles, labels = plt.gca().get_legend_handles_labels()
     if handles:  # Only add legend if there are labeled elements
@@ -85,7 +85,7 @@ def plot_air_temp(df: pd.DataFrame, T_pred: np.ndarray, file_path: Path):
         raise ValueError(f"Date column not found in df. Date column name currently set to {LABELS['date_norm']}")
     if LABELS['temp_avg'] not in df.columns:
         raise ValueError(f"Air Temperature column not found in df. Air Temperature column name is currently set to{LABELS['temp_avg']}")
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
     # Plot actual vs predicted temperature
     plt.figure(figsize=(8, 4))
@@ -117,7 +117,7 @@ def plot_yearly_soil_temp(soil_temp: np.ndarray, file_path: Path):
         FileNotFoundError: If the parent directory does not exist.
     """
     # Check Parmeters
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
     # Create the soil temperature plot
     doy = np.arange(0,365)
@@ -151,7 +151,7 @@ def plot_day_soil_temp(
         FileNotFoundError: If the parent directory does not exist.
     """
     # Check Parameters
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
     # Create Plot
     plt.figure()
@@ -189,7 +189,7 @@ def plot_3d_soil_temp(
         FileNotFoundError: If the parent directory does not exist.
     """
     # Check Parameters
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
     # Create Plot
     fig = plt.figure(figsize=(10, 6), dpi=80, constrained_layout=True) # 10 inch by 6 inch dpi = dots per inch
@@ -238,7 +238,7 @@ def plot_daily_soil_temp(
         FileNotFoundError: If the parent directory does not exist.
     """    
     # Validate input parameters
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
     
     # Generate time intervals
     time_passed = np.arange(0, 1440, 5)
@@ -285,7 +285,7 @@ def plot_3d_daily_soil_temp(
         ValueError: If the file extension is not '.png' or if the needed label(s) isn't found in the df
         FileNotFoundError: If the parent directory does not exist.
     """
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
     # Convert minutes to hours for plotting
     hours_grid = time_grid / 60
@@ -342,7 +342,7 @@ def plot_rainfall(df: pd.DataFrame, file_path: Path):
         raise ValueError(f"{LABELS['rain']} not found in the df. Please run the rainfall model first.")
     if LABELS['runoff'] not in df.columns:
         raise ValueError(f"{LABELS['runoff']} not found in the df. Please run the rainfall model first.")
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
     # Create plot with rain and runoff data
     plt.figure(figsize=(6, 4))
@@ -390,7 +390,7 @@ def plot_evapo_data(
         raise ValueError("You must provide the same number of model labels and model data")
     if LABELS['date_norm'] not in df.columns:
         raise ValueError(f"Date column not found in df. Date column name currently set to {LABELS['date_norm']}")
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
 
     # Generates a new Plot
@@ -434,7 +434,7 @@ def plot_gdd(df: pd.DataFrame, file_path: Path):
         raise ValueError(f"{LABELS['gdd']} was not found in the df. Please run the growing degree days model first")
     if LABELS['date_norm'] not in df.columns:
         raise ValueError(f"Date column not found in df. Date column name currently set to {LABELS['date_norm']}")
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
     # Extract GDD data
     gdd_data = df[LABELS['gdd']]
@@ -471,7 +471,7 @@ def plot_gdd_sum(df: pd.DataFrame, file_path: Path):
         raise ValueError(f"{LABELS['gdd_sum']} was not found in the df. Please run the growing degree days ")
     if LABELS['date_norm'] not in df.columns:
         raise ValueError(f"Date column not found in df. Date column name currently set to {LABELS['date_norm']}")
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
     # Extract GDD data
     gdd_sum_data = df[LABELS['gdd_sum']]
@@ -507,7 +507,7 @@ def plot_yearly_photoperiod(latitude: float, file_path: Path):
     global LABELS
 
     # Check Parameters
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
 
     # Set up plot with Title and axes
@@ -518,7 +518,7 @@ def plot_yearly_photoperiod(latitude: float, file_path: Path):
     plt.ylabel('Photoperiod (hours per day)', size=14)
 
     # Calulate photoperiods and adds them to the plot
-    photoperiods, __, __, __, __, __ = equations.photoperiod_at_latitude(latitude, doy)
+    photoperiods, __, __, __, __, __ = equations.photoperiod_at_lat(latitude, doy)
 
     plt.plot(doy, photoperiods, color='k')
 
@@ -544,7 +544,7 @@ def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
     global LABELS
 
     # Check Parameters
-    check_png_filename(file_path)
+    __check_png_filename(file_path)
 
     # Set up plot with Title and axes
     plt.figure(figsize=(6,4))
