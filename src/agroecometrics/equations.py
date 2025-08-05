@@ -4,7 +4,6 @@ from scipy.stats import circmean
 import numpy as np
 import pandas as pd
 
-from agroecometrics import settings
 import agroecometrics as AEM
 
 
@@ -69,14 +68,17 @@ def model_air_temp(air_temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
     avg_temp = np.mean(air_temps)    # Mean Temperature | Units: °C
     thermal_amp = (np.max(air_temps) - np.min(air_temps)) / 2  # | Units: °C
 
-    # Find day of year of minimum temperature (phase shift)
-    min_idx = np.argmin(air_temps)
+    # Use the day with the minimum and maximum temperatures to calulate time_laf
+    min_idx = np.argmin(air_temps[:190])
     min_date = pd.to_datetime(date_times[min_idx])
-    time_lag = (min_date - pd.Timestamp(min_date.year, 1, 1)).days  # days since Jan 1
+    max_idx = np.argmax(air_temps)
+    max_date = pd.to_datetime(date_times[max_idx])
+    time_lag_date = min_date + (max_date - pd.Timedelta(days=183) - min_date) / 2
+    time_lag = (time_lag_date - pd.Timestamp(time_lag_date.year, 1, 1)).days  # days since Jan 1
 
     # Convert all dates to day of year
     date_times = pd.to_datetime(date_times)
-    doys = (date_times - pd.to_datetime([pd.Timestamp(dt.year, 1, 1) for dt in date_times])).days
+    doys = date_times.dt.dayofyear
 
     # Generate sinusoidal temperature predictions
     pred_temp = avg_temp + thermal_amp * np.cos(
@@ -163,7 +165,7 @@ def soil_temp_on_day(
     damp_depth = (2 * thermal_diffusivity / phase_frequency) ** 0.5 # Units: cm
 
     # Estimate the temperatures for each depth
-    soil_depths = np.linspace(0, max_depth, interpolations) # Interpolation depths | Units: cm
+    soil_depths = np.linspace(max_depth/interpolations, max_depth, interpolations) # Interpolation depths | Units: cm
     soil_temp = avg_temp + \
         thermal_amp * np.exp(-soil_depths / damp_depth) * \
         np.sin(phase_frequency * doy - soil_depths / damp_depth - PHASE)
@@ -205,7 +207,7 @@ def yearly_soil_temp_at_depth(
     phase_frequency = 2 * np.pi / 365 # Phase Frequency | Units: 1 / s
     PHASE = np.pi/2 + phase_frequency*timelag # Phase constant | Units: None
 
-    thermal_diffusivity = thermal_diffusivity / 100 * 86400 # Unit conversion | Units: cm^2/day
+    thermal_diffusivity = thermal_diffusivity * 0.01 * 86400 # Unit conversion | Units: cm^2/day
     damp_depth = (2*thermal_diffusivity/phase_frequency)**(1/2) # Damping depth 
 
     doys = np.arange(1,366)
@@ -457,7 +459,7 @@ def jensen_haise(
 def hargreaves(
         temp_min: np.ndarray,
         temp_max: np.ndarray,
-        doy: np.ndarray,
+        doys: np.ndarray,
         latitude: float
     ) -> np.ndarray:
     """
@@ -466,7 +468,7 @@ def hargreaves(
     Args:
         temp_min: The minimum daily temperature (°C)
         temp_max: The maximum daily temperature (°C)
-        doy: Day of year (0-365) where January 1st is 0 and 365
+        doys: Array of Day of year's (0-365) where January 1st is 0 and 365
         latitude: Latitude in decimal degress. Where the northern hemisphere is 
             positive and the southern hemisphere is negative
         
@@ -478,7 +480,7 @@ def hargreaves(
         raise ValueError("All inputs must be the same length")
     
     # Model Calulations
-    Ra = __compute_solar_radiation(doy, latitude)
+    Ra = __compute_solar_radiation(doys, latitude)
     T_avg = (temp_min + temp_max)/2
     PET = 0.0023 * Ra * (T_avg + 17.8) * (temp_max - temp_min)**0.5
 
@@ -643,7 +645,8 @@ def model_gdd(
     # Simply GDD calculation
     if temp_opt is None and temp_upper is None:
         gdd_days = (temp_avg - temp_base)*time_duration
-        return np.maximum(0, gdd_days)
+        gdd_days = np.maximum(0, gdd_days)
+        return gdd_days, gdd_days.cumsum()
 
     # Initialize GDD array
     gdd = np.zeros_like(temp_avg)

@@ -2,12 +2,11 @@ from pathlib import Path
 from typing import Optional
 import pandas as pd
 import numpy as np
-import datetime
 
 import matplotlib.pyplot as plt
 
 
-from agroecometrics import equations, settings
+from agroecometrics import equations
 
 # Gets the acutal labels of columns based on the user settings
 
@@ -139,7 +138,7 @@ def plot_yearly_soil_temp(
     return save_plot(file_path)
 
 def plot_day_soil_temp(
-        soil_temp: np.ndarray,
+        soil_temps: np.ndarray,
         depths: int,
         file_path: Path,
     ) -> Path:
@@ -164,7 +163,7 @@ def plot_day_soil_temp(
 
     # Create Plot
     plt.figure()
-    plt.plot(soil_temp, -depths)
+    plt.plot(depths, soil_temps)
     plt.ylabel("Soil temperature (Celsius)")
     plt.xlabel("Soil Depth (Centimeters)")
     
@@ -395,7 +394,6 @@ def plot_evapo_data(
     plt.xlabel("Date")
     
     return save_plot(file_path)
-
 
 ####    GROWING DEGREE DAYS PLOTS    ####
 

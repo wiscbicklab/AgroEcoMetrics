@@ -2,15 +2,9 @@ from pathlib import Path
 from typing import Optional, Tuple
 from scipy.stats import circmean
 
-
 import numpy as np
 import pandas as pd
 
-from agroecometrics import settings
-
-
-# Gets the acutal LABELS of columns based on the user settings
-LABELS = settings.get_labels()
 
 ####    Private UTIL FUNCTIONS    ####
 def __csv_file_exists(file_path: Path) -> bool:
@@ -43,7 +37,8 @@ def __csv_file_exists(file_path: Path) -> bool:
 # Data File Functions
 def load_data_csv(
         file_path: Path, 
-        date_format: str = LABELS['date_format'],
+        date_time_column: str,
+        date_time_format: str = "%m/%d/%Y %I:%M %p",
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> pd.DataFrame:
@@ -72,7 +67,6 @@ def load_data_csv(
         ValueError: If the file extension is not '.csv'.
         FileNotFoundError: If the file could not be found.
     '''
-    global LABELS
 
     # Check Parameters
     if not __csv_file_exists(file_path):
@@ -84,18 +78,23 @@ def load_data_csv(
     df = None
     df = pd.read_csv(file_path)
     df.columns = df.columns.str.strip().str.replace("'", "")
-    df[LABELS['date_time']] = pd.to_datetime(df[LABELS['date_time']], format=date_format)
+
+    if date_time_column not in df.columns:
+        raise ValueError(f"The given date column name, {date_time_column}, was not found in the csv data!")
+    
+
+    df[date_time_column] = pd.to_datetime(df[date_time_column], format=date_time_format)
 
     # Filter data using the start and end dates
     if start_date:
-        df = df[df[LABELS['date_time']] >= pd.to_datetime(start_date)]
+        df = df[df[date_time_column] >= pd.to_datetime(start_date)]
     if end_date:
-        df = df[df[LABELS['date_time']] <= pd.to_datetime(end_date)]
+        df = df[df[date_time_column] <= pd.to_datetime(end_date)]
 
     # Adds a Year, DOY, and Normalized Date column to the df
-    df[LABELS['doy']] = df[LABELS['date_time']].dt.dayofyear-1
-    df[LABELS['year']] = df[LABELS['date_time']].dt.year
-    df[LABELS['date_norm']] = pd.to_datetime(df[LABELS['date_time']], format=date_format).dt.normalize()
+    df['DOY'] = df[date_time_column].dt.dayofyear-1
+    df['YEAR'] = df[date_time_column].dt.year
+    df['NORMALIZED_DATE'] = pd.to_datetime(df[date_time_column], format=date_time_format).dt.normalize()
 
 
     return df.reset_index(drop=True)
@@ -122,17 +121,16 @@ def interpolate_df(
     Raises:
         KeyError: If one of the col_names was not found in the dataframe
     """
-    global LABELS
     if col_names:
         if len(col_names) == 0:
             raise ValueError("label_keys must containa list of keys or be none")
         for col in col_names:
-            if col not in LABELS:
-                raise KeyError(col + " was not found in the available LABELS")
-            df[LABELS[col]].interpolate(method=method, inplace=True)
+            if col not in df.columns:
+                raise KeyError(col + " was not found in the df")
+            df[col] = df[col].interpolate(method=method)
     else:
         for col in df.columns.values:
-            df[LABELS[col]].interpolate(method=method, inplace=True)
+            df[col] = df[col].interpolate(method=method)
     
     return df
 
@@ -156,11 +154,10 @@ def save_data_csv(
         FileNotFoundError: If the parent directory does not exist.
         FileExistsError: If the file already exists.
     """
-    global LABELS
 
     # Check Parameters
     if __csv_file_exists(file_path):
-        print("The file {file_path} already exists.")
+        print(f"The file {file_path} already exists.")
         usr_input = input("Are you sure you want OVERWRITE the file(y/n):  ")
         if not usr_input or usr_input != "y":
             raise FileExistsError(f"The file, {file_path}, already exists.")
