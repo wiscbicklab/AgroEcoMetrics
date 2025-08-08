@@ -54,8 +54,8 @@ def model_air_temp(air_temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
     Creates an air temperature model and creates air temperature estimates using model.
 
     Creates an air temperature model by finding the best fit for a sinusoidal function.
-        Estimates Parameters using the given data.
-        Creates a temperature estimate for each day in the df using the model
+    Estimates Parameters using the given data.
+    Creates a temperature estimate for each day in the df using the model
 
     Args:
         air_temps: The daily average air temperature (°C)
@@ -100,7 +100,7 @@ def yearly_soil_temp(
     Models soil temperature over one year at the given depth.
 
     Creates a model to estimate soil temperature given a day of year and depth.
-        Predicts the soil temperature everyday at the specified depth.
+    Predicts the soil temperature everyday at the specified depth.
 
     Args:
         depth: The depth to model the soil temperature (m).
@@ -141,8 +141,8 @@ def daily_soil_temp(
     Models soil temperature on a particular day of the year
 
     Creates a model to estimate soil temperature given a day of year and depth.
-        Calculates depths to use by linearly interpolating the max_depth by the number of interpolations.
-        Uses the model to estimate the soil temperature at a range of depths on the specified day of year.
+    Calculates depths to use by linearly interpolating the max_depth by the number of interpolations.
+    Uses the model to estimate the soil temperature at a range of depths on the specified day of year.
     
     Args:
         doy: Day of year (0-365) where January 1st is 0 and 365.
@@ -186,8 +186,8 @@ def yearly_3d_soil_temp(
     Models soil temperature over a full year (0–365) and across depth.
 
     Creates a model to estimate soil temperature given a day of year and depth.
-        Calculates depths to use by linearly interpolating the max_depth by the number of interpolations
-        Uses the model to create a matrix of estimations for each day of the year at each depth.
+    Calculates depths to use by linearly interpolating the max_depth by the number of interpolations
+    Uses the model to create a matrix of estimations for each day of the year at each depth.
         
     Args:
         max_depth: The maximum depth in centimeters to model the soil temperature
@@ -229,8 +229,8 @@ def model_soil_temp(
     Creates soil temperature predictions for each air temperature provided over the course of a day
 
     Estimates the parameters for a sinusodial function modeling the daily surface temperature.
-        Uses the parameter estimations to create a model of soil temperatures at different depths.
-        Predicts the soil temperatue at the given depth for each air temperature provided
+    Uses the parameter estimations to create a model of soil temperatures at different depths.
+    Predicts the soil temperatue at the given depth for each air temperature provided
 
     Args:
         air_temps: The soil surface air temperatures for a given day (°C).
@@ -622,8 +622,8 @@ def model_gdd(
     Model how many growing degree days have passed
 
     Models Growing Degree days using a minimum base temperature, an optional 
-        optimal temperature, an optional maximum growing temperature, and 
-        the average temperature over the recorded durations
+    optimal temperature, an optional maximum growing temperature, and 
+    the average temperature over the recorded durations
         
     Args:
         temp_avg:  The average temperature over the duration_time (°C)
@@ -801,7 +801,7 @@ def cummulative_water_infiltration(
     Calculates the cummulative vertical water infultration.
     
     Calculates the cummulative vertical water infultration for the given soil parameters.
-        Calculations are made for equally spaced times from [0 to max_time].
+    Calculations are made for equally spaced times from [0 to max_time].
     
     Args:
         water_vol_fraction: The Volume Fraction of water.
@@ -813,8 +813,7 @@ def cummulative_water_infiltration(
   
     Returns:
         A numpy array of length 'interpolations' representing the cummulative vertical water infultration over equal time segments.
-        Where the first value represents the infultration after max_time/interpolations time,
-            and the last vaule represents the infultration after max_time.
+        Where the first value represents the infultration after max_time/interpolations time, and the last vaule represents the infultration after max_time.
     """
     # Define Constants
     WATER_DENSITY = 1000 # Units: Kg / m^3

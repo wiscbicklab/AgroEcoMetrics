@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath('../src'))
 project = 'AgroEcoMetrics'
 copyright = "2025, 'Scarlett Olson'"
 author = "'Scarlett Olson'"
-release = '0.1.0b'
+release = '0.1.0b2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -34,6 +34,6 @@ exclude_patterns = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'furo'
-html_static_path = ['_static']
+html_static_path = []
 html_baseurl = 'https://wiscbicklab.github.io//AgroEcoMetrics'
 

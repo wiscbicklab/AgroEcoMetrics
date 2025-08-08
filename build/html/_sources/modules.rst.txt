@@ -32,11 +32,3 @@ visualizations
    :members:
    :undoc-members:
    :show-inheritance:
-
-settings
---------
-
-.. automodule:: agroecometrics.settings
-   :members:
-   :undoc-members:
-   :show-inheritance:

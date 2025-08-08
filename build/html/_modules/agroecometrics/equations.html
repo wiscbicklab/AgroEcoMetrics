@@ -5,31 +5,31 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
         <link rel="canonical" href="https://wiscbicklab.github.io//AgroEcoMetrics/_modules/agroecometrics/equations.html" />
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>agroecometrics.equations - AgroEcoMetrics 0.1.0b documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+        <title>agroecometrics.equations - AgroEcoMetrics 0.1.0b2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.1.0b documentation</div></a>
+      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.1.0b2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,8 +189,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  
-  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0b documentation</span>
+  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0b2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -242,237 +241,252 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">agroecometrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">agroecometrics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">AEM</span>
 
 
-<span class="c1"># Gets the acutal LABELS of columns based on the user settings</span>
-<span class="n">LABELS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get_labels</span><span class="p">()</span>
+<span class="c1"># Constants Representing the number of seconds in a Day and Year</span>
 <span class="n">DAY_SECONDS</span> <span class="o">=</span> <span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span>
 <span class="n">YEAR_SECONDS</span> <span class="o">=</span> <span class="n">DAY_SECONDS</span><span class="o">*</span><span class="mi">365</span>
 
 <span class="c1"># Helper Functions</span>
-<div class="viewcode-block" id="compute_esat">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.compute_esat">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_esat</span><span class="p">(</span><span class="n">temp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">__compute_vapor_sat_pressure</span><span class="p">(</span><span class="n">temp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes saturation vapor pressure based Tetens formula</span>
+<span class="sd">    Computes saturation vapor pressure based Tetens formula.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        temp: Temperature to calculate the saturation vapor pressure (°C)</span>
+<span class="sd">        temp: Temperature used to calculate the saturation vapor pressure (°C).</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        Computed saturation vapor pressure (kPa)</span>
+<span class="sd">        Computed saturation vapor pressure (kPa).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">e_sat</span> <span class="o">=</span> <span class="mf">0.6108</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">17.27</span> <span class="o">*</span> <span class="n">temp</span><span class="o">/</span><span class="p">(</span><span class="n">temp</span><span class="o">+</span><span class="mf">237.3</span><span class="p">))</span> 
-    <span class="k">return</span> <span class="n">e_sat</span></div>
+    <span class="k">return</span> <span class="n">e_sat</span>
 
-
-<div class="viewcode-block" id="compute_Ra">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.compute_Ra">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_Ra</span><span class="p">(</span><span class="n">doy</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">__compute_solar_radiation</span><span class="p">(</span><span class="n">doy</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes extra-terrestrial solar radiation using the FAO Penman-Monteith method</span>
+<span class="sd">    Computes extra-terrestrial solar radiation using the FAO Penman-Monteith method.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        doy: Day of year (0-365) where January 1st is 0 and 365</span>
-<span class="sd">        latitude: Latitude in decimal degress. Where the northern hemisphere is </span>
-<span class="sd">            positive and the southern hemisphere is negative</span>
+<span class="sd">        doy: Day of year (0-365) where January 1st is 0 and 365.</span>
+<span class="sd">        lat: Latitude in decimal degress. Where the northern hemisphere is positive and the southern hemisphere is negative.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Extra-terrestrial solar radiation (Ra) in MJ/m²/day</span>
+<span class="sd">        Extra-terrestrial solar radiation (Ra) in MJ/m²/day.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lat_radians</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">lat</span> 
     <span class="n">dr</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">0.033</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">doy</span><span class="o">/</span><span class="mi">365</span><span class="p">)</span> <span class="c1"># Inverse relative distance Earth-Sun</span>
-    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">latitude</span> <span class="c1"># Latitude in radians</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="mf">0.409</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">doy</span><span class="o">/</span><span class="mi">365</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.39</span><span class="p">)</span> <span class="c1"># Solar delcination</span>
-    <span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="c1"># Sunset hour angle</span>
+    <span class="n">solar_declination</span> <span class="o">=</span> <span class="mf">0.409</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">doy</span><span class="o">/</span><span class="mi">365</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.39</span><span class="p">)</span> <span class="c1"># Solar delcination</span>
     <span class="n">Gsc</span> <span class="o">=</span> <span class="mf">0.0820</span> <span class="c1"># Solar constant</span>
-    <span class="n">Ra</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">Gsc</span> <span class="o">*</span> <span class="n">dr</span>
-    <span class="n">Ra</span> <span class="o">=</span> <span class="n">Ra</span> <span class="o">*</span> <span class="p">(</span><span class="n">omega</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">omega</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">Ra</span></div>
 
+    <span class="n">sunset_hour_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">lat_radians</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">solar_declination</span><span class="p">))</span> <span class="c1"># Sunset hour angle</span>
+
+    <span class="n">Ra</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">Gsc</span> <span class="o">*</span> <span class="n">dr</span>
+    <span class="n">Ra</span> <span class="o">=</span> <span class="n">Ra</span> <span class="o">*</span> <span class="p">(</span><span class="n">sunset_hour_angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat_radians</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">solar_declination</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat_radians</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">solar_declination</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">sunset_hour_angle</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">Ra</span>
 
 <span class="c1"># Air Temperature model</span>
 <div class="viewcode-block" id="model_air_temp">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.equations.model_air_temp">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">model_air_temp</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">model_air_temp</span><span class="p">(</span><span class="n">air_temps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">date_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Creates an Air temperature model and creates air temperature estimates using model</span>
+<span class="sd">    Creates an air temperature model and creates air temperature estimates using model.</span>
+
+<span class="sd">    Creates an air temperature model by finding the best fit for a sinusoidal function.</span>
+<span class="sd">    Estimates Parameters using the given data.</span>
+<span class="sd">    Creates a temperature estimate for each day in the df using the model</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        df: DataFrame containing temperature data</span>
+<span class="sd">        air_temps: The daily average air temperature (°C)</span>
+<span class="sd">        date_times: The datetime corresponding to each air temperature measurement</span>
 <span class="sd">    </span>
 <span class="sd">    Returns: </span>
 <span class="sd">        A numpy array of predicted daily temperatures over the period of the dataframe</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">global</span> <span class="n">LABELS</span>
-
-    <span class="c1"># Check Parameters</span>
-    <span class="k">if</span> <span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;temp_avg&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;temp_avg&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> was not found in the df. Please check your temp_avg label.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> was not found in the df. Please check your date_time label.&quot;</span><span class="p">)</span>
-    
-    <span class="c1"># Extract air temperatures</span>
-    <span class="n">air_temp</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;temp_avg&#39;</span><span class="p">]]</span>
-
     <span class="c1"># Estimate sinusoidal parameters</span>
-    <span class="n">avg_temp</span> <span class="o">=</span> <span class="n">air_temp</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>    <span class="c1"># Units: °C</span>
-    <span class="n">thermal_amp</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">air_temp</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span> <span class="c1"># Units: °C</span>
-    <span class="n">min_date</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">air_temp</span><span class="o">.</span><span class="n">idxmin</span><span class="p">(),</span> <span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]]</span> <span class="c1"># Datetime object</span>
-    <span class="n">min_doy</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_date</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">min_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">days</span> <span class="c1"># Units: Days</span>
+    <span class="n">avg_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span>    <span class="c1"># Mean Temperature | Units: °C</span>
+    <span class="n">thermal_amp</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">air_temps</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># | Units: °C</span>
 
-    <span class="c1"># Generate daily temperature predictions using the model</span>
-    <span class="n">T_pred</span> <span class="o">=</span> <span class="n">avg_temp</span> <span class="o">+</span> <span class="n">thermal_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="n">min_doy</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="c1"># Use the day with the minimum and maximum temperatures to calulate time_laf</span>
+    <span class="n">min_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">air_temps</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)])</span>
+    <span class="n">min_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date_times</span><span class="p">[</span><span class="n">min_idx</span><span class="p">])</span>
+    <span class="n">max_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span>
+    <span class="n">max_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date_times</span><span class="p">[</span><span class="n">max_idx</span><span class="p">])</span>
+    <span class="n">time_lag_date</span> <span class="o">=</span> <span class="n">min_date</span> <span class="o">+</span> <span class="p">(</span><span class="n">max_date</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">183</span><span class="p">)</span> <span class="o">-</span> <span class="n">min_date</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">time_lag</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_lag_date</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">time_lag_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">days</span>  <span class="c1"># days since Jan 1</span>
 
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">T_pred</span><span class="p">)</span></div>
+    <span class="c1"># Convert all dates to day of year</span>
+    <span class="n">date_times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date_times</span><span class="p">)</span>
+    <span class="n">doys</span> <span class="o">=</span> <span class="n">date_times</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">dayofyear</span>
+
+    <span class="c1"># Generate sinusoidal temperature predictions</span>
+    <span class="n">pred_temp</span> <span class="o">=</span> <span class="n">avg_temp</span> <span class="o">+</span> <span class="n">thermal_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span>
+        <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">((</span><span class="n">doys</span> <span class="o">-</span> <span class="n">time_lag</span><span class="p">)</span> <span class="o">/</span> <span class="mf">365.0</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pred_temp</span><span class="p">)</span></div>
 
 
 
 <span class="c1"># Soil Temperature models</span>
-<div class="viewcode-block" id="soil_temp_at_depth">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.soil_temp_at_depth">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">soil_temp_at_depth</span><span class="p">(</span>
+<div class="viewcode-block" id="yearly_soil_temp">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.yearly_soil_temp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">yearly_soil_temp</span><span class="p">(</span>
         <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">avg_temp</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
         <span class="n">thermal_amp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">thermal_dif</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.203</span><span class="p">,</span>
+        <span class="n">thermal_diffusivity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.203</span><span class="p">,</span>
         <span class="n">time_lag</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Models soil temperature over one year at the given depth</span>
+<span class="sd">    Models soil temperature over one year at the given depth.</span>
+
+<span class="sd">    Creates a model to estimate soil temperature given a day of year and depth.</span>
+<span class="sd">    Predicts the soil temperature everyday at the specified depth.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        depth: The depth to model the soil temperature (m)</span>
-<span class="sd">        avg_temp: The annual average surface temperature (°C)</span>
-<span class="sd">        thermal_amp: The annual thermal amplitude of the soil surface (°C)</span>
-<span class="sd">        thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument (mm^2 / s)</span>
-<span class="sd">        time_lag: The time lag between Jaunary 1st and the coldest day of the year (days)</span>
+<span class="sd">        depth: The depth to model the soil temperature (m).</span>
+<span class="sd">        avg_temp: The annual average surface temperature (°C).</span>
+<span class="sd">        thermal_amp: The annual thermal amplitude of the soil surface (°C).</span>
+<span class="sd">        thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument (mm^2 / s).</span>
+<span class="sd">        time_lag: The time lag between Jaunary 1st and the coldest day of the year (days).</span>
 
 <span class="sd">    Return:</span>
-<span class="sd">        Predicted soil temperature at the given depth for each day of the year (°C)</span>
+<span class="sd">        Predicted soil temperature at the given depth for each day of the year (°C).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Set Constants</span>
-    <span class="n">OMEGA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">YEAR_SECONDS</span> <span class="c1"># Phase Frequency | Units: 1 / s</span>
-    <span class="n">PHASE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">OMEGA</span> <span class="o">*</span> <span class="p">(</span><span class="n">time_lag</span> <span class="o">*</span> <span class="n">DAY_SECONDS</span><span class="p">)</span> <span class="c1"># Phase constant | Units: </span>
+    <span class="n">phase_frequency</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">YEAR_SECONDS</span> <span class="c1"># Phase Frequency | Units: 1 / s</span>
+    <span class="n">PHASE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">phase_frequency</span> <span class="o">*</span> <span class="p">(</span><span class="n">time_lag</span> <span class="o">*</span> <span class="n">DAY_SECONDS</span><span class="p">)</span> <span class="c1"># Phase constant | Units: None</span>
 
     <span class="c1"># Calculate Damping Depth</span>
-    <span class="n">thermal_dif</span> <span class="o">=</span> <span class="n">thermal_dif</span> <span class="o">/</span> <span class="mi">100</span>    <span class="c1"># Unit Conversion: cm^2 / s</span>
-    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">thermal_dif</span><span class="o">/</span><span class="n">OMEGA</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Units: cm</span>
+    <span class="n">thermal_diffusivity</span> <span class="o">=</span> <span class="n">thermal_diffusivity</span> <span class="o">/</span> <span class="mi">100</span>    <span class="c1"># Unit Conversion | Units: cm^2 / s</span>
+    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">thermal_diffusivity</span><span class="o">/</span><span class="n">phase_frequency</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Units: cm</span>
 
     <span class="c1"># Estimate the temperatures for each day of the year</span>
     <span class="n">doy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">365</span><span class="p">)</span><span class="o">*</span><span class="n">DAY_SECONDS</span> <span class="c1"># Units: s</span>
     <span class="n">soil_temp</span> <span class="o">=</span> <span class="n">avg_temp</span> <span class="o">+</span> \
         <span class="n">thermal_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">depth</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">)</span> <span class="o">*</span> \
-        <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">OMEGA</span> <span class="o">*</span> <span class="n">doy</span> <span class="o">-</span> <span class="n">depth</span> <span class="o">/</span> <span class="n">damp_depth</span> <span class="o">-</span> <span class="n">PHASE</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase_frequency</span> <span class="o">*</span> <span class="n">doy</span> <span class="o">-</span> <span class="n">depth</span> <span class="o">/</span> <span class="n">damp_depth</span> <span class="o">-</span> <span class="n">PHASE</span><span class="p">)</span>
     
     <span class="k">return</span>  <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">soil_temp</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="soil_temp_on_day">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.soil_temp_on_day">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">soil_temp_on_day</span><span class="p">(</span>
+<div class="viewcode-block" id="daily_soil_temp">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.daily_soil_temp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">daily_soil_temp</span><span class="p">(</span>
         <span class="n">doy</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">Nz</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">interpolations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">avg_temp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
         <span class="n">thermal_amp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">thermal_dif</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.203</span><span class="p">,</span>
+        <span class="n">thermal_diffusivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.203</span><span class="p">,</span>
         <span class="n">timelag</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Models soil temperature on a particular day of the year</span>
+
+<span class="sd">    Creates a model to estimate soil temperature given a day of year and depth.</span>
+<span class="sd">    Calculates depths to use by linearly interpolating the max_depth by the number of interpolations.</span>
+<span class="sd">    Uses the model to estimate the soil temperature at a range of depths on the specified day of year.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        doy: Day of year (0-365) where January 1st is 0 and 365</span>
-<span class="sd">        max_depth: The maximum depth in centimeters to model the soil temperature</span>
-<span class="sd">        Nz: The number of interpolated depths to caluculate soil temperature at</span>
-<span class="sd">        avg_temp: The annual average surface temperature (°C)</span>
-<span class="sd">        thermal_amp: The annual thermal amplitude of the soil surface (°C)</span>
-<span class="sd">        thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]</span>
-<span class="sd">        time_lag: The time lag in days (0-365) where January 1st is 0 and 365</span>
+<span class="sd">        doy: Day of year (0-365) where January 1st is 0 and 365.</span>
+<span class="sd">        max_depth: The maximum depth in centimeters to model the soil temperature.</span>
+<span class="sd">        interpolations: The number of interpolated depths to caluculate soil temperature at.</span>
+<span class="sd">        avg_temp: The annual average surface temperature (°C).</span>
+<span class="sd">        thermal_amp: The annual thermal amplitude of the soil surface (°C).</span>
+<span class="sd">        thermal_diffusivity: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s].</span>
+<span class="sd">        time_lag: The time lag in days (0-365) where January 1st is 0 and 365.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        An np array of the soil temps and an np array of the depths of the soil temps (°C)</span>
+<span class="sd">        A tuple containing two numpy arrays.</span>
+<span class="sd">            The first array contains the soil temperature predictions (°C)</span>
+<span class="sd">            The second array contians the depth of each prediction (cm)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Set Constants</span>
-    <span class="n">OMEGA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">YEAR_SECONDS</span><span class="p">)</span> <span class="c1"># Phase Frequency | Units: 1 / s</span>
-    <span class="n">PHASE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">OMEGA</span> <span class="o">*</span> <span class="p">(</span><span class="n">timelag</span> <span class="o">*</span> <span class="n">DAY_SECONDS</span><span class="p">)</span> <span class="c1"># Phase constant</span>
+    <span class="n">phase_frequency</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">YEAR_SECONDS</span><span class="p">)</span> <span class="c1"># Phase Frequency | Units: 1 / s</span>
+    <span class="n">PHASE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">phase_frequency</span> <span class="o">*</span> <span class="p">(</span><span class="n">timelag</span> <span class="o">*</span> <span class="n">DAY_SECONDS</span><span class="p">)</span> <span class="c1"># Phase constant | Units: None</span>
 
     <span class="c1"># Calculate Damping Depth</span>
-    <span class="n">thermal_dif</span> <span class="o">=</span> <span class="n">thermal_dif</span> <span class="o">/</span> <span class="mi">100</span>    <span class="c1"># Unit Conversion: cm^2 / s</span>
-    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">thermal_dif</span> <span class="o">/</span> <span class="n">OMEGA</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="c1"># Units: cm</span>
+    <span class="n">thermal_diffusivity</span> <span class="o">=</span> <span class="n">thermal_diffusivity</span> <span class="o">/</span> <span class="mi">100</span>    <span class="c1"># Unit Conversion | Units: cm^2 / s</span>
+    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">thermal_diffusivity</span> <span class="o">/</span> <span class="n">phase_frequency</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="c1"># Units: cm</span>
 
     <span class="c1"># Estimate the temperatures for each depth</span>
-    <span class="n">depths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">,</span> <span class="n">Nz</span><span class="p">)</span> <span class="c1"># Interpolation depths | Units: cm</span>
-    <span class="n">T_soil</span> <span class="o">=</span> <span class="n">avg_temp</span> <span class="o">+</span> \
-        <span class="n">thermal_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">depths</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">)</span> <span class="o">*</span> \
-        <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">OMEGA</span> <span class="o">*</span> <span class="n">doy</span> <span class="o">-</span> <span class="n">depths</span> <span class="o">/</span> <span class="n">damp_depth</span> <span class="o">-</span> <span class="n">PHASE</span><span class="p">)</span>
+    <span class="n">soil_depths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">max_depth</span><span class="o">/</span><span class="n">interpolations</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">,</span> <span class="n">interpolations</span><span class="p">)</span> <span class="c1"># Interpolation depths | Units: cm</span>
+    <span class="n">soil_temp</span> <span class="o">=</span> <span class="n">avg_temp</span> <span class="o">+</span> \
+        <span class="n">thermal_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">soil_depths</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">)</span> <span class="o">*</span> \
+        <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase_frequency</span> <span class="o">*</span> <span class="n">doy</span> <span class="o">-</span> <span class="n">soil_depths</span> <span class="o">/</span> <span class="n">damp_depth</span> <span class="o">-</span> <span class="n">PHASE</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">depths</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">T_soil</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">soil_temp</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">soil_depths</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="soil_temp_at_depth_on_day">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.soil_temp_at_depth_on_day">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">soil_temp_at_depth_on_day</span><span class="p">(</span>
+<div class="viewcode-block" id="yearly_3d_soil_temp">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.yearly_3d_soil_temp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">yearly_3d_soil_temp</span><span class="p">(</span>
         <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">Nz</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">interpolations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">avg_temp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
         <span class="n">thermal_amp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">thermal_dif</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.203</span><span class="p">,</span>
+        <span class="n">thermal_diffusivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.203</span><span class="p">,</span>
         <span class="n">timelag</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Models soil temperature over a full year (0–365) and across depth.</span>
-<span class="sd">    </span>
+
+<span class="sd">    Creates a model to estimate soil temperature given a day of year and depth.</span>
+<span class="sd">    Calculates depths to use by linearly interpolating the max_depth by the number of interpolations</span>
+<span class="sd">    Uses the model to create a matrix of estimations for each day of the year at each depth.</span>
+<span class="sd">        </span>
 <span class="sd">    Args:</span>
 <span class="sd">        max_depth: The maximum depth in centimeters to model the soil temperature</span>
-<span class="sd">        Nz: The number of interpolated depths to calculate soil temperature at</span>
+<span class="sd">        interpolations: The number of interpolated depths to calculate soil temperature at</span>
 <span class="sd">        avg_temp: The annual average surface temperature (°C)</span>
 <span class="sd">        thermal_amp: The annual thermal amplitude of the soil surface (°C)</span>
-<span class="sd">        thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]</span>
+<span class="sd">        thermal_diffusivity: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]</span>
 <span class="sd">        timelag: The time lag in days (0-365) where January 1st is 0 and 365</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        A tuple of (doy_grid, z_grid, temp_grid), where each is a 2D NumPy array.</span>
+<span class="sd">        A tuple of (doy_grid, z_grid, temp_grid), where each is a 2D NumPy array. </span>
+<span class="sd">        Each grid represents a Matrix of depths and doys.</span>
+<span class="sd">        doy_grid varies the day of year between columns. Each columns represents the same doy.</span>
+<span class="sd">        depth_grid varies the depth between rows. Each row represents the same depth</span>
+<span class="sd">        temp_grid varies between rows and columns. </span>
+<span class="sd">        Each point represents the predicted temperature for the doy and depth indicated by the same point in the doy_grid and depth_grid respectively</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Set Constants</span>
-    <span class="n">OMEGA</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">365</span>
+    <span class="n">phase_frequency</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">365</span> <span class="c1"># Phase Frequency | Units: 1 / s</span>
+    <span class="n">PHASE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">phase_frequency</span><span class="o">*</span><span class="n">timelag</span> <span class="c1"># Phase constant | Units: None</span>
 
-    <span class="n">thermal_dif</span> <span class="o">=</span> <span class="n">thermal_dif</span> <span class="o">/</span> <span class="mi">100</span> <span class="o">*</span> <span class="mi">86400</span> <span class="c1"># convert to cm^2/day</span>
-    <span class="n">phase_const</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">OMEGA</span><span class="o">*</span><span class="n">timelag</span> <span class="c1"># Phase constant</span>
-    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">thermal_dif</span><span class="o">/</span><span class="n">OMEGA</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Damping depth </span>
+    <span class="n">thermal_diffusivity</span> <span class="o">=</span> <span class="n">thermal_diffusivity</span> <span class="o">*</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="mi">86400</span> <span class="c1"># Unit conversion | Units: cm^2/day</span>
+    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">thermal_diffusivity</span><span class="o">/</span><span class="n">phase_frequency</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Damping depth </span>
 
-    <span class="n">doy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">366</span><span class="p">)</span>
-    <span class="n">depths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">,</span> <span class="n">Nz</span><span class="p">)</span> <span class="c1"># Interpolation depths</span>
-    <span class="n">doy_grid</span><span class="p">,</span><span class="n">z_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span><span class="n">depths</span><span class="p">)</span>
+    <span class="n">doys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">366</span><span class="p">)</span>
+    <span class="n">depths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">,</span> <span class="n">interpolations</span><span class="p">)</span> <span class="c1"># Interpolation depths</span>
+    <span class="n">doy_grid</span><span class="p">,</span> <span class="n">depth_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">doys</span><span class="p">,</span><span class="n">depths</span><span class="p">)</span>
     
-    <span class="n">t_grid</span> <span class="o">=</span> <span class="n">avg_temp</span> <span class="o">+</span> <span class="n">thermal_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z_grid</span><span class="o">/</span><span class="n">damp_depth</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">OMEGA</span><span class="o">*</span><span class="n">doy_grid</span> <span class="o">-</span> <span class="n">z_grid</span><span class="o">/</span><span class="n">damp_depth</span> <span class="o">-</span> <span class="n">phase_const</span><span class="p">)</span>
+    <span class="n">temp_grid</span> <span class="o">=</span> <span class="n">avg_temp</span> <span class="o">+</span> <span class="n">thermal_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">depth_grid</span><span class="o">/</span><span class="n">damp_depth</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase_frequency</span><span class="o">*</span><span class="n">doy_grid</span> <span class="o">-</span> <span class="n">depth_grid</span><span class="o">/</span><span class="n">damp_depth</span> <span class="o">-</span> <span class="n">PHASE</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">doy_grid</span><span class="p">,</span> <span class="n">z_grid</span><span class="p">,</span> <span class="n">t_grid</span></div>
+    <span class="k">return</span> <span class="n">doy_grid</span><span class="p">,</span> <span class="n">depth_grid</span><span class="p">,</span> <span class="n">temp_grid</span></div>
 
 
-<div class="viewcode-block" id="model_soil_temp_from_air_temp">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.model_soil_temp_from_air_temp">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">model_soil_temp_from_air_temp</span><span class="p">(</span>
-        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<div class="viewcode-block" id="model_soil_temp">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.model_soil_temp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">model_soil_temp</span><span class="p">(</span>
+        <span class="n">air_temps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">depth</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">date_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_format&#39;</span><span class="p">],</span>
-        <span class="n">thermal_dif</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.203</span><span class="p">,</span>
+        <span class="n">thermal_diffusivity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.203</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates temperature predictions for every 5 minutes for a modeled date</span>
+<span class="sd">    Creates soil temperature predictions for each air temperature provided over the course of a day</span>
 
 <span class="sd">    Estimates the parameters for a sinusodial function modeling the daily surface temperature.</span>
-<span class="sd">    Uses the parameter estimations to create a model of soil temperatures at different depths</span>
+<span class="sd">    Uses the parameter estimations to create a model of soil temperatures at different depths.</span>
+<span class="sd">    Predicts the soil temperatue at the given depth for each air temperature provided</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        df: DataFrame containing temperature data, must contain 5_minute_temp as defined in settings.</span>
-<span class="sd">        depth: The depth in centimeters to model the soil temperature</span>
-<span class="sd">        date: Is the date which parameters will be estimated for.</span>
-<span class="sd">        date_format: Is the format that the date variable and data use for the date.</span>
-<span class="sd">        thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]</span>
+<span class="sd">        air_temps: The soil surface air temperatures for a given day (°C).</span>
+<span class="sd">        depth: The depth to model the soil temperature (cm).</span>
+<span class="sd">        thermal_diffusivity: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s].</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A numpy array containing the predicted temperatures (°C) every 5 minutes </span>
@@ -480,108 +494,79 @@
 <span class="sd">            the given air temperatures</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Constants</span>
-    <span class="k">global</span> <span class="n">LABELS</span>
-    <span class="n">OMEGA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">DAY_SECONDS</span> <span class="c1"># Phase Frequency | Units: 1 / s</span>
+    <span class="n">phase_frequency</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">DAY_SECONDS</span> <span class="c1"># Phase Frequency | Units: 1 / s</span>
 
     <span class="c1"># Calculate Damping Depth</span>
-    <span class="n">thermal_dif</span> <span class="o">=</span> <span class="n">thermal_dif</span> <span class="o">/</span> <span class="mi">100</span> <span class="c1"># Unit Conversion: cm^2 / s</span>
-    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">thermal_dif</span> <span class="o">/</span> <span class="n">OMEGA</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="c1"># Units: cm</span>
+    <span class="n">thermal_diffusivity</span> <span class="o">=</span> <span class="n">thermal_diffusivity</span> <span class="o">/</span> <span class="mi">100</span> <span class="c1"># Unit Conversion: cm^2 / s</span>
+    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">thermal_diffusivity</span> <span class="o">/</span> <span class="n">phase_frequency</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="c1"># Units: cm</span>
 
-    <span class="c1"># Find all the entries in the dataframe with the correct date and sort by time</span>
-    <span class="n">target_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
-    <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_norm&#39;</span><span class="p">]],</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span>
-    <span class="n">daily_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">dates</span> <span class="o">==</span> <span class="n">target_date</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">])</span>
-    <span class="c1"># Raise an exception if no data for the specified date could be found</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">daily_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find data in the given dataframe for:</span><span class="se">\t</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Extract the 5-minute air temperatures and ensure all exist</span>
-    <span class="n">air_temp</span> <span class="o">=</span> <span class="n">daily_df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;5_minute_temp&#39;</span><span class="p">]]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)</span> <span class="o">!=</span> <span class="n">DAY_SECONDS</span> <span class="o">/</span> <span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected 288 5-minute temperature values for </span><span class="si">{</span><span class="n">target_date</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">measurement_offset</span> <span class="o">=</span> <span class="n">DAY_SECONDS</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span>
 
     <span class="c1"># Estimate sinusoidal parameters</span>
-    <span class="n">avg_temp</span> <span class="o">=</span> <span class="n">air_temp</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>    <span class="c1"># Units: °C</span>
-    <span class="n">thermal_amp</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">air_temp</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span> <span class="c1"># Units: °C</span>
-    <span class="n">min_time</span> <span class="o">=</span> <span class="n">daily_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">air_temp</span><span class="o">.</span><span class="n">idxmin</span><span class="p">(),</span> <span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]]</span>
-    <span class="n">timelag</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_time</span><span class="o">.</span><span class="n">hour</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">min_time</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="c1"># Units: s</span>
+    <span class="n">avg_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span>    <span class="c1"># Units: °C</span>
+    <span class="n">thermal_amp</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">air_temps</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span> <span class="c1"># Units: °C</span>
 
-    <span class="c1"># Generate predictions for every 5 minutes</span>
-    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">DAY_SECONDS</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span> <span class="c1"># Units: s</span>
+    <span class="c1"># Find TimeLag</span>
+    <span class="n">min_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span>
+    <span class="n">timelag</span> <span class="o">=</span> <span class="n">min_idx</span><span class="o">*</span><span class="n">measurement_offset</span>
+
+    <span class="c1"># Generate predictions for every air temperature provided</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">measurement_offset</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">len</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)]</span> <span class="c1"># Units: s</span>
     <span class="n">temp_predictions</span> <span class="o">=</span> <span class="n">avg_temp</span> <span class="o">+</span> \
         <span class="n">thermal_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">depth</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">)</span> <span class="o">*</span> \
-        <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">OMEGA</span> <span class="o">*</span> <span class="p">(</span><span class="n">time</span> <span class="o">-</span> <span class="n">timelag</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">depth</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">))</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase_frequency</span> <span class="o">*</span> <span class="p">(</span><span class="n">times</span> <span class="o">-</span> <span class="n">timelag</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">depth</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">temp_predictions</span></div>
 
 
-    <span class="c1"># DEBUGGING</span>
-    <span class="n">soil_temp_actual</span> <span class="o">=</span> <span class="n">daily_df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;soil_temp4&#39;</span><span class="p">]]</span>
-    <span class="c1"># DEBUGGING</span>
-
-
-    <span class="k">return</span> <span class="n">temp_predictions</span><span class="p">,</span> <span class="n">air_temp</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">soil_temp_actual</span></div>
-
-
-<div class="viewcode-block" id="model_soil_temp_at_depth_from_air_temp">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.model_soil_temp_at_depth_from_air_temp">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">model_soil_temp_at_depth_from_air_temp</span><span class="p">(</span>
-        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<div class="viewcode-block" id="model_3d_soil_temp">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.model_3d_soil_temp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">model_3d_soil_temp</span><span class="p">(</span>
+        <span class="n">air_temps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">max_depth</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">Nz</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-        <span class="n">date_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y %I:%M %p&#39;</span><span class="p">,</span>
-        <span class="n">thermal_dif</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.203</span>
+        <span class="n">interpolations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">thermal_diffusivity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.203</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Models soil temperature over a full day (in 5-minute intervals) across depth </span>
 <span class="sd">    using air temperature data to parameterize a sinusoidal model.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        df: DataFrame containing temperature data; must contain &#39;5_minute_temp&#39; and datetime.</span>
-<span class="sd">        max_depth: Maximum depth in centimeters to model the soil temperature.</span>
-<span class="sd">        date: The date (string) for which parameters will be estimated.</span>
-<span class="sd">        Nz: Number of interpolated depth points.</span>
-<span class="sd">        date_format: The format used for the date string.</span>
-<span class="sd">        thermal_dif: Thermal diffusivity [mm^2/s] from KD2 Pro instrument.</span>
+<span class="sd">        air_temps: The soil surface air temperatures for a given day (°C).</span>
+<span class="sd">        max_depth: Maximum depth to model the soil temperature (cm).</span>
+<span class="sd">        interpolations: Number of interpolated depth points.</span>
+<span class="sd">        thermal_diffusivity: Thermal diffusivity [mm^2/s] from KD2 Pro instrument.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A tuple of (time_grid, depth_grid, temp_grid), each a 2D NumPy array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Constants</span>
-    <span class="k">global</span> <span class="n">LABELS</span>
-    <span class="n">OMEGA</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">DAY_SECONDS</span> <span class="c1"># Phase Frequency | Units: 1 / s</span>
+    <span class="n">phase_frequency</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">DAY_SECONDS</span> <span class="c1"># Phase Frequency | Units: 1 / s</span>
 
     <span class="c1"># Calculate Damping Depth</span>
-    <span class="n">thermal_dif</span> <span class="o">=</span> <span class="n">thermal_dif</span> <span class="o">/</span> <span class="mi">100</span> <span class="c1"># Unit Conversion: cm^2 / s</span>
-    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">thermal_dif</span> <span class="o">/</span> <span class="n">OMEGA</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="c1"># Units: cm</span>
+    <span class="n">thermal_diffusivity</span> <span class="o">=</span> <span class="n">thermal_diffusivity</span> <span class="o">/</span> <span class="mi">100</span> <span class="c1"># Unit Conversion: cm^2 / s</span>
+    <span class="n">damp_depth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">thermal_diffusivity</span> <span class="o">/</span> <span class="n">phase_frequency</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="c1"># Units: cm</span>
 
-    <span class="c1"># Find all the entries in the dataframe with the correct date and sort by time</span>
-    <span class="n">target_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
-    <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_norm&#39;</span><span class="p">]],</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span>
-    <span class="n">daily_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">dates</span> <span class="o">==</span> <span class="n">target_date</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">])</span>
-    <span class="c1"># Raise an exception if no data for the specified date could be found</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">daily_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find data in the given dataframe for:</span><span class="se">\t</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Extract the 5-minute air temperatures and ensure all exist</span>
-    <span class="n">air_temp</span> <span class="o">=</span> <span class="n">daily_df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;5_minute_temp&#39;</span><span class="p">]]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)</span> <span class="o">!=</span> <span class="n">DAY_SECONDS</span> <span class="o">/</span> <span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected 288 5-minute temperature values for </span><span class="si">{</span><span class="n">target_date</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">measurement_offset</span> <span class="o">=</span> <span class="n">DAY_SECONDS</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span>
 
     <span class="c1"># Estimate sinusoidal parameters</span>
-    <span class="n">avg_temp</span> <span class="o">=</span> <span class="n">air_temp</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>    <span class="c1"># Units: °C</span>
-    <span class="n">thermal_amp</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">air_temp</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span> <span class="c1"># Units: °C</span>
-    <span class="n">min_time</span> <span class="o">=</span> <span class="n">daily_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">air_temp</span><span class="o">.</span><span class="n">idxmin</span><span class="p">(),</span> <span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]]</span>
-    <span class="n">timelag</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_time</span><span class="o">.</span><span class="n">hour</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">min_time</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="c1"># Units: s</span>
+    <span class="n">avg_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span>    <span class="c1"># Units: °C</span>
+    <span class="n">thermal_amp</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">air_temps</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span> <span class="c1"># Units: °C</span>
+
+    <span class="c1"># Find TimeLag</span>
+    <span class="n">min_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)</span>
+    <span class="n">timelag</span> <span class="o">=</span> <span class="n">min_idx</span><span class="o">*</span><span class="n">measurement_offset</span>
 
     <span class="c1"># Create time and depth grids</span>
-    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">DAY_SECONDS</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-    <span class="n">depths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">max_depth</span><span class="o">/</span><span class="n">Nz</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">,</span> <span class="n">Nz</span><span class="p">)</span>
-    <span class="n">time_grid</span><span class="p">,</span> <span class="n">depth_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">depths</span><span class="p">)</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">measurement_offset</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">len</span><span class="p">(</span><span class="n">air_temps</span><span class="p">)]</span> <span class="c1"># Units: s</span>
+    <span class="n">depths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">max_depth</span><span class="o">/</span><span class="n">interpolations</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">,</span> <span class="n">interpolations</span><span class="p">)</span>
+    <span class="n">time_grid</span><span class="p">,</span> <span class="n">depth_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">depths</span><span class="p">)</span>
 
     <span class="c1"># Generate predictions for the given times and depths</span>
     <span class="n">temp_grid</span> <span class="o">=</span> <span class="n">avg_temp</span> <span class="o">+</span> \
         <span class="n">thermal_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">depth_grid</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">)</span> <span class="o">*</span> \
-        <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">OMEGA</span> <span class="o">*</span> <span class="p">(</span><span class="n">time_grid</span> <span class="o">-</span> <span class="n">timelag</span><span class="p">)</span> <span class="o">-</span> <span class="n">depth_grid</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase_frequency</span> <span class="o">*</span> <span class="p">(</span><span class="n">time_grid</span> <span class="o">-</span> <span class="n">timelag</span><span class="p">)</span> <span class="o">-</span> <span class="n">depth_grid</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">depth_grid</span><span class="p">,</span> <span class="n">temp_grid</span></div>
 
@@ -608,7 +593,7 @@
 <span class="sd">        wind_speed: The average daily wind speed in meters per second</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The Dalton models predictions for evapotranspiration clipped to a minimum of zero</span>
+<span class="sd">        The Dalton models predictions for evapotranspiration clipped to a minimum of zero (mm/day)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Ensures parameter saftey</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">temp_min</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> \
@@ -616,8 +601,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All inputs must be the same length&quot;</span><span class="p">)</span>
     
     <span class="c1"># Model calulations</span>
-    <span class="n">e_sat_min</span> <span class="o">=</span> <span class="n">compute_esat</span><span class="p">(</span><span class="n">temp_min</span><span class="p">)</span>
-    <span class="n">e_sat_max</span> <span class="o">=</span> <span class="n">compute_esat</span><span class="p">(</span><span class="n">temp_max</span><span class="p">)</span>
+    <span class="n">e_sat_min</span> <span class="o">=</span> <span class="n">__compute_vapor_sat_pressure</span><span class="p">(</span><span class="n">temp_min</span><span class="p">)</span>
+    <span class="n">e_sat_max</span> <span class="o">=</span> <span class="n">__compute_vapor_sat_pressure</span><span class="p">(</span><span class="n">temp_max</span><span class="p">)</span>
     <span class="n">e_sat</span> <span class="o">=</span> <span class="p">(</span><span class="n">e_sat_min</span> <span class="o">+</span> <span class="n">e_sat_max</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">e_atm</span> <span class="o">=</span> <span class="p">(</span><span class="n">e_sat_min</span><span class="o">*</span><span class="p">(</span><span class="n">RH_max</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_sat_max</span><span class="o">*</span><span class="p">(</span><span class="n">RH_min</span><span class="o">/</span><span class="mi">100</span><span class="p">))</span><span class="o">/</span> <span class="mi">2</span>
     <span class="n">PET</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.648</span> <span class="o">+</span> <span class="mf">0.7223</span><span class="o">*</span><span class="n">wind_speed</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">e_sat</span> <span class="o">-</span> <span class="n">e_atm</span><span class="p">)</span>
@@ -656,8 +641,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All inputs must be the same length&quot;</span><span class="p">)</span>
     
     <span class="c1"># Model calulations</span>
-    <span class="n">e_sat_min</span> <span class="o">=</span> <span class="n">compute_esat</span><span class="p">(</span><span class="n">temp_min</span><span class="p">)</span>
-    <span class="n">e_sat_max</span> <span class="o">=</span> <span class="n">compute_esat</span><span class="p">(</span><span class="n">temp_max</span><span class="p">)</span>
+    <span class="n">e_sat_min</span> <span class="o">=</span> <span class="n">__compute_vapor_sat_pressure</span><span class="p">(</span><span class="n">temp_min</span><span class="p">)</span>
+    <span class="n">e_sat_max</span> <span class="o">=</span> <span class="n">__compute_vapor_sat_pressure</span><span class="p">(</span><span class="n">temp_max</span><span class="p">)</span>
     <span class="n">e_sat</span> <span class="o">=</span> <span class="p">(</span><span class="n">e_sat_min</span> <span class="o">+</span> <span class="n">e_sat_max</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">e_atm</span> <span class="o">=</span> <span class="p">(</span><span class="n">e_sat_min</span><span class="o">*</span><span class="p">(</span><span class="n">RH_max</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_sat_max</span><span class="o">*</span><span class="p">(</span><span class="n">RH_min</span><span class="o">/</span><span class="mi">100</span><span class="p">))</span><span class="o">/</span> <span class="mi">2</span>
     <span class="n">PET</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.625</span> <span class="o">+</span> <span class="mf">0.000479</span><span class="o">/</span><span class="n">wind_speed</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">e_sat</span> <span class="o">-</span> <span class="n">e_atm</span><span class="p">)</span>
@@ -730,7 +715,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All inputs must be the same length&quot;</span><span class="p">)</span>
     
     <span class="c1"># Model Calculations</span>
-    <span class="n">Ra</span> <span class="o">=</span> <span class="n">compute_Ra</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span> <span class="n">latitude</span><span class="p">)</span>
+    <span class="n">Ra</span> <span class="o">=</span> <span class="n">__compute_solar_radiation</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span> <span class="n">latitude</span><span class="p">)</span>
     <span class="n">T_avg</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_min</span> <span class="o">+</span> <span class="n">temp_max</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">PET</span> <span class="o">=</span> <span class="mf">0.0102</span> <span class="o">*</span> <span class="p">(</span><span class="n">T_avg</span><span class="o">+</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">Ra</span>
 
@@ -745,7 +730,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">hargreaves</span><span class="p">(</span>
         <span class="n">temp_min</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">temp_max</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">doy</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">doys</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -754,7 +739,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        temp_min: The minimum daily temperature (°C)</span>
 <span class="sd">        temp_max: The maximum daily temperature (°C)</span>
-<span class="sd">        doy: Day of year (0-365) where January 1st is 0 and 365</span>
+<span class="sd">        doys: Array of Day of year&#39;s (0-365) where January 1st is 0 and 365</span>
 <span class="sd">        latitude: Latitude in decimal degress. Where the northern hemisphere is </span>
 <span class="sd">            positive and the southern hemisphere is negative</span>
 <span class="sd">        </span>
@@ -766,7 +751,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All inputs must be the same length&quot;</span><span class="p">)</span>
     
     <span class="c1"># Model Calulations</span>
-    <span class="n">Ra</span> <span class="o">=</span> <span class="n">compute_Ra</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span> <span class="n">latitude</span><span class="p">)</span>
+    <span class="n">Ra</span> <span class="o">=</span> <span class="n">__compute_solar_radiation</span><span class="p">(</span><span class="n">doys</span><span class="p">,</span> <span class="n">latitude</span><span class="p">)</span>
     <span class="n">T_avg</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_min</span> <span class="o">+</span> <span class="n">temp_max</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">PET</span> <span class="o">=</span> <span class="mf">0.0023</span> <span class="o">*</span> <span class="n">Ra</span> <span class="o">*</span> <span class="p">(</span><span class="n">T_avg</span> <span class="o">+</span> <span class="mf">17.8</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">temp_max</span> <span class="o">-</span> <span class="n">temp_min</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
 
@@ -789,10 +774,11 @@
         <span class="n">doy</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">altitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">solar_rad</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">wind_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    PComputer evapotranspiration using the penman-monteith model</span>
+<span class="sd">    Computed evapotranspiration using the penman-monteith model</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        temp_min: The minimum daily temperature (°C)</span>
@@ -817,13 +803,20 @@
                                      <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">RH_max</span><span class="p">)</span> <span class="o">==</span>  <span class="nb">len</span><span class="p">(</span><span class="n">wind_speed</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speed</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All inputs must be the same length&quot;</span><span class="p">)</span>
     
+    <span class="k">if</span> <span class="n">solar_rad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">solar_rad</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp_min</span><span class="p">):</span>
+               <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All inputs must be the same length&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Calculates solar radiation</span>
+        <span class="n">solar_rad</span> <span class="o">=</span> <span class="n">__compute_solar_radiation</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span> <span class="n">latitude</span><span class="p">)</span>
+    
     <span class="n">temp_avg</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_min</span> <span class="o">+</span> <span class="n">temp_max</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">atm_pressure</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_min</span><span class="o">+</span><span class="n">p_max</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="c1"># Can be also obtained from weather station</span>
     <span class="n">Cp</span> <span class="o">=</span> <span class="mf">0.001013</span><span class="p">;</span> <span class="c1"># Approx. 0.001013 for average atmospheric conditions</span>
-    <span class="n">gamma</span> <span class="o">=</span> <span class="p">(</span><span class="n">Cp</span> <span class="o">*</span> <span class="n">atm_pressure</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">0.622</span> <span class="o">*</span> <span class="mf">2.45</span><span class="p">)</span> <span class="c1"># Approx. 0.000665</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.000665</span><span class="o">*</span> <span class="p">(</span><span class="n">Cp</span> <span class="o">*</span> <span class="n">atm_pressure</span><span class="p">)</span>
 
     <span class="c1"># Wind speed Adjustment</span>
-    <span class="n">wind_speed_2m</span> <span class="o">=</span> <span class="n">wind_speed</span> <span class="o">*</span> <span class="p">(</span><span class="mf">4.87</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mf">67.8</span> <span class="o">*</span> <span class="n">wind_height</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.42</span><span class="p">))</span>  <span class="c1"># Eq. 47, FAO-56 wind height in [m]</span>
+    <span class="n">wind_speed_at_height</span> <span class="o">=</span> <span class="n">wind_speed</span> <span class="o">*</span> <span class="p">(</span><span class="mf">4.87</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mf">67.8</span> <span class="o">*</span> <span class="n">wind_height</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.42</span><span class="p">))</span>  <span class="c1"># Eq. 47, FAO-56 wind height in [m]</span>
 
     <span class="c1"># Calculates air humidity and vapor pressure</span>
     <span class="n">delta</span> <span class="o">=</span> <span class="mi">4098</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.6108</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">17.27</span> <span class="o">*</span> <span class="n">temp_avg</span> <span class="o">/</span> <span class="p">(</span><span class="n">temp_avg</span>  <span class="o">+</span> <span class="mf">237.3</span><span class="p">)))</span>
@@ -832,9 +825,6 @@
     <span class="n">e_temp_min</span> <span class="o">=</span> <span class="mf">0.6108</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">17.27</span> <span class="o">*</span> <span class="n">temp_min</span> <span class="o">/</span> <span class="p">(</span><span class="n">temp_min</span> <span class="o">+</span> <span class="mf">237.3</span><span class="p">))</span>
     <span class="n">e_saturation</span> <span class="o">=</span> <span class="p">(</span><span class="n">e_temp_max</span> <span class="o">+</span> <span class="n">e_temp_min</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">e_actual</span> <span class="o">=</span> <span class="p">(</span><span class="n">e_temp_min</span> <span class="o">*</span> <span class="p">(</span><span class="n">RH_max</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_temp_max</span> <span class="o">*</span> <span class="p">(</span><span class="n">RH_min</span> <span class="o">/</span> <span class="mi">100</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
-
-    <span class="c1"># Calculates solar radiation</span>
-    <span class="n">solar_rad</span> <span class="o">=</span> <span class="n">compute_Ra</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span> <span class="n">latitude</span><span class="p">)</span>
 
     <span class="c1"># Clear Sky Radiation: Rso (MJ/m2/day)</span>
     <span class="n">Rso</span> <span class="o">=</span>  <span class="p">(</span><span class="mf">0.75</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="n">altitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">solar_rad</span>  <span class="c1"># Eq. 37, FAO-56</span>
@@ -845,6 +835,8 @@
     <span class="n">sigma</span>  <span class="o">=</span> <span class="mf">4.903</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">9</span>
     <span class="n">maxTempK</span> <span class="o">=</span> <span class="n">temp_max</span> <span class="o">+</span> <span class="mf">273.16</span>
     <span class="n">minTempK</span> <span class="o">=</span> <span class="n">temp_min</span> <span class="o">+</span> <span class="mf">273.16</span>
+
+
     <span class="c1"># Eq. 39, FAO-56</span>
     <span class="n">Rnl</span> <span class="o">=</span>  <span class="n">sigma</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxTempK</span><span class="o">**</span><span class="mi">4</span> <span class="o">+</span> <span class="n">minTempK</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span>
     <span class="n">Rnl</span> <span class="o">=</span> <span class="n">Rnl</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.34</span> <span class="o">-</span> <span class="mf">0.14</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">e_actual</span><span class="p">))</span>
@@ -855,9 +847,9 @@
     <span class="n">soil_heat_flux</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># Eq. 42, FAO-56 G = 0 for daily time steps  [MJ/m2/day]</span>
 
     <span class="c1"># ETo calculation</span>
-    <span class="n">PET</span> <span class="o">=</span> <span class="mf">0.408</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">*</span> <span class="p">(</span><span class="n">solar_rad</span> <span class="o">-</span> <span class="n">soil_heat_flux</span><span class="p">)</span> <span class="o">+</span> <span class="n">gamma</span>
-    <span class="n">PET</span> <span class="o">=</span> <span class="n">PET</span> <span class="o">*</span> <span class="p">(</span><span class="mi">900</span> <span class="o">/</span> <span class="p">(</span><span class="n">temp_avg</span>  <span class="o">+</span> <span class="mi">273</span><span class="p">))</span>  <span class="o">*</span> <span class="n">wind_speed_2m</span> <span class="o">*</span> <span class="p">(</span><span class="n">e_saturation</span> <span class="o">-</span> <span class="n">e_actual</span><span class="p">)</span>
-    <span class="n">PET</span> <span class="o">=</span> <span class="n">PET</span> <span class="o">/</span> <span class="p">(</span><span class="n">delta</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.34</span> <span class="o">*</span> <span class="n">wind_speed_2m</span><span class="p">))</span>
+    <span class="n">PET</span> <span class="o">=</span> <span class="mf">0.408</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">*</span> <span class="p">(</span><span class="n">Rn</span> <span class="o">-</span> <span class="n">soil_heat_flux</span><span class="p">)</span>
+    <span class="n">PET</span> <span class="o">=</span> <span class="n">PET</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="p">(</span><span class="mi">900</span> <span class="o">/</span> <span class="p">(</span><span class="n">temp_avg</span>  <span class="o">+</span> <span class="mi">273</span><span class="p">))</span>  <span class="o">*</span> <span class="n">wind_speed_at_height</span> <span class="o">*</span> <span class="p">(</span><span class="n">e_saturation</span> <span class="o">-</span> <span class="n">e_actual</span><span class="p">)</span>
+    <span class="n">PET</span> <span class="o">=</span> <span class="n">PET</span> <span class="o">/</span> <span class="p">(</span><span class="n">delta</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.34</span> <span class="o">*</span> <span class="n">wind_speed_at_height</span><span class="p">))</span>
 
 
     <span class="c1"># Ensures non-negative evapotranspiration</span>
@@ -866,175 +858,32 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">PET</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="EvapoTranspiration_to_df">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.EvapoTranspiration_to_df">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">EvapoTranspiration_to_df</span><span class="p">(</span>
-        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">temp_min</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">temp_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">RH_min</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">RH_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">wind_speed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">p_min</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">p_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">doy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">latitude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">altitude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">wind_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1.5</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Adds daily evapotranspiration and its cumulative sum to the given DataFrame </span>
-<span class="sd">    using a specified model and its required parameters.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        df: The DataFrame to add the evapotranspiration data to</span>
-<span class="sd">        model_name: Name of the model to use. Options:</span>
-<span class="sd">                [&quot;dalton&quot;, &quot;penman&quot;, &quot;romanenko&quot;, &quot;jensen_haise&quot;, &quot;hargreaves&quot;, &quot;penman_monteith&quot;]</span>
-<span class="sd">        temp_min:   The minimum daily temperature (°C)</span>
-<span class="sd">        temp_max:   The maximum daily temperature (°C)</span>
-<span class="sd">        RH_min:     The minimum daily relative humidity (range: 0.0-1.0)</span>
-<span class="sd">        RH_max:     The maximum daily relative humidity (range: 0.0-1.0)</span>
-<span class="sd">        wind_speed: The average daily wind speed in meters per second</span>
-<span class="sd">        p_min:      The minimum daily atmospheric pressure in Pa</span>
-<span class="sd">        p_max:      The maximum daily atmospheric pressure in Pa</span>
-<span class="sd">        doy:        Day of year (0-365) where January 1st is 0 and 365</span>
-<span class="sd">        latitude:   Latitude in decimal degress. Where the northern hemisphere is </span>
-<span class="sd">            positive and the southern hemisphere is negative</span>
-<span class="sd">        altitude:   Altitude of the location in meters</span>
-<span class="sd">        wind_height: Height of measurement for wind speed in meters</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s2">&quot;dalton&quot;</span><span class="p">:</span>
-        <span class="n">pet</span> <span class="o">=</span> <span class="n">dalton</span><span class="p">(</span><span class="n">temp_min</span><span class="p">,</span> <span class="n">temp_max</span><span class="p">,</span> <span class="n">RH_min</span><span class="p">,</span> <span class="n">RH_max</span><span class="p">,</span> <span class="n">wind_speed</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s2">&quot;penman&quot;</span><span class="p">:</span>
-        <span class="n">pet</span> <span class="o">=</span> <span class="n">penman</span><span class="p">(</span><span class="n">temp_min</span><span class="p">,</span> <span class="n">temp_max</span><span class="p">,</span> <span class="n">RH_min</span><span class="p">,</span> <span class="n">RH_max</span><span class="p">,</span> <span class="n">wind_speed</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s2">&quot;romanenko&quot;</span><span class="p">:</span>
-        <span class="n">pet</span> <span class="o">=</span> <span class="n">romanenko</span><span class="p">(</span><span class="n">temp_min</span><span class="p">,</span> <span class="n">temp_max</span><span class="p">,</span> <span class="n">RH_min</span><span class="p">,</span> <span class="n">RH_max</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s2">&quot;jensen_haise&quot;</span><span class="p">:</span>
-        <span class="n">pet</span> <span class="o">=</span> <span class="n">jensen_haise</span><span class="p">(</span><span class="n">temp_min</span><span class="p">,</span> <span class="n">temp_max</span><span class="p">,</span> <span class="n">doy</span><span class="p">,</span> <span class="n">latitude</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s2">&quot;hargreaves&quot;</span><span class="p">:</span>
-        <span class="n">pet</span> <span class="o">=</span> <span class="n">hargreaves</span><span class="p">(</span><span class="n">temp_min</span><span class="p">,</span> <span class="n">temp_max</span><span class="p">,</span> <span class="n">doy</span><span class="p">,</span> <span class="n">latitude</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s2">&quot;penman_monteith&quot;</span><span class="p">:</span>
-        <span class="n">pet</span> <span class="o">=</span> <span class="n">penman_monteith</span><span class="p">(</span><span class="n">temp_min</span><span class="p">,</span> <span class="n">temp_max</span><span class="p">,</span> <span class="n">RH_min</span><span class="p">,</span> <span class="n">RH_max</span><span class="p">,</span> <span class="n">p_min</span><span class="p">,</span> <span class="n">p_max</span><span class="p">,</span>
-                              <span class="n">wind_speed</span><span class="p">,</span> <span class="n">doy</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">altitude</span><span class="p">,</span> <span class="n">wind_height</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown model name &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;. Must be one of: &quot;</span>
-                         <span class="s2">&quot;[&#39;dalton&#39;, &#39;penman&#39;, &#39;romanenko&#39;, &#39;jensen_haise&#39;, &#39;hargreaves&#39;, &#39;penman_monteith&#39;].&quot;</span><span class="p">)</span>
-
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;evapotranspiration&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pet</span></div>
-
-
-
 <span class="c1"># Rain/Runoff Models</span>
 <div class="viewcode-block" id="model_runoff">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.equations.model_runoff">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">model_runoff</span><span class="p">(</span><span class="n">precip</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">75</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">model_runoff</span><span class="p">(</span><span class="n">rainfall</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">curve_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">75</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Uses Curve Number to estimate runoff from rainfall</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        precip: The daily amount of precipitation in millimeters</span>
-<span class="sd">        cn: The curve number to use in the calculation</span>
+<span class="sd">        precipitation: The daily amount of precipitation in millimeters</span>
+<span class="sd">        curve_number: The curve number to use in the calculation</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The estimated runoff</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c1"># Convert precitation to inches</span>
-    <span class="n">precip_inch</span> <span class="o">=</span> <span class="n">precip</span> <span class="o">/</span> <span class="mf">25.4</span>
+    <span class="n">rainfall</span> <span class="o">=</span> <span class="n">rainfall</span> <span class="o">/</span> <span class="mf">25.4</span> <span class="c1"># Unit Conversion | Units: In</span>
 
     <span class="c1"># Model Calulations</span>
-    <span class="n">runoff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">precip_inch</span><span class="p">)</span>
-    <span class="n">S02</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">cn</span> <span class="o">-</span> <span class="mi">10</span>
+    <span class="n">runoff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">rainfall</span><span class="p">)</span>
+    <span class="n">S02</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">curve_number</span> <span class="o">-</span> <span class="mi">10</span>
     <span class="n">S005</span> <span class="o">=</span> <span class="mf">1.33</span> <span class="o">*</span> <span class="n">S02</span><span class="o">**</span><span class="mf">1.15</span>
     <span class="n">Lambda</span> <span class="o">=</span> <span class="mf">0.05</span>
     <span class="n">Ia</span> <span class="o">=</span> <span class="n">S005</span> <span class="o">*</span> <span class="n">Lambda</span>
-    <span class="n">idx</span> <span class="o">=</span> <span class="n">precip_inch</span> <span class="o">&gt;</span> <span class="n">Ia</span>
-    <span class="n">runoff</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">precip_inch</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">Ia</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">precip_inch</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">Ia</span> <span class="o">+</span> <span class="n">S005</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">rainfall</span> <span class="o">&gt;</span> <span class="n">Ia</span>
+    <span class="n">runoff</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">rainfall</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">Ia</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">rainfall</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">Ia</span> <span class="o">+</span> <span class="n">S005</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">runoff</span> <span class="o">*</span> <span class="mf">25.4</span> <span class="c1"># Convert runoff back to millimeters</span></div>
-
-
-<div class="viewcode-block" id="rainfall_runoff_to_df">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.rainfall_runoff_to_df">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">rainfall_runoff_to_df</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">75</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Adds rainfall sum, runoff sum, and runoff to the DataFrame</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        df: The DataFrame containing the rainfall data</span>
-<span class="sd">        cn: The curve number to be used in the runoff calculation</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">LABELS</span>
-
-    <span class="c1"># Check Parameters</span>
-    <span class="k">if</span> <span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;rain&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;rain&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> was not found in the df. Please check your rain label.&quot;</span><span class="p">)</span>
-    
-    <span class="c1"># Add data to the df</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s2">&quot;rain_sum&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s2">&quot;rain&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s2">&quot;runoff&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">model_runoff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s2">&quot;rain&quot;</span><span class="p">]],</span> <span class="n">cn</span><span class="o">=</span><span class="n">cn</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s2">&quot;runoff_sum&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s2">&quot;runoff&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span></div>
-
-
-
-<span class="c1"># Fletcher&#39;s Functions</span>
-<div class="viewcode-block" id="match_weather_datetime">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.match_weather_datetime">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">match_weather_datetime</span><span class="p">(</span>
-        <span class="n">weather_dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">data_dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Matches each datetime in `data_datetime_col` to the closest datetime </span>
-<span class="sd">        in `weather_datetime_col`.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        weather_dt: The np array of actual weather date_times</span>
-<span class="sd">        data_dt:    The np array of date_times to find the closest match for</span>
-<span class="sd">    </span>
-<span class="sd">    Returns:</span>
-<span class="sd">        A tuple of (original times, matched weather times, matched indices, time differences)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">weather_dt</span><span class="p">,</span> <span class="n">data_dt</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">weather_dt</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">before</span> <span class="o">=</span> <span class="n">weather_dt</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="n">after</span> <span class="o">=</span> <span class="n">weather_dt</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">data_dt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">before</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">data_dt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">after</span><span class="p">):</span>
-                <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
-
-    <span class="n">matched_times</span> <span class="o">=</span> <span class="n">weather_dt</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
-    <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data_dt</span> <span class="o">-</span> <span class="n">matched_times</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">data_dt</span><span class="p">,</span> <span class="n">matched_times</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">diffs</span></div>
-
- 
-<div class="viewcode-block" id="get_weather_data_from_cols">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.get_weather_data_from_cols">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_weather_data_from_cols</span><span class="p">(</span>
-        <span class="n">weather_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">weather_cols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Extracts values from weather columns at given matched indices.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        weather_df:   The DataFrame containing weather data</span>
-<span class="sd">        weather_cols: The key names to be used in the dictionary</span>
-<span class="sd">        indices:      The indices in the DataFrame to be used in the dictionary</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        A dictionary of {column_name: values}.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="n">col</span><span class="p">:</span> <span class="p">[</span><span class="n">weather_df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">weather_cols</span>
-    <span class="p">}</span></div>
-
+    <span class="k">return</span> <span class="n">runoff</span> <span class="o">*</span> <span class="mf">25.4</span> <span class="c1"># Unit Conversion | Units: mm</span></div>
 
 
 <span class="c1"># Growing Degree Days</span>
@@ -1045,14 +894,14 @@
         <span class="n">temp_base</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">temp_opt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">temp_upper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">duration_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">time_duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Model how many growing degree days have passed</span>
 
 <span class="sd">    Models Growing Degree days using a minimum base temperature, an optional </span>
-<span class="sd">        optimal temperature, an optional maximum growing temperature, and </span>
-<span class="sd">        the average temperature over the recorded durations</span>
+<span class="sd">    optimal temperature, an optional maximum growing temperature, and </span>
+<span class="sd">    the average temperature over the recorded durations</span>
 <span class="sd">        </span>
 <span class="sd">    Args:</span>
 <span class="sd">        temp_avg:  The average temperature over the duration_time (°C)</span>
@@ -1060,13 +909,15 @@
 <span class="sd">        temp_opt: The optimal temperature a given crop will grow (°C), </span>
 <span class="sd">                            above this temperature growing will slow linearly</span>
 <span class="sd">        temp_upper: The maximum temperature a given crop will grow (°C)</span>
-<span class="sd">        duration_time: The number of days that each temp_avg represents</span>
+<span class="sd">        time_duration: The number of days that each temp_avg represents</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        An np.ndarray with the calculated Growing Degree Days for each daily temperature</span>
+<span class="sd">        A tuple containing two np.ndarray&#39;s</span>
+<span class="sd">        The first contains Growing Degree Days for each daily temperature</span>
+<span class="sd">        The second contains the cummulative sum of Growing Degree Days for each daily temperature</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Validate parameter input</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">duration_time</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">time_duration</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The time duration must be positive&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">temp_avg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">temp_avg</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp_avg</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You must provide temperature averages, None provided&quot;</span><span class="p">)</span>
@@ -1079,8 +930,9 @@
     
     <span class="c1"># Simply GDD calculation</span>
     <span class="k">if</span> <span class="n">temp_opt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">temp_upper</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">gdd_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_avg</span> <span class="o">-</span> <span class="n">temp_base</span><span class="p">)</span><span class="o">*</span><span class="n">duration_time</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">gdd_days</span><span class="p">)</span>
+        <span class="n">gdd_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_avg</span> <span class="o">-</span> <span class="n">temp_base</span><span class="p">)</span><span class="o">*</span><span class="n">time_duration</span>
+        <span class="n">gdd_days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">gdd_days</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gdd_days</span><span class="p">,</span> <span class="n">gdd_days</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
 
     <span class="c1"># Initialize GDD array</span>
     <span class="n">gdd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">temp_avg</span><span class="p">)</span>
@@ -1090,55 +942,21 @@
     <span class="n">above_opt</span> <span class="o">=</span> <span class="n">temp_avg</span> <span class="o">&gt;</span> <span class="n">temp_opt</span> 
     
     <span class="c1"># Compute GDD where temp &lt; temp_opt</span>
-    <span class="n">gdd</span><span class="p">[</span><span class="n">below_opt</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">temp_avg</span><span class="p">[</span><span class="n">below_opt</span><span class="p">]</span> <span class="o">-</span> <span class="n">temp_base</span><span class="p">)</span> <span class="o">*</span> <span class="n">duration_time</span><span class="p">)</span>
+    <span class="n">gdd</span><span class="p">[</span><span class="n">below_opt</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">temp_avg</span><span class="p">[</span><span class="n">below_opt</span><span class="p">]</span> <span class="o">-</span> <span class="n">temp_base</span><span class="p">)</span> <span class="o">*</span> <span class="n">time_duration</span><span class="p">)</span>
     
     <span class="c1"># Compute GDD where temp &gt;= temp_opt</span>
-    <span class="n">gdd_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_opt</span> <span class="o">-</span> <span class="n">temp_base</span><span class="p">)</span> <span class="o">*</span> <span class="n">duration_time</span>
+    <span class="n">gdd_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_opt</span> <span class="o">-</span> <span class="n">temp_base</span><span class="p">)</span> <span class="o">*</span> <span class="n">time_duration</span>
     <span class="n">gdd</span><span class="p">[</span><span class="n">above_opt</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> 
         <span class="n">gdd_max</span> <span class="o">*</span> <span class="p">(</span><span class="n">temp_upper</span> <span class="o">-</span> <span class="n">temp_avg</span><span class="p">[</span><span class="n">above_opt</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">temp_upper</span> <span class="o">-</span> <span class="n">temp_opt</span><span class="p">),)</span>
     
-    <span class="k">return</span> <span class="n">gdd</span></div>
-
-
-<div class="viewcode-block" id="gdd_to_df">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.gdd_to_df">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">gdd_to_df</span><span class="p">(</span>
-        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">temp_avg</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">temp_base</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">temp_opt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">temp_upper</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">duration_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Models Growing Degree days using a minimum base temperature, an optional </span>
-<span class="sd">        optimal temperature, an optional maximum growing temperature, and </span>
-<span class="sd">        the average temperature over the recorded durations.</span>
-<span class="sd">        Adds the Growing Degree days and cummulative GDD to the given DataFrame</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        df: The DataFrame to add the GDD data to</span>
-<span class="sd">        temp_avg:  The average temperature over the duration_time (°C)</span>
-<span class="sd">        temp_base: The minimum temperature a given crop will grow at (°C)</span>
-<span class="sd">        temp_optimal: The optimal temperature a given crop will grow (°C), </span>
-<span class="sd">                            above this temperature growing will slow linearly</span>
-<span class="sd">        temp_upper: The maximum temperature a given crop will grow (°C)</span>
-<span class="sd">        duration_time: The number of days that each temp_avg represents</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">LABELS</span>
-    
-    <span class="c1"># Calculate gdd</span>
-    <span class="n">gdd</span> <span class="o">=</span> <span class="n">model_gdd</span><span class="p">(</span><span class="n">temp_avg</span><span class="p">,</span> <span class="n">temp_base</span><span class="p">,</span> <span class="n">temp_opt</span><span class="p">,</span> <span class="n">temp_upper</span><span class="p">,</span> <span class="n">duration_time</span><span class="p">)</span>
-
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;gdd&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">gdd</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;gdd_sum&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">gdd</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">gdd</span><span class="p">,</span> <span class="n">gdd</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span></div>
 
 
 
 <span class="c1"># Photo Period Tools</span>
-<div class="viewcode-block" id="photoperiod_at_latitude">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.photoperiod_at_latitude">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">photoperiod_at_latitude</span><span class="p">(</span><span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">doy</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<div class="viewcode-block" id="photoperiod_at_lat">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.photoperiod_at_lat">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">photoperiod_at_lat</span><span class="p">(</span><span class="n">lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">doy</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.</span>
 
@@ -1150,62 +968,60 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Photoperiod, daylight hours, at the given latitude for the given days.</span>
 <span class="sd">        The angle of the sum below the horizon.</span>
-<span class="sd">        The zenithal distance of the sun in degrees</span>
-<span class="sd">        The mean anomaly of the sun</span>
-<span class="sd">        The declination of the sun in degrees</span>
-<span class="sd">        Lambda</span>
-<span class="sd">        Delta</span>
+<span class="sd">        The zenithal distance of the sun in degrees.</span>
+<span class="sd">        The mean anomaly of the sun.</span>
+<span class="sd">        Lambda.</span>
+<span class="sd">        Delta.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Convert latitude to radians</span>
-    <span class="n">latitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">latitude</span><span class="p">)</span>
+    <span class="n">lat_radians</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
     
     <span class="c1"># Angle of the sun below the horizon. Civil twilight is -4.76 degrees.</span>
     <span class="n">light_intensity</span> <span class="o">=</span> <span class="mf">2.206</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">3</span>
-    <span class="n">B</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.76</span> <span class="o">-</span> <span class="mf">1.03</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">light_intensity</span><span class="p">)</span> <span class="c1"># Eq. [5].</span>
+    <span class="n">sun_angle</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.76</span> <span class="o">-</span> <span class="mf">1.03</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">light_intensity</span><span class="p">)</span> <span class="c1"># Eq. [5].</span>
 
     <span class="c1"># Zenithal distance of the sun in degrees</span>
-    <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">90</span> <span class="o">+</span> <span class="n">B</span><span class="p">)</span> <span class="c1"># Eq. [6]. Value at sunrise and sunset.</span>
+    <span class="n">sun_zenithal_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">90</span> <span class="o">+</span> <span class="n">sun_angle</span><span class="p">)</span> <span class="c1"># Eq. [6]. Value at sunrise and sunset.</span>
     
     <span class="c1"># Mean anomaly of the sun. It is a convenient uniform measure of </span>
     <span class="c1"># how far around its orbit a body has progressed since pericenter.</span>
-    <span class="n">M</span> <span class="o">=</span> <span class="mf">0.9856</span><span class="o">*</span><span class="n">doy</span> <span class="o">-</span> <span class="mf">3.251</span> <span class="c1"># Eq. [4].</span>
+    <span class="n">sun_mean_anomaly</span> <span class="o">=</span> <span class="mf">0.9856</span><span class="o">*</span><span class="n">doy</span> <span class="o">-</span> <span class="mf">3.251</span> <span class="c1"># Eq. [4].</span>
     
     <span class="c1"># Declination of sun in degrees</span>
-    <span class="n">Lambda</span> <span class="o">=</span> <span class="n">M</span> <span class="o">+</span> <span class="mf">1.916</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">M</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.020</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">M</span><span class="p">))</span> <span class="o">+</span> <span class="mf">282.565</span> <span class="c1"># Eq. [3]. Lambda</span>
+    <span class="n">sun_declenation</span> <span class="o">=</span> <span class="n">sun_mean_anomaly</span> <span class="o">+</span> <span class="mf">1.916</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">sun_mean_anomaly</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.020</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">sun_mean_anomaly</span><span class="p">))</span> <span class="o">+</span> <span class="mf">282.565</span> <span class="c1"># Eq. [3]. Lambda</span>
     <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mf">23.44</span><span class="p">))</span> <span class="c1"># 23.44 degrees is the orbital plane of Earth around the Sun</span>
-    <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">Lambda</span><span class="p">)))</span> <span class="c1"># Eq. [2].</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">sun_declenation</span><span class="p">)))</span> <span class="c1"># Eq. [2].</span>
 
     <span class="c1"># Calculate daylength in hours, defining sec(x) = 1/cos(x)</span>
-    <span class="n">P</span> <span class="o">=</span> <span class="mi">2</span><span class="o">/</span><span class="mi">15</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">latitude</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">latitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="c1"># Eq. [1].</span>
+    <span class="n">day_length</span> <span class="o">=</span> <span class="mi">2</span><span class="o">/</span><span class="mi">15</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">sun_zenithal_dist</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat_radians</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">lat_radians</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="c1"># Eq. [1].</span>
 
-    <span class="k">return</span> <span class="n">P</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">Lambda</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">day_length</span><span class="p">,</span> <span class="n">sun_angle</span><span class="p">,</span> <span class="n">sun_zenithal_dist</span><span class="p">,</span> <span class="n">sun_mean_anomaly</span><span class="p">,</span> <span class="n">sun_declenation</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span></div>
 
     
 <div class="viewcode-block" id="photoperiod_on_day">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.equations.photoperiod_on_day">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">photoperiod_on_day</span><span class="p">(</span><span class="n">latitude</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">doys</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">photoperiod_on_day</span><span class="p">(</span><span class="n">lat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">doys</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes photoperiod for a given near polar regions.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        latitude: Latitude in decimal degress. Where the northern hemisphere is </span>
-<span class="sd">            positive and the southern hemisphere is negative</span>
-<span class="sd">        doys: The day of year (0-365) where January 1st is 0 and 365 to perform the calculation</span>
+<span class="sd">        lat: Latitude in decimal degress. Where the northern hemisphere is positive and the southern hemisphere is negative.</span>
+<span class="sd">        doys: The day of year (0-365) where January 1st is 0 and 365 to perform the calculation.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Photoperiod, daylight hours, for the given latitudes on the given day.</span>
 <span class="sd">        The angle of the sum below the horizon.</span>
-<span class="sd">        The zenithal distance of the sun in degrees</span>
-<span class="sd">        The mean anomaly of the sun</span>
-<span class="sd">        The declination of the sun in degrees</span>
-<span class="sd">        Lambda from the equation</span>
-<span class="sd">        Delta from the equation</span>
+<span class="sd">        The zenithal distance of the sun in degrees.</span>
+<span class="sd">        The mean anomaly of the sun.</span>
+<span class="sd">        The declination of the sun in degrees.</span>
+<span class="sd">        Lambda from the equation.</span>
+<span class="sd">        Delta from the equation.</span>
 <span class="sd">    </span>
 <span class="sd">    References:</span>
 <span class="sd">        Keisling, T.C., 1982. Calculation of the Length of Day 1. Agronomy Journal, 74(4), pp.758-759.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Convert latitude to radians and convert shapes</span>
-    <span class="n">latitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">latitude</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># shape (N, 1)</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># shape (N, 1)</span>
     <span class="n">doys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">doys</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
     
     <span class="c1"># Angle of the sun below the horizon. Civil twilight is -4.76 degrees.</span>
@@ -1225,7 +1041,7 @@
     <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">C</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">Lambda</span><span class="p">)))</span> <span class="c1"># Eq. [2].</span>
 
     <span class="c1"># Calculate daylength in hours, defining sec(x) = 1/cos(x)</span>
-    <span class="n">P</span> <span class="o">=</span> <span class="mi">2</span><span class="o">/</span><span class="mi">15</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">latitude</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">latitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="c1"># Eq. [1].</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="mi">2</span><span class="o">/</span><span class="mi">15</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="c1"># Eq. [1].</span>
 
     <span class="k">return</span> <span class="n">P</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">Lambda</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span></div>
 
@@ -1235,75 +1051,71 @@
 <div class="viewcode-block" id="hydraulic_conductivity">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.equations.hydraulic_conductivity">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">hydraulic_conductivity</span><span class="p">(</span>
-        <span class="n">k_s</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">psi_e</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">theta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">theta_s</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">sat_hydraulic_conductivity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">air_entry_water_potential</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">volumetric_water_content</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">sat_water_content</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Estimates the hydraulic conductivity of soil</span>
+<span class="sd">    Estimates the hydraulic conductivity of soil.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        k_s: The saturated conductivity of the soil  (kg * s / m^3)</span>
-<span class="sd">        psi_e: The air entry water potential of the soil  (J / kg)</span>
-<span class="sd">        theta: Is the volumetric water content of the soil (m^3 / m^3)</span>
-<span class="sd">        theta_s: Is the saturation water content of the soil (m^3 / m^3)</span>
-<span class="sd">        b: Is the exponent of moisture release parameter</span>
+<span class="sd">        sat_hydraulic_conductivity: The saturated conductivity of the soil  (kg * s / m^3).</span>
+<span class="sd">        air_entry_water_potential: The air entry water potential of the soil  (J / kg).</span>
+<span class="sd">        volumetric_water_content: Is the volumetric water content of the soil (m^3 / m^3).</span>
+<span class="sd">        sat_water_content: Is the saturation water content of the soil (m^3 / m^3).</span>
+<span class="sd">        b: Is the exponent of moisture release.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The calculated hydraulic conductivity of the soil given the parameters ()</span>
+<span class="sd">        The calculated hydraulic conductivity of the soil given the parameters ().</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">psi_m</span> <span class="o">=</span> <span class="n">psi_e</span><span class="o">*</span> <span class="p">(</span><span class="n">theta</span> <span class="o">/</span> <span class="n">theta_s</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">wetting_front_water_potential</span> <span class="o">=</span> <span class="n">air_entry_water_potential</span><span class="o">*</span> <span class="p">(</span><span class="n">volumetric_water_content</span> <span class="o">/</span> <span class="n">sat_water_content</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">)</span>
 
-    <span class="n">k_psi_m</span> <span class="o">=</span> <span class="n">k_s</span> <span class="o">*</span> <span class="p">(</span><span class="n">psi_e</span> <span class="o">/</span> <span class="n">psi_m</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">/</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">hydraulic_conductivity</span> <span class="o">=</span> <span class="n">sat_hydraulic_conductivity</span> <span class="o">*</span> <span class="p">(</span><span class="n">air_entry_water_potential</span> <span class="o">/</span> <span class="n">wetting_front_water_potential</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">/</span><span class="n">b</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">k_psi_m</span></div>
+    <span class="k">return</span> <span class="n">hydraulic_conductivity</span></div>
 
 
-<div class="viewcode-block" id="cummulative_water_infultration">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.cummulative_water_infultration">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">cummulative_water_infultration</span><span class="p">(</span>
-        <span class="n">delta_theta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">K_avg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">psi_mi</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">psi_mf</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">Nz</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">100</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="cummulative_water_infiltration">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.equations.cummulative_water_infiltration">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cummulative_water_infiltration</span><span class="p">(</span>
+        <span class="n">water_vol_fraction</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">avg_sat_hydraulic_conductivity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">infultration_water_potential</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">wetting_front_water_potential</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">max_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">interpolations</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">100</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the cummulative vertical water infultration.</span>
 <span class="sd">    </span>
 <span class="sd">    Calculates the cummulative vertical water infultration for the given soil parameters.</span>
-<span class="sd">        Calculations are made for equally spaced times from [time/Nz to time]</span>
+<span class="sd">    Calculations are made for equally spaced times from [0 to max_time].</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        delta_theta: The Volume Fraction of water</span>
-<span class="sd">        K_avg: The average hydraulic conductivity of the wet soil (kg * s /m^3)</span>
-<span class="sd">        psi_mi: The infultration boudary&#39;s water potential (J / kg)</span>
-<span class="sd">        psi_mf: The wetting front&#39;s water potentail (J / kg)</span>
-<span class="sd">        time: The length of time to calcute the cummulative water infultration (s)</span>
-<span class="sd">        Nz: The number of interpolated times to calculate</span>
-
-<span class="sd">    </span>
+<span class="sd">        water_vol_fraction: The Volume Fraction of water.</span>
+<span class="sd">        avg_sat_hydraulic_conductivity: The average hydraulic conductivity of the wet soil (kg * s /m^3).</span>
+<span class="sd">        infultration_water_potential: The infultration boudary&#39;s water potential (J / kg).</span>
+<span class="sd">        wetting_front_water_potential: The wetting front&#39;s water potential (J / kg).</span>
+<span class="sd">        max_time: The length of time to calcute the cummulative water infultration (s).</span>
+<span class="sd">        interpolations: The number of interpolated times to calculate.</span>
+<span class="sd">  </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        A numpy array of length Nz representing the cummulative vertical water</span>
-<span class="sd">            infultration over time. Where the first value represents the </span>
-<span class="sd">            infultraiton after zero time, the second value represents the</span>
-<span class="sd">            infultration after time/Nz time, and the last vaule represents the</span>
-<span class="sd">            infultration after time.</span>
+<span class="sd">        A numpy array of length &#39;interpolations&#39; representing the cummulative vertical water infultration over equal time segments.</span>
+<span class="sd">        Where the first value represents the infultration after max_time/interpolations time, and the last vaule represents the infultration after max_time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Define Constants</span>
     <span class="n">WATER_DENSITY</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># Units: Kg / m^3</span>
     <span class="n">LITTLE_G</span> <span class="o">=</span> <span class="mf">9.80665</span> <span class="c1"># Units: m / s^2</span>
 
-    <span class="k">if</span> <span class="n">delta_theta</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">delta_theta</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The volume Fraction of water must be between [0,1], but </span><span class="si">{</span><span class="n">delta_theta</span><span class="si">}</span><span class="s2"> was provided&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">water_vol_fraction</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">water_vol_fraction</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The volume Fraction of water must be between [0,1], but </span><span class="si">{</span><span class="n">water_vol_fraction</span><span class="si">}</span><span class="s2"> was provided&quot;</span><span class="p">)</span>
 
     <span class="c1"># Calculate water infultration at each of the time</span>
-    <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">Nz</span><span class="p">)</span>
-    <span class="n">water_inful</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">WATER_DENSITY</span> <span class="o">*</span> <span class="n">delta_theta</span> <span class="o">*</span> <span class="n">K_avg</span> <span class="o">*</span> <span class="p">(</span><span class="n">psi_mi</span> <span class="o">-</span> <span class="n">psi_mf</span><span class="p">)</span> <span class="o">*</span> <span class="n">times</span>
-    <span class="n">water_inful</span> <span class="o">=</span>  <span class="n">water_inful</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">LITTLE_G</span> <span class="o">*</span> <span class="n">K_avg</span> <span class="o">*</span> <span class="n">times</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">max_time</span><span class="o">/</span><span class="n">interpolations</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="n">interpolations</span><span class="p">)</span>
+    <span class="n">water_inful</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">WATER_DENSITY</span> <span class="o">*</span> <span class="n">water_vol_fraction</span> <span class="o">*</span> <span class="n">avg_sat_hydraulic_conductivity</span> <span class="o">*</span> <span class="p">(</span><span class="n">infultration_water_potential</span> <span class="o">-</span> <span class="n">wetting_front_water_potential</span><span class="p">)</span> <span class="o">*</span> <span class="n">times</span>
+    <span class="n">water_inful</span> <span class="o">=</span>  <span class="n">water_inful</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">LITTLE_G</span> <span class="o">*</span> <span class="n">avg_sat_hydraulic_conductivity</span> <span class="o">*</span> <span class="n">times</span>
 
     <span class="k">return</span> <span class="n">water_inful</span></div>
 
@@ -1342,9 +1154,9 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=cd7bf820"></script>
+</div><script src="../../_static/documentation_options.js?v=d31d1d1e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>
