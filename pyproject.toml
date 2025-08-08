@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agroecometrics"
-version = "0.1.0b"
+version = "0.1.0b1"
 description = "Agricultural ecology metrics and visualization tools."
 readme = "README.md"
 requires-python = ">=3.7"

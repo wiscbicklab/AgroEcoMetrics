@@ -18,42 +18,34 @@ It provides:
 
 ### `agroecometrics.data`
 
-Provides utilities for loading, cleaning, interpolating, and saving agricultural datasets. Includes functions to:
+Provides utilities for loading, cleaning, interpolating, manipulating, and saving agricultural datasets. Includes functions to:
 
 - Check CSV file validity
 - Load and filter data by date range
 - Interpolate missing data
 - Save processed DataFrames
+- Match date times between numpy arrays
+- Get a pandas DataFrame as a dictionary
 
 ### `agroecometrics.equations`
 
 Contains models and equations for ecological and agricultural analysis, including:
 
+- **TEMPERATURE MODELS**: Soil and Air Temperature Prediction Models.
 - **Evapotranspiration Models**: Dalton, Penman, Hargreaves, etc.
-- **Solar Radiation Calculations**: Compute extraterrestrial radiation (`Ra`)
-- **Vapor Pressure Calculations**: Estimate saturation vapor pressure (`esat`)
-- **Water Movement Models**: Infiltration and hydraulic conductivity
 - **Crop Models**: Calculate Growing Degree Days (GDD)
+- **Photoperiod Models**: Photoperiod Predictions.
+- **Water Movement Models**: Infiltration and hydraulic conductivity
 
 ### `agroecometrics.visualizations`
 
 Provides methods for creating plots from the calulations made in equations.
 
-- Rainfall and Runoff plot
 - Air Temperature plots
-- Soil Temperature plots and 3d mesh graphs
-- Photoperiod Prediction plots
-
-### `agroecometrics.settings`
-
-Used to have consistent references to data within the dataframe.
-The example below shows how to print the current labels and to change labels
-
-```python
-data_labels = AEM.settings.get_labels()
-print(data_labels)
-AEM.settings.set_labels({'temp_avg': 'Temperature', 'date_time': 'Date'})
-```
+- Soil temperature plots and 3d mesh graphs
+- Rainfall and runoff plot
+- Growing degree day plots
+- Photoperiod prediction plots
 
 ## Getting Started
 
@@ -73,19 +65,16 @@ from agroecometrics as AEM
 import pandas as pd
 
 # Load your data
-file_path = Path("your_weather_data.csv")
-df = AEM.data.load_data(file_path)
+data_path = Path("**your_weather_data.csv**")
+image_path = Path("**your_saved_plot.png**")
+df = AEM.data.load_data_csv(data_path, "**date_time_col_name**", start_date='2024-01-01', end_date='2024-12-31')
 
 # Create a Graph of air temperature on a particular day
-air_temp_pred = AEM.equations.model_air_temp(df)
-AEM.visualizations.plot_air_temp(df, air_temp_pred, Path("your_saved_plot.png"))
-
-# Add Growing Degree Days (GDD) to your dataset
-gdd_to_df(df, temp_avg=df["TempAvg"].values, temp_base=10)
-
-# Save your CSV file with new data
-AEM.data.save_data(df, Path('your_updated_data.csv'))
+date_times = df["**date_time_col_name**"]
+avg_air_temp = df['**avg_air_temp_col_name**']
+air_temp_pred = AEM.equations.model_air_temp(avg_air_temp)
+AEM.visualizations.plot_air_temp(avg_air_temp, air_temp_pred, date_times, image_path)
 ```
 
-This script loads weather data, computes growing degree days, and adds the results to your DataFrame.
+This script loads weather data filtered to only 2024, creates an air temperature models from the data, and saves a plot of the predicted temperatures from the model against the actual temperatures.
 
