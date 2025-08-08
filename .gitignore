@@ -1,5 +1,7 @@
 # Ignore private files
+.vscode/
 private/
+Scripts/
 
 # Testing images
 Tests/Images/
@@ -10,10 +12,16 @@ __pycache__/
 *.py[cod]
 
 # Build artifacts
+build/
 dist/
 *.egg-info/
 *.egg
-.buildinfo
-.buildinfo.bak
+source/
+docs/
+
+# Ignore Tests for the Paper
+Tests/Paper/
+
+
 
 

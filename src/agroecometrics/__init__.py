@@ -1,1 +1,1 @@
-from . import equations, visualizations, settings, data
+from . import equations, visualizations, data
