@@ -36,7 +36,7 @@ def __check_png_filename(file_path: Path):
         raise FileNotFoundError(f"The directory '{file_path.parent}' does not exist.")
     return True
 
-def save_plot(file_path: Path) -> Path:
+def __save_plot(file_path: Path) -> Path:
     """
     Prepares plot to be saved and saves it.
 
@@ -101,7 +101,7 @@ def plot_air_temp(
     plt.ylabel("Air temperature (Celsius)")
     plt.xlabel("Date")
     
-    return save_plot(file_path)
+    return __save_plot(file_path)
 
 
 ####    SOIL TEMPERATURE PLOTS    ####
@@ -135,11 +135,11 @@ def plot_yearly_soil_temp(
     plt.ylabel("Surface Soil Temperature (Celsius)")
     plt.xlabel("Day of Year")
    
-    return save_plot(file_path)
+    return __save_plot(file_path)
 
-def plot_day_soil_temp(
+def plot_daily_soil_temp(
         soil_temps: np.ndarray,
-        depths: int,
+        soil_depths: int,
         file_path: Path,
     ) -> Path:
     """
@@ -163,16 +163,16 @@ def plot_day_soil_temp(
 
     # Create Plot
     plt.figure()
-    plt.plot(depths, soil_temps)
+    plt.plot(soil_depths, soil_temps)
     plt.ylabel("Soil temperature (Celsius)")
     plt.xlabel("Soil Depth (Centimeters)")
     
-    return save_plot(file_path)
+    return __save_plot(file_path)
 
-def plot_3d_soil_temp(
+def plot_yearly_3d_soil_temp(
         doy_grid: np.ndarray,
-        z_grid: np.ndarray, 
-        t_grid: np.ndarray,
+        depth_grid: np.ndarray, 
+        temp_grid: np.ndarray,
         file_path: Path
     ) -> Path:
     """
@@ -201,9 +201,9 @@ def plot_3d_soil_temp(
     # Create Plot
     fig = plt.figure(figsize=(10, 6), dpi=80, constrained_layout=True) # 10 inch by 6 inch dpi = dots per inch
     ax = fig.add_subplot(111, projection="3d")
-    surf = ax.plot_surface(doy_grid, z_grid, t_grid, cmap="viridis", antialiased=False)
+    surf = ax.plot_surface(doy_grid, depth_grid, temp_grid, cmap="viridis", antialiased=False)
     fig.colorbar(surf, shrink=0.5, aspect=20)
-    frame = surf = ax.plot_wireframe(doy_grid, z_grid, t_grid, linewidth=0.5, color="k", alpha=0.5)
+    frame = surf = ax.plot_wireframe(doy_grid, depth_grid, temp_grid, linewidth=0.5, color="k", alpha=0.5)
 
     # Label x,y, and z axis
     ax.set_xlabel("Day of the year")
@@ -213,14 +213,14 @@ def plot_3d_soil_temp(
     # Set position of the 3D plot
     ax.view_init(elev=30, azim=35)
 
-    return save_plot(file_path)
+    return __save_plot(file_path)
 
-def plot_daily_soil_temp(
+def plot_soil_temp_predictions(
         air_temp: np.ndarray,
         pred_temp: np.ndarray,
-        depth: int,
+        depth: float,
         file_path: Path,
-        soil_temp: Optional[np.ndarray] = None
+        soil_temp: Optional[np.ndarray] = None,
     ) -> Path:
     """
     Creates a plot of air temperature and the predicted soil temperature on a particular date
@@ -257,16 +257,16 @@ def plot_daily_soil_temp(
 
     # Add Optional actual soil temperature
     if soil_temp is not None:
-        plt.scatter(time, soil_temp, s=5, color="blue", label="Soil Temp 4in")
+        plt.scatter(time, soil_temp, s=5, color="blue", label="Soil Temp")
 
     # Set labels
     plt.ylabel("Temperature  (Celsius)")
     plt.xlabel("Time (Hours)")
     plt.xticks(ticks=[0, 6, 12, 18, 24], labels=["12 AM", "6 AM", "12 PM", "6 PM", "12 AM"])
 
-    return save_plot(file_path)
+    return __save_plot(file_path)
 
-def plot_3d_daily_soil_temp(
+def plot_3d_soil_temp_predictions(
         time_grid: np.ndarray,
         depth_grid: np.ndarray,
         temp_grid: np.ndarray,
@@ -315,41 +315,7 @@ def plot_3d_daily_soil_temp(
     ax.view_init(elev=30, azim=35)
 
     # Save and return path
-    return save_plot(file_path)
-
-
-####    RAILFALL PLOTS    ####
-
-def plot_rainfall(
-        rainfall: np.ndarray,
-        runnoff: np.ndarray,
-        date_times: np.ndarray,
-        file_path: Path
-    ) -> Path:
-    """
-    Creates a plot of rainfall and runoff over time.
-
-    Args:
-        df: DataFrame with cumulative rainfall and runoff
-        file_path: A Path object representing the output file path.
-
-    Returns: 
-        The filename where the plot was saved
-
-    Raises:
-        TypeError: If file_path is not a Path object.
-        ValueError: If the file extension is not '.png' or the rainfall, runnoff, and date_times parameters are not the same length
-        FileNotFoundError: If the parent directory does not exist.
-    """
-    __check_png_filename(file_path)
-
-    # Create plot with rain and runoff data
-    plt.figure(figsize=(6, 4))
-    plt.plot(date_times, rainfall, color="navy", label="Rainfall")
-    plt.plot(date_times, runnoff, color="tomato", label="Runoff")
-    plt.ylabel("Rainfall or Runoff (mm)")
-
-    return save_plot(file_path)
+    return __save_plot(file_path)
 
 
 ####    EVAPOTRANSPIRATION PLOTS    ####
@@ -393,7 +359,42 @@ def plot_evapo_data(
     plt.ylabel("Evapotranspiration (mm/day)")
     plt.xlabel("Date")
     
-    return save_plot(file_path)
+    return __save_plot(file_path)
+
+
+####    RAILFALL PLOTS    ####
+
+def plot_rainfall(
+        rainfall: np.ndarray,
+        runoff: np.ndarray,
+        date_times: np.ndarray,
+        file_path: Path
+    ) -> Path:
+    """
+    Creates a plot of rainfall and runoff over time.
+
+    Args:
+        df: DataFrame with cumulative rainfall and runoff
+        file_path: A Path object representing the output file path.
+
+    Returns: 
+        The filename where the plot was saved
+
+    Raises:
+        TypeError: If file_path is not a Path object.
+        ValueError: If the file extension is not '.png' or the rainfall, runnoff, and date_times parameters are not the same length
+        FileNotFoundError: If the parent directory does not exist.
+    """
+    __check_png_filename(file_path)
+
+    # Create plot with rain and runoff data
+    plt.figure(figsize=(6, 4))
+    plt.plot(date_times, rainfall, color="blue", label="Rainfall")
+    plt.plot(date_times, runoff, color="red", label="Runoff")
+    plt.ylabel("Rainfall or Runoff (mm)")
+
+    return __save_plot(file_path)
+
 
 ####    GROWING DEGREE DAYS PLOTS    ####
 
@@ -426,7 +427,7 @@ def plot_gdd(
     plt.xlabel("Date")
     plt.ylabel(f'Growing degree days {chr(176)}C-d)')
 
-    return save_plot(file_path)
+    return __save_plot(file_path)
     
 def plot_gdd_sum(
         gdd_sum: np.ndarray,
@@ -457,17 +458,18 @@ def plot_gdd_sum(
     plt.xlabel("Date")
     plt.ylabel(f'Growing degree days sum {chr(176)}C-d)')
 
-    return save_plot(file_path)
+    return __save_plot(file_path)
     
+
 ####    PHOTOPERIOD PLOTS    ####
 
-def plot_yearly_photoperiod(latitude: float, file_path: Path):
+def plot_yearly_photoperiod(lat: float, file_path: Path):
     """
-    Creates a plot of the photoperiod at a specified latitude over a year's time
+    Creates a plot of the photoperiod at a specified latitude over a year's time. Not accurate near polar regions.
 
     Args:
-        latitude: Latitude in decimal degress. Where the northern hemisphere is 
-            positive and the southern hemisphere is negative
+        latitude: Latitude in decimal degress. Where the northern hemisphere is .
+            positive and the southern hemisphere is negative.
         file_path: A Path object representing the output file path.
 
     Returns:
@@ -484,16 +486,16 @@ def plot_yearly_photoperiod(latitude: float, file_path: Path):
     # Set up plot with Title and axes
     doy = np.arange(0,366)
     plt.figure(figsize=(6,4))
-    plt.title('Latitude:' + str(latitude))
+    plt.title('Latitude:' + str(lat))
     plt.xlabel('Day of the year', size=14)
     plt.ylabel('Photoperiod (hours per day)', size=14)
 
     # Calulate photoperiods and adds them to the plot
-    photoperiods, __, __, __, __, __ = equations.photoperiod_at_lat(latitude, doy)
+    photoperiods, __, __, __, __, __ = equations.photoperiod_at_lat(lat, doy)
 
     plt.plot(doy, photoperiods, color='k')
 
-    return save_plot(file_path)
+    return __save_plot(file_path)
 
 def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
     """
@@ -527,7 +529,7 @@ def plot_daily_photoperiod(doys: np.ndarray, file_path: Path):
         photoperiod, *_ = equations.photoperiod_on_day(latitudes, doy)
         plt.plot(latitudes, photoperiod, label=f'DOY {doy}')
     
-    return save_plot(file_path)
+    return __save_plot(file_path)
 
 
 

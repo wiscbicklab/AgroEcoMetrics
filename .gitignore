@@ -4,6 +4,7 @@ private/
 
 # Testing images
 Tests/Images/
+Tests/Data/
 
 # Python bytecode and cache
 __pycache__/

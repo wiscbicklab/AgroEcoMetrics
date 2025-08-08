@@ -112,14 +112,14 @@ def soil_temp_tests(file_path: Path):
         True if the tests ran sucessfully and False otherwise
     """
     try:
-        T_depth = AEM.equations.soil_temp_at_depth(10)
+        T_depth = AEM.equations.yearly_soil_temp(10)
         AEM.visualizations.plot_yearly_soil_temp(T_depth, file_path.joinpath("soil_temp.png"))
 
-        T_day, depths = AEM.equations.soil_temp_on_day(10, 500)
-        AEM.visualizations.plot_day_soil_temp(T_day, depths, file_path.joinpath("day150_temp.png"))
+        T_day, depths = AEM.equations.daily_soil_temp(10, 500)
+        AEM.visualizations.plot_daily_soil_temp(T_day, depths, file_path.joinpath("day150_temp.png"))
 
-        doy_grid, z_grid, t_grid = AEM.equations.yearly_soil_temp_at_depth(500)
-        AEM.visualizations.plot_3d_soil_temp(doy_grid, z_grid, t_grid, file_path.joinpath("soil_temp_3d.png"))
+        doy_grid, z_grid, t_grid = AEM.equations.yearly_3d_soil_temp(500)
+        AEM.visualizations.plot_yearly_3d_soil_temp(doy_grid, z_grid, t_grid, file_path.joinpath("soil_temp_3d.png"))
         return True
     except Exception as e:
         print("ERROR:", e)
@@ -194,11 +194,11 @@ def air_to_soil_temp_test(df: pd.DataFrame, file_path: Path):
     global LABELS 
     try:
         for i in range(10, 31):
-            temp_predictions, air_temp, soil_temp = AEM.equations.model_soil_temp_from_air_temp(df, 10, f"07/{i}/2024 12:00 AM")
-            AEM.visualizations.plot_daily_soil_temp(air_temp, temp_predictions, 10, file_path.joinpath(f"July_Soil_Predictions/July_{i}_soil_temp_predictions.png"), soil_temp)
+            temp_predictions, air_temp, soil_temp = AEM.equations.model_soil_temp(df, 10, f"07/{i}/2024 12:00 AM")
+            AEM.visualizations.plot_soil_temp_predictions(air_temp, temp_predictions, 10, file_path.joinpath(f"July_Soil_Predictions/July_{i}_soil_temp_predictions.png"), soil_temp)
 
-        time_grid, depth_grid, temp_grid = AEM.equations.model_soil_temp_at_depth_from_air_temp(df, 10, "07/21/2024 12:00 AM")
-        AEM.visualizations.plot_3d_daily_soil_temp(time_grid, depth_grid, temp_grid, file_path.joinpath("3d_soil_temp_predictions.png"))
+        time_grid, depth_grid, temp_grid = AEM.equations.model_3d_soil_temp(df, 10, "07/21/2024 12:00 AM")
+        AEM.visualizations.plot_3d_soil_temp_predictions(time_grid, depth_grid, temp_grid, file_path.joinpath("3d_soil_temp_predictions.png"))
         return True
     except Exception as e:
         print("ERROR:", e)
@@ -225,6 +225,12 @@ def hydraulic_conductivity_test():
         print("ERROR:", e)
         traceback.print_exc()
         return False
+
+def data_tests(df: pd.DataFrame, file_path: Path):
+    df_dict = AEM.data.df_as_dict(df)
+    return True
+
+
 
 if __name__ == "__main__":
     # Get Data
@@ -262,6 +268,7 @@ if __name__ == "__main__":
     # Hydraulic Conductivity Tests
     print("Hydraulic_Conductivity_Tests Passed:\t" + str(hydraulic_conductivity_test()))
 
+    print("Data Tests Passed:\t\t\t" + str(data_tests(df, folder)))
     # Attempt to save the updated DataFrame
     #AEM.data.save_data(df2024, Path("/home/scarlett/Documents/Entomology/AgroEcoMetrics/Tests/Data/Saved_Test_Data.cSv"))
     

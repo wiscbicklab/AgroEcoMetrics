@@ -47,6 +47,7 @@ def load_data_csv(
 
     Loads data from a csv file into a DataFrame. Strips the column names of whitespace on either end and removes apostrophes.
     Filters data by the given dates. If no start or end date is specified the oldest and newest dates in the data are used respectively.
+    Converts the date time column to Date Time objects and numeric columns to Numeric Data Types
     Adds columns for the date_norm, DOY, and Year.
         Column names can be found by running AEM.settings.calc_calculation_labels().
         date_norm stores the date normalized to contain the same time, midnight.
@@ -84,6 +85,8 @@ def load_data_csv(
     
 
     df[date_time_column] = pd.to_datetime(df[date_time_column], format=date_time_format)
+
+
 
     # Filter data using the start and end dates
     if start_date:
@@ -169,56 +172,72 @@ def save_data_csv(
 
 
 # Fletcher's Functions
-def match_weather_datetime(
-        weather_dt: np.ndarray,
-        data_dt: np.ndarray
+def match_datetimes(
+        target_dt: np.ndarray,
+        desired_dt: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
-    Matches each datetime in `data_datetime_col` to the closest datetime 
-        in `weather_datetime_col`.
+    Matches each datetime in 'desired_dt' to the closest datetime in 'target_dt'.
 
     Args:
-        weather_dt: The np array of actual weather date_times
-        data_dt:    The np array of date_times to find the closest match for
+        target_dt: The np array of actual weather date_times
+        desired_dt:    The np array of date_times to find the closest match for
     
     Returns:
-        A tuple of (original times, matched weather times, matched indices, time differences)
+        A tuple of 4 numpy arrays
+        The first contains the original desired_dt
+        The second contains the date_times matched from the target_dt.
+        The third contains the indices of the matched date_times in the original target_dt
+        The fourth contains the the difference in time between the desired and matched times
     """
-    indices = np.searchsorted(weather_dt, data_dt, side="left")
-    indices = np.minimum(indices, len(weather_dt) - 1)
+    idx = np.searchsorted(target_dt, desired_dt, side="left")
+    idx = np.minimum(idx, len(target_dt) - 1)
 
-    for i in range(len(indices)):
-        if indices[i] > 0:
-            before = weather_dt[indices[i] - 1]
-            after = weather_dt[indices[i]]
-            if abs(data_dt[i] - before) < abs(data_dt[i] - after):
-                indices[i] -= 1
+    for i in range(len(idx)):
+        if idx[i] > 0:
+            before = target_dt[idx[i] - 1]
+            after = target_dt[idx[i]]
+            if abs(desired_dt[i] - before) < abs(desired_dt[i] - after):
+                idx[i] -= 1
 
-    matched_times = weather_dt[indices]
-    diffs = np.abs(data_dt - matched_times)
+    matched_times = target_dt[idx]
+    diffs = np.abs(desired_dt - matched_times)
 
-    return data_dt, matched_times, indices, diffs
+    return desired_dt, matched_times, idx, diffs
  
-def get_weather_data_from_cols(
-        weather_df: pd.DataFrame,
-        weather_cols: list[str],
-        indices: np.ndarray
+def df_as_dict(
+        df: pd.DataFrame,
+        cols: Optional[np.ndarray],
+        idx: Optional[np.ndarray]
     ) -> dict[str, list[float]]:
     """
-    Extracts values from weather columns at given matched indices.
+    Extracts values from a DataFrame into a dictionary
+
+    Allows users to create a dictionary from a Dataframe. Column names are used for the dictionary keys.
+    Only the columns the user provides are added to the dictionary. If no columns are provided all columns are added.
+    The value stored in each key is a list of data from the given DataFrame column
+    Only the data for 
 
     Args:
-        weather_df:   The DataFrame containing weather data
-        weather_cols: The key names to be used in the dictionary
-        indices:      The indices in the DataFrame to be used in the dictionary
+        df:   The DataFrame containing weather data
+        cols: The key names to be used in the dictionary
+        idx:  The indices in the DataFrame to be used in the dictionary
 
     Returns:
         A dictionary of {column_name: values}.
     """
-    return {
-        col: [weather_df[col].iloc[i] for i in indices]
-        for col in weather_cols
-    }
+    # Get all Columns if None are specified
+    if cols is None or len(cols) == 0:
+        cols = np.asarray(df.columns)
+    # Get all indices if None are specified
+    if idx is None or len(idx) == 0:
+        idx = np.asarray([i for i in range(df.shape[0])])
+
+    return_dict = {}
+    for col in cols:
+        if col in df.columns:
+            return_dict[col] = df[col].iloc[idx].tolist()
+    return return_dict
 
 
 

@@ -69,7 +69,7 @@ def model_air_temp(air_temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
     thermal_amp = (np.max(air_temps) - np.min(air_temps)) / 2  # | Units: °C
 
     # Use the day with the minimum and maximum temperatures to calulate time_laf
-    min_idx = np.argmin(air_temps[:190])
+    min_idx = np.argmin(air_temps[:int(len(air_temps) / 2)])
     min_date = pd.to_datetime(date_times[min_idx])
     max_idx = np.argmax(air_temps)
     max_date = pd.to_datetime(date_times[max_idx])
@@ -89,7 +89,7 @@ def model_air_temp(air_temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
 
 
 # Soil Temperature models
-def soil_temp_at_depth(
+def yearly_soil_temp(
         depth: int,
         avg_temp: int=25,
         thermal_amp: int = 10,
@@ -128,7 +128,7 @@ def soil_temp_at_depth(
     
     return  np.asarray(soil_temp)
 
-def soil_temp_on_day(
+def daily_soil_temp(
         doy: int,
         max_depth: int,
         interpolations: int = 100,
@@ -154,7 +154,9 @@ def soil_temp_on_day(
         time_lag: The time lag in days (0-365) where January 1st is 0 and 365.
 
     Returns:
-        An np array of the soil temps and an np array of the depths of the soil temps (°C)
+        A tuple containing two numpy arrays.
+            The first array contains the soil temperature predictions (°C)
+            The second array contians the depth of each prediction (cm)
     """
     # Set Constants
     phase_frequency = 2 * np.pi / (YEAR_SECONDS) # Phase Frequency | Units: 1 / s
@@ -170,9 +172,9 @@ def soil_temp_on_day(
         thermal_amp * np.exp(-soil_depths / damp_depth) * \
         np.sin(phase_frequency * doy - soil_depths / damp_depth - PHASE)
 
-    return (np.asarray(soil_depths), np.asarray(soil_temp))
+    return (np.asarray(soil_temp), np.asarray(soil_depths))
 
-def yearly_soil_temp_at_depth(
+def yearly_3d_soil_temp(
         max_depth: int,
         interpolations: int = 1000,
         avg_temp: int = 25,
@@ -218,7 +220,7 @@ def yearly_soil_temp_at_depth(
 
     return doy_grid, depth_grid, temp_grid
 
-def model_soil_temp_from_air_temp(
+def model_soil_temp(
         air_temps: np.ndarray,
         depth: float,
         thermal_diffusivity: int = 0.203,
@@ -265,7 +267,7 @@ def model_soil_temp_from_air_temp(
 
     return temp_predictions
 
-def model_soil_temp_at_depth_from_air_temp(
+def model_3d_soil_temp(
         air_temps: np.ndarray,
         max_depth: float,
         interpolations: int = 1000,
@@ -500,6 +502,7 @@ def penman_monteith(
         doy: np.ndarray,
         latitude: float,
         altitude: float,
+        solar_rad: Optional[np.ndarray]=None,
         wind_height: int = 1.5,
     ) -> np.ndarray:
     """
@@ -528,13 +531,20 @@ def penman_monteith(
                                      == len(RH_max) ==  len(wind_speed) == len(wind_speed)):
         raise ValueError("All inputs must be the same length")
     
+    if solar_rad is not None:
+        if len(solar_rad) != len(temp_min):
+               raise ValueError("All inputs must be the same length")
+    else:
+        # Calculates solar radiation
+        solar_rad = __compute_solar_radiation(doy, latitude)
+    
     temp_avg = (temp_min + temp_max)/2
     atm_pressure = (p_min+p_max)/2 # Can be also obtained from weather station
     Cp = 0.001013; # Approx. 0.001013 for average atmospheric conditions
-    gamma = (Cp * atm_pressure) / (0.622 * 2.45) # Approx. 0.000665
+    gamma = 0.000665* (Cp * atm_pressure)
 
     # Wind speed Adjustment
-    wind_speed_2m = wind_speed * (4.87 / np.log((67.8 * wind_height) - 5.42))  # Eq. 47, FAO-56 wind height in [m]
+    wind_speed_at_height = wind_speed * (4.87 / np.log((67.8 * wind_height) - 5.42))  # Eq. 47, FAO-56 wind height in [m]
 
     # Calculates air humidity and vapor pressure
     delta = 4098 * (0.6108 * np.exp(17.27 * temp_avg / (temp_avg  + 237.3)))
@@ -543,9 +553,6 @@ def penman_monteith(
     e_temp_min = 0.6108 * np.exp(17.27 * temp_min / (temp_min + 237.3))
     e_saturation = (e_temp_max + e_temp_min) / 2
     e_actual = (e_temp_min * (RH_max / 100) + e_temp_max * (RH_min / 100)) / 2
-
-    # Calculates solar radiation
-    solar_rad = __compute_solar_radiation(doy, latitude)
 
     # Clear Sky Radiation: Rso (MJ/m2/day)
     Rso =  (0.75 + (2 * 10**-5) * altitude) * solar_rad  # Eq. 37, FAO-56
@@ -556,6 +563,8 @@ def penman_monteith(
     sigma  = 4.903 * 10**-9
     maxTempK = temp_max + 273.16
     minTempK = temp_min + 273.16
+
+
     # Eq. 39, FAO-56
     Rnl =  sigma * (maxTempK**4 + minTempK**4)
     Rnl = Rnl / 2 * (0.34 - 0.14 * np.sqrt(e_actual))
@@ -566,9 +575,9 @@ def penman_monteith(
     soil_heat_flux = 0 # Eq. 42, FAO-56 G = 0 for daily time steps  [MJ/m2/day]
 
     # ETo calculation
-    PET = 0.408 * delta * (solar_rad - soil_heat_flux) + gamma
-    PET = PET * (900 / (temp_avg  + 273))  * wind_speed_2m * (e_saturation - e_actual)
-    PET = PET / (delta + gamma * (1 + 0.34 * wind_speed_2m))
+    PET = 0.408 * delta * (Rn - soil_heat_flux)
+    PET = PET + gamma * (900 / (temp_avg  + 273))  * wind_speed_at_height * (e_saturation - e_actual)
+    PET = PET / (delta + gamma * (1 + 0.34 * wind_speed_at_height))
 
 
     # Ensures non-negative evapotranspiration
@@ -600,7 +609,6 @@ def model_runoff(rainfall: np.ndarray, curve_number: int = 75) -> pd.DataFrame:
     runoff[idx] = (rainfall[idx] - Ia)**2 / (rainfall[idx] - Ia + S005)
 
     return runoff * 25.4 # Unit Conversion | Units: mm
-
 
 # Growing Degree Days
 def model_gdd(
@@ -689,24 +697,24 @@ def photoperiod_at_lat(lat: float, doy: np.ndarray) -> Tuple[np.array, np.array,
     
     # Angle of the sun below the horizon. Civil twilight is -4.76 degrees.
     light_intensity = 2.206 * 10**-3
-    B = -4.76 - 1.03 * np.log(light_intensity) # Eq. [5].
+    sun_angle = -4.76 - 1.03 * np.log(light_intensity) # Eq. [5].
 
     # Zenithal distance of the sun in degrees
-    alpha = np.radians(90 + B) # Eq. [6]. Value at sunrise and sunset.
+    sun_zenithal_dist = np.radians(90 + sun_angle) # Eq. [6]. Value at sunrise and sunset.
     
     # Mean anomaly of the sun. It is a convenient uniform measure of 
     # how far around its orbit a body has progressed since pericenter.
-    M = 0.9856*doy - 3.251 # Eq. [4].
+    sun_mean_anomaly = 0.9856*doy - 3.251 # Eq. [4].
     
     # Declination of sun in degrees
-    Lambda = M + 1.916*np.sin(np.radians(M)) + 0.020*np.sin(np.radians(2*M)) + 282.565 # Eq. [3]. Lambda
+    sun_declenation = sun_mean_anomaly + 1.916*np.sin(np.radians(sun_mean_anomaly)) + 0.020*np.sin(np.radians(2*sun_mean_anomaly)) + 282.565 # Eq. [3]. Lambda
     C = np.sin(np.radians(23.44)) # 23.44 degrees is the orbital plane of Earth around the Sun
-    delta = np.arcsin(C*np.sin(np.radians(Lambda))) # Eq. [2].
+    delta = np.arcsin(C*np.sin(np.radians(sun_declenation))) # Eq. [2].
 
     # Calculate daylength in hours, defining sec(x) = 1/cos(x)
-    P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(lat_radians)) * (1/np.cos(delta)) - np.tan(lat_radians) * np.tan(delta) ) ) # Eq. [1].
+    day_length = 2/15 * np.degrees( np.arccos( np.cos(sun_zenithal_dist) * (1/np.cos(lat_radians)) * (1/np.cos(delta)) - np.tan(lat_radians) * np.tan(delta) ) ) # Eq. [1].
 
-    return P, B, alpha, M, Lambda, np.degrees(delta)
+    return day_length, sun_angle, sun_zenithal_dist, sun_mean_anomaly, sun_declenation, np.degrees(delta)
     
 def photoperiod_on_day(lat: np.ndarray, doys: np.ndarray) -> Tuple[np.array, np.array, np.array, np.array, np.array]:
     """
@@ -770,7 +778,7 @@ def hydraulic_conductivity(
         air_entry_water_potential: The air entry water potential of the soil  (J / kg).
         volumetric_water_content: Is the volumetric water content of the soil (m^3 / m^3).
         sat_water_content: Is the saturation water content of the soil (m^3 / m^3).
-        b: Is the exponent of moisture release parameter.
+        b: Is the exponent of moisture release.
 
     Returns:
         The calculated hydraulic conductivity of the soil given the parameters ().
@@ -781,11 +789,11 @@ def hydraulic_conductivity(
 
     return hydraulic_conductivity
 
-def cummulative_water_infultration(
+def cummulative_water_infiltration(
         water_vol_fraction: float,
         avg_sat_hydraulic_conductivity: float,
         infultration_water_potential: float,
-        wetting_front_water_potentail: float,
+        wetting_front_water_potential: float,
         max_time: int,
         interpolations: int=100
     ) -> np.array:
@@ -804,9 +812,8 @@ def cummulative_water_infultration(
         interpolations: The number of interpolated times to calculate.
   
     Returns:
-        A numpy array of length 'interpolations' representing the cummulative vertical water infultration over time.
-        Where the first value represents the infultraiton after zero time,
-            the second value represents the infultration after max_time/interpolations time,
+        A numpy array of length 'interpolations' representing the cummulative vertical water infultration over equal time segments.
+        Where the first value represents the infultration after max_time/interpolations time,
             and the last vaule represents the infultration after max_time.
     """
     # Define Constants
@@ -817,8 +824,8 @@ def cummulative_water_infultration(
         raise ValueError(f"The volume Fraction of water must be between [0,1], but {water_vol_fraction} was provided")
 
     # Calculate water infultration at each of the time
-    times = np.linspace(0, max_time, interpolations)
-    water_inful = 2 * WATER_DENSITY * water_vol_fraction * avg_sat_hydraulic_conductivity * (infultration_water_potential - wetting_front_water_potentail) * times
+    times = np.linspace(max_time/interpolations, max_time, interpolations)
+    water_inful = 2 * WATER_DENSITY * water_vol_fraction * avg_sat_hydraulic_conductivity * (infultration_water_potential - wetting_front_water_potential) * times
     water_inful =  water_inful ** 0.5 + LITTLE_G * avg_sat_hydraulic_conductivity * times
 
     return water_inful
