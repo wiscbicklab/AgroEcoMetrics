@@ -1,0 +1,28 @@
+# Ignore private files
+private/
+.vscode/
+
+# Ignore Test Files
+Tests/
+
+# Python bytecode and cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+source/
+docs/
+
+# Ignore Example Code
+Tests/Paper/
+
+# Ignore the source file
+src/
+
+# Ignore the Scripts files
+Scripts/
