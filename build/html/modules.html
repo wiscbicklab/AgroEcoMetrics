@@ -304,10 +304,10 @@ If a list of column names are provided only those columns are interpolated.</p>
 Filters data by the given dates. If no start or end date is specified the oldest and newest dates in the data are used respectively.
 Converts the date time column to Date Time objects and numeric columns to Numeric Data Types
 Adds columns for the date_norm, DOY, and Year.
--Column names can be found by running AEM.settings.calc_calculation_labels().
--date_norm stores the date normalized to contain the same time, midnight.
--doy stores the number of days since January 1st, where January 1st = 0 and December 31st = 364 or 365 during a leap year.
--year stores the current year.</p>
+Column names can be found by running AEM.settings.calc_calculation_labels().
+date_norm stores the date normalized to contain the same time, midnight.
+doy stores the number of days since January 1st, where January 1st = 0 and December 31st = 364 or 365 during a leap year.
+year stores the current year.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -397,35 +397,35 @@ Calculations are made for equally spaced times from [0 to max_time].</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A numpy array of length ‘interpolations’ representing the cummulative vertical water infultration over equal time segments.
-Where the first value represents the infultration after max_time/interpolations time, and the last vaule represents the infultration after max_time.</p>
+<dd class="field-even"><p>A numpy array of length ‘interpolations’ representing the cummulative vertical water infultration.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.daily_soil_temp">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">daily_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_diffusivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timelag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#daily_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.daily_soil_temp" title="Link to this definition">¶</a></dt>
-<dd><p>Models soil temperature on a particular day of the year</p>
-<p>Creates a model to estimate soil temperature given a day of year and depth.
-Calculates depths to use by linearly interpolating the max_depth by the number of interpolations.
-Uses the model to estimate the soil temperature at a range of depths on the specified day of year.</p>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">daily_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timelag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#daily_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.daily_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Models soil temperature at a set of depths on a particular day of the year</p>
+<p>Estimates the soil temperature at the number of depths specified.
+The first depth is max_depth/num_depths and the last depth is max_depth.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>doy</strong> – Day of year (0-365) where January 1st is 0 and 365.</p></li>
-<li><p><strong>max_depth</strong> – The maximum depth in centimeters to model the soil temperature.</p></li>
-<li><p><strong>interpolations</strong> – The number of interpolated depths to caluculate soil temperature at.</p></li>
-<li><p><strong>avg_temp</strong> – The annual average surface temperature (°C).</p></li>
-<li><p><strong>thermal_amp</strong> – The annual thermal amplitude of the soil surface (°C).</p></li>
-<li><p><strong>thermal_diffusivity</strong> – The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s].</p></li>
+<li><p><strong>doy</strong> – The day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>max_depth</strong> – The maximum depth to model the soil temperature. (m)</p></li>
+<li><p><strong>num_depths</strong> – The number of depths to caluculate soil temperature at. (None)</p></li>
+<li><p><strong>surface_temp</strong> – The annual average surface temperature. (°C)</p></li>
+<li><p><strong>thermal_amp</strong> – The annual thermal amplitude of the soil surface. (°C)</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to estimate. (mm^2 / s)</p></li>
 <li><p><strong>time_lag</strong> – The time lag in days (0-365) where January 1st is 0 and 365.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>A tuple containing two numpy arrays.</dt><dd><p>The first array contains the soil temperature predictions (°C)
-The second array contians the depth of each prediction (cm)</p>
+<dt>A tuple containing two numpy arrays.</dt><dd><ul class="simple">
+<li><p>The first contains the soil temperature predictions. (°C)</p></li>
+<li><p>The second contains the depth of each prediction. (cm)</p></li>
+</ul>
 </dd>
 </dl>
 </p>
@@ -440,35 +440,40 @@ The second array contians the depth of each prediction (cm)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>temp_min</strong> – The minimum daily temperature (°C)</p></li>
-<li><p><strong>temp_max</strong> – The maximum daily temperature (°C)</p></li>
-<li><p><strong>RH_min</strong> – The minimum daily relative humidity (range: 0.0-1.0)</p></li>
-<li><p><strong>RH_max</strong> – The maximum daily relative humidity (range: 0.0-1.0)</p></li>
-<li><p><strong>wind_speed</strong> – The average daily wind speed in meters per second</p></li>
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>RH_min</strong> – A numpy array of minimum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>RH_max</strong> – A numpy array of maximum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>wind_speed</strong> – A numpy array of average daily wind speeds. (m/s)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The Dalton models predictions for evapotranspiration clipped to a minimum of zero (mm/day)</p>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.hargreaves">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">hargreaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#hargreaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.hargreaves" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">hargreaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#hargreaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.hargreaves" title="Link to this definition">¶</a></dt>
 <dd><p>Computes evapotranspiration using the Hargreaves model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>temp_min</strong> – The minimum daily temperature (°C)</p></li>
-<li><p><strong>temp_max</strong> – The maximum daily temperature (°C)</p></li>
-<li><p><strong>doys</strong> – Array of Day of year’s (0-365) where January 1st is 0 and 365</p></li>
-<li><p><strong>latitude</strong> – Latitude in decimal degress. Where the northern hemisphere is
-positive and the southern hemisphere is negative</p></li>
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lats</strong> – A numpy array of latitudes. (Degrees, North is positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The Hargreaves models predictions for evapotranspiration clipped to a minimum of zero</p>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
 </dd>
 </dl>
 </dd></dl>
@@ -495,60 +500,69 @@ positive and the southern hemisphere is negative</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.jensen_haise">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">jensen_haise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#jensen_haise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.jensen_haise" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">jensen_haise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#jensen_haise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.jensen_haise" title="Link to this definition">¶</a></dt>
 <dd><p>Computes evapotranspiration using the Jensen model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>temp_min</strong> – The minimum daily temperature (°C)</p></li>
-<li><p><strong>temp_max</strong> – The maximum daily temperature (°C)</p></li>
-<li><p><strong>doy</strong> – Day of year (0-365) where January 1st is 0 and 365</p></li>
-<li><p><strong>latitude</strong> – Latitude in decimal degress. Where the northern hemisphere is
-positive and the southern hemisphere is negative</p></li>
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lats</strong> – A numpy array of latitudes. (Degrees, North is positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The Jensen-Haise models predictions for evapotranspiration clipped to a minimum of zero</p>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.model_3d_soil_temp">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_diffusivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_3d_soil_temp" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_3d_soil_temp" title="Link to this definition">¶</a></dt>
 <dd><p>Models soil temperature over a full day (in 5-minute intervals) across depth
 using air temperature data to parameterize a sinusoidal model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>air_temps</strong> – The soil surface air temperatures for a given day (°C).</p></li>
-<li><p><strong>max_depth</strong> – Maximum depth to model the soil temperature (cm).</p></li>
-<li><p><strong>interpolations</strong> – Number of interpolated depth points.</p></li>
-<li><p><strong>thermal_diffusivity</strong> – Thermal diffusivity [mm^2/s] from KD2 Pro instrument.</p></li>
+<li><p><strong>air_temps</strong> – Soil surface air temperatures for a given day. (°C)</p></li>
+<li><p><strong>max_depth</strong> – Maximum depth to model the soil temperature. (m)</p></li>
+<li><p><strong>num_depths</strong> – The number of interpolated depths to calculate soil temperature at.</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to model. (mm^2 / s)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A tuple of (time_grid, depth_grid, temp_grid), each a 2D NumPy array.</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p>time_grid: varies across columns. (seconds in day)</p></li>
+<li><p>depth_grid: varies across rows. (m)</p></li>
+<li><p>temp_grid: soil temperature (°C) at each depth and time.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(time_grid, depth_grid, temp_grid), each a 2D NumPy array</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.model_air_temp">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_air_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_air_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_air_temp" title="Link to this definition">¶</a></dt>
-<dd><p>Creates an air temperature model and creates air temperature estimates using model.</p>
-<p>Creates an air temperature model by finding the best fit for a sinusoidal function.
-Estimates Parameters using the given data.
-Creates a temperature estimate for each day in the df using the model</p>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_air_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_air_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_air_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a daily air temperature estimate by creating a model from actual air temperatures.</p>
+<p>Creates a sinusoidal model of air temperature using best fit on the provided data.
+Then creates daily air temperature predictions over the entire range of dates provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>air_temps</strong> – The daily average air temperature (°C)</p></li>
-<li><p><strong>date_times</strong> – The datetime corresponding to each air temperature measurement</p></li>
+<li><p><strong>temps</strong> – A numpy array of average daily air temperatures. (°C)</p></li>
+<li><p><strong>date_times</strong> – A numpy array of date time objects correspoinding to the air temperatures.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A numpy array of predicted daily temperatures over the period of the dataframe</p>
+<dd class="field-even"><p>A numpy array of predicted daily temperatures from the first to the last day provided, inclusive.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -556,25 +570,32 @@ Creates a temperature estimate for each day in the df using the model</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.model_gdd">
 <span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_gdd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_avg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_upper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_gdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_gdd" title="Link to this definition">¶</a></dt>
-<dd><p>Model how many growing degree days have passed</p>
-<p>Models Growing Degree days using a minimum base temperature, an optional
-optimal temperature, an optional maximum growing temperature, and
-the average temperature over the recorded durations</p>
+<dd><p>Model how many growing degree days have passed.</p>
+<p>Models Growing Degree days using a minimum base temperature, an optional optimal temperature,
+an optional maximum growing temperature, and the average temperature over the recorded durations.
+If only a base temperature is provided GDD start accumulating above the base temperature, and
+accumulate faster the higher the temperature gets. If optimal and upper temperature are provided
+the accumulation starts above the base temperature, is greatest at the optimal temperature, and
+then decreases linearly down to zero at the upper temperature.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>temp_avg</strong> – The average temperature over the duration_time (°C)</p></li>
-<li><p><strong>temp_base</strong> – The minimum temperature a given crop will grow at (°C)</p></li>
-<li><p><strong>temp_opt</strong> – The optimal temperature a given crop will grow (°C),
-above this temperature growing will slow linearly</p></li>
-<li><p><strong>temp_upper</strong> – The maximum temperature a given crop will grow (°C)</p></li>
-<li><p><strong>time_duration</strong> – The number of days that each temp_avg represents</p></li>
+<li><p><strong>temp_avg</strong> – A numpy array of average temperatures. (°C)</p></li>
+<li><p><strong>temp_base</strong> – The minimum temperature to accumulate GDD. (°C)</p></li>
+<li><p><strong>temp_opt</strong> – The optimal temperature to accumulate GDD. (°C)</p></li>
+<li><p><strong>temp_upper</strong> – The maximum temperature to accumulate GDD. (°C)</p></li>
+<li><p><strong>time_duration</strong> – The length of time each temp_avg represents. (Days)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A tuple containing two np.ndarray’s
-The first contains Growing Degree Days for each daily temperature
-The second contains the cummulative sum of Growing Degree Days for each daily temperature</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing two numpy arrays.</dt><dd><ul class="simple">
+<li><p>The first contains Growing Degree Days for each day.</p></li>
+<li><p>The second contains the cummulative sum of Growing Degree Days for each day.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -586,38 +607,33 @@ The second contains the cummulative sum of Growing Degree Days for each daily te
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>precipitation</strong> – The daily amount of precipitation in millimeters</p></li>
-<li><p><strong>curve_number</strong> – The curve number to use in the calculation</p></li>
+<li><p><strong>precipitation</strong> – A numpy array of daily precipitation. (mm)</p></li>
+<li><p><strong>curve_number</strong> – The curve number.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The estimated runoff</p>
+<dd class="field-even"><p>The runoff estimation. (mm)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.model_soil_temp">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_diffusivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_soil_temp" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_soil_temp" title="Link to this definition">¶</a></dt>
 <dd><p>Creates soil temperature predictions for each air temperature provided over the course of a day</p>
-<p>Estimates the parameters for a sinusodial function modeling the daily surface temperature.
-Uses the parameter estimations to create a model of soil temperatures at different depths.
-Predicts the soil temperatue at the given depth for each air temperature provided</p>
+<p>Creates a sinusodial model of air temperature using best fir on the provided data
+Then uses that model to estimate soil temperature at the given depth for each temperature given.
+Air temperature are assumed to represent a single day and be equally spaced out through the entire day.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>air_temps</strong> – The soil surface air temperatures for a given day (°C).</p></li>
-<li><p><strong>depth</strong> – The depth to model the soil temperature (cm).</p></li>
-<li><p><strong>thermal_diffusivity</strong> – The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s].</p></li>
+<li><p><strong>air_temps</strong> – A numpy array of air temperatures at the soil surface. (°C)</p></li>
+<li><p><strong>depth</strong> – The depth to model the soil temperature. (cm)</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to model. (mm^2 / s)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>A numpy array containing the predicted temperatures (°C) every 5 minutes</dt><dd><p>starting at midnight at the specified depth and a numpy array containing
-the given air temperatures</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p>A numpy array containing the predicted temperatures. (°C)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -629,43 +645,72 @@ the given air temperatures</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>temp_min</strong> – The minimum daily temperature (°C)</p></li>
-<li><p><strong>temp_max</strong> – The maximum daily temperature (°C)</p></li>
-<li><p><strong>RH_min</strong> – The minimum daily relative humidity (range: 0.0-1.0)</p></li>
-<li><p><strong>RH_max</strong> – The maximum daily relative humidity (range: 0.0-1.0)</p></li>
-<li><p><strong>wind_speed</strong> – The average daily wind speed in meters per second</p></li>
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>RH_min</strong> – A numpy array of minimum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>RH_max</strong> – A numpy array of maximum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>wind_speed</strong> – A numpy array of average daily wind speeds. (m/s)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The Penman models predictions for evapotranspiration clipped to a minimum of zero</p>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.penman_monteith">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">penman_monteith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar_rad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#penman_monteith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.penman_monteith" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">penman_monteith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar_rad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#penman_monteith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.penman_monteith" title="Link to this definition">¶</a></dt>
 <dd><p>Computed evapotranspiration using the penman-monteith model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>temp_min</strong> – The minimum daily temperature (°C)</p></li>
-<li><p><strong>temp_max</strong> – The maximum daily temperature (°C)</p></li>
-<li><p><strong>RH_min</strong> – The minimum daily relative humidity (range: 0.0-1.0)</p></li>
-<li><p><strong>RH_max</strong> – The maximum daily relative humidity (range: 0.0-1.0)</p></li>
-<li><p><strong>p_min</strong> – The minimum daily atmospheric pressure in Pa</p></li>
-<li><p><strong>p_max</strong> – The maximum daily atmospheric pressure in Pa</p></li>
-<li><p><strong>wind_speed</strong> – The average daily wind speed in meters per second</p></li>
-<li><p><strong>doy</strong> – Day of year (0-365) where January 1st is 0 and 365</p></li>
-<li><p><strong>latitude</strong> – Latitude in decimal degress. Where the northern hemisphere is
-positive and the southern hemisphere is negative</p></li>
-<li><p><strong>altitude</strong> – Altitude of the location in meters</p></li>
-<li><p><strong>wind_height</strong> – Height of measurment for wind speed</p></li>
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>RH_min</strong> – A numpy array of minimum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>RH_max</strong> – A numpy array of maximum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>p_min</strong> – A numpy array of minimum daily atmospheric pressure. (Pa)</p></li>
+<li><p><strong>p_max</strong> – A numpy array of maximum daily atmospheric pressure. (Pa)</p></li>
+<li><p><strong>wind_speed</strong> – A numpy array of average daily wind speeds. (m/s)</p></li>
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lat</strong> – The latitude of the location. (Degrees, North is positive)</p></li>
+<li><p><strong>alts</strong> – The altitude of the location. (m)</p></li>
+<li><p><strong>wind_height</strong> – Height of for wind speed measurments. (m)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.photoperiod_at_lat">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_at_lat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_at_lat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_at_lat" title="Link to this definition">¶</a></dt>
+<dd><p>Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lat</strong> – The latitude to compute photoperiod at. (Degrees, North is positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>The Hargreaves models predictions for evapotranspiration clipped to</dt><dd><p>a minimum of zero</p>
+<dt>A tuple containing</dt><dd><ul class="simple">
+<li><p>Photoperiod, daylight hours, at the given latitude for the given days.</p></li>
+<li><p>The angle of the sum below the horizon.</p></li>
+<li><p>The zenithal distance of the sun in degrees.</p></li>
+<li><p>The mean anomaly of the sun.</p></li>
+<li><p>Lambda.</p></li>
+<li><p>Delta.</p></li>
+</ul>
 </dd>
 </dl>
 </p>
@@ -674,47 +719,28 @@ positive and the southern hemisphere is negative</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="agroecometrics.equations.photoperiod_at_lat">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_at_lat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_at_lat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_at_lat" title="Link to this definition">¶</a></dt>
-<dd><p>Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>latitude</strong> – Latitude in decimal degress. Where the northern hemisphere is
-positive and the southern hemisphere is negative</p></li>
-<li><p><strong>doy</strong> – np.ndarray of the days of year (0-365) where January 1st is 0 and 365</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Photoperiod, daylight hours, at the given latitude for the given days.
-The angle of the sum below the horizon.
-The zenithal distance of the sun in degrees.
-The mean anomaly of the sun.
-Lambda.
-Delta.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.photoperiod_on_day">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_on_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_on_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_on_day" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_on_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_on_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_on_day" title="Link to this definition">¶</a></dt>
 <dd><p>Computes photoperiod for a given near polar regions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lat</strong> – Latitude in decimal degress. Where the northern hemisphere is positive and the southern hemisphere is negative.</p></li>
-<li><p><strong>doys</strong> – The day of year (0-365) where January 1st is 0 and 365 to perform the calculation.</p></li>
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lats</strong> – A numpy array of latitudes to compute photoperiod at. (Degrees, North is positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Photoperiod, daylight hours, for the given latitudes on the given day.
-The angle of the sum below the horizon.
-The zenithal distance of the sun in degrees.
-The mean anomaly of the sun.
-The declination of the sun in degrees.
-Lambda from the equation.
-Delta from the equation.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing</dt><dd><p>Photoperiod, daylight hours, for the given latitudes on the given day.
+- The angle of the sum below the horizon.
+- The zenithal distance of the sun in degrees.
+- The mean anomaly of the sun.
+- The declination of the sun in degrees.
+- Lambda from the equation.
+- Delta from the equation.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 <p class="rubric">References</p>
@@ -728,65 +754,69 @@ Delta from the equation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>temp_min</strong> – The minimum daily temperature (°C)</p></li>
-<li><p><strong>temp_max</strong> – The maximum daily temperature (°C)</p></li>
-<li><p><strong>RH_min</strong> – The minimum daily relative humidity (range: 0.0-1.0)</p></li>
-<li><p><strong>RH_max</strong> – The maximum daily relative humidity (range: 0.0-1.0)</p></li>
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>RH_min</strong> – A numpy array of minimum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>RH_max</strong> – A numpy array of maximum daily relative humidities. (range: 0.0-1.0)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The Romanenko models predictions for evapotranspiration clipped to a minimum of zero</p>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.yearly_3d_soil_temp">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">yearly_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_diffusivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timelag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#yearly_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.yearly_3d_soil_temp" title="Link to this definition">¶</a></dt>
-<dd><p>Models soil temperature over a full year (0–365) and across depth.</p>
-<p>Creates a model to estimate soil temperature given a day of year and depth.
-Calculates depths to use by linearly interpolating the max_depth by the number of interpolations
-Uses the model to create a matrix of estimations for each day of the year at each depth.</p>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">yearly_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timelag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#yearly_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.yearly_3d_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Models soil temperature over a full year (0-365) and across depth.</p>
+<p>Estimates the soil temperature at the number of depths specified for each day of the year.
+The first depth is max_depth/num_depths and the last depth is max_depth.
+Creates a matrix of estimations for each day of the year at each depth.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>max_depth</strong> – The maximum depth in centimeters to model the soil temperature</p></li>
-<li><p><strong>interpolations</strong> – The number of interpolated depths to calculate soil temperature at</p></li>
-<li><p><strong>avg_temp</strong> – The annual average surface temperature (°C)</p></li>
-<li><p><strong>thermal_amp</strong> – The annual thermal amplitude of the soil surface (°C)</p></li>
-<li><p><strong>thermal_diffusivity</strong> – The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]</p></li>
+<li><p><strong>max_depth</strong> – The maximum depth in centimeters to model the soil temperature. (m)</p></li>
+<li><p><strong>num_depths</strong> – The number of interpolated depths to calculate soil temperature at.</p></li>
+<li><p><strong>surface_temp</strong> – The annual average surface temperature. (°C)</p></li>
+<li><p><strong>thermal_amp</strong> – The annual thermal amplitude of the soil surface. (°C)</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to model. (mm^2 / s)</p></li>
 <li><p><strong>timelag</strong> – The time lag in days (0-365) where January 1st is 0 and 365</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A tuple of (doy_grid, z_grid, temp_grid), where each is a 2D NumPy array.
-Each grid represents a Matrix of depths and doys.
-doy_grid varies the day of year between columns. Each columns represents the same doy.
-depth_grid varies the depth between rows. Each row represents the same depth
-temp_grid varies between rows and columns.
-Each point represents the predicted temperature for the doy and depth indicated by the same point in the doy_grid and depth_grid respectively</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple of (doy_grid, z_grid, temp_grid), where each is a 2D NumPy array.</dt><dd><ul class="simple">
+<li><p>doy_grid: varies across columns. (same DOY per column)</p></li>
+<li><p>z_grid: varies across rows. (same depth per row) (m)</p></li>
+<li><p>temp_grid: soil temperature at each depth and DOY. (°C)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.yearly_soil_temp">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">yearly_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_diffusivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_lag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#yearly_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.yearly_soil_temp" title="Link to this definition">¶</a></dt>
-<dd><p>Models soil temperature over one year at the given depth.</p>
-<p>Creates a model to estimate soil temperature given a day of year and depth.
-Predicts the soil temperature everyday at the specified depth.</p>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">yearly_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_lag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#yearly_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.yearly_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Models average soil temperature at a given depth for each day of a year</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>depth</strong> – The depth to model the soil temperature (m).</p></li>
-<li><p><strong>avg_temp</strong> – The annual average surface temperature (°C).</p></li>
-<li><p><strong>thermal_amp</strong> – The annual thermal amplitude of the soil surface (°C).</p></li>
-<li><p><strong>thermal_dif</strong> – The Thermal diffusivity obtained from KD2 Pro instrument (mm^2 / s).</p></li>
-<li><p><strong>time_lag</strong> – The time lag between Jaunary 1st and the coldest day of the year (days).</p></li>
+<li><p><strong>depth</strong> – The depth to model the soil temperature. (m)</p></li>
+<li><p><strong>surface_temp</strong> – The annual average surface temperature. (°C)</p></li>
+<li><p><strong>thermal_amp</strong> – The annual thermal amplitude of the soil surface. (°C)</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to estimate. (mm^2 / s)</p></li>
+<li><p><strong>time_lag</strong> – The difference between January 1st and the coldest day of the year. (Days)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Predicted soil temperature at the given depth for each day of the year (°C).</p>
+<dd class="field-even"><p>A numpy array of the daily soil temperature predictions. (°C).</p>
 </dd>
 </dl>
 </dd></dl>
