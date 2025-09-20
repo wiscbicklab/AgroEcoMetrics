@@ -144,8 +144,8 @@ def daily_soil_temp(
 
     Returns:
         A tuple containing two numpy arrays.
-            The first contains the soil temperature predictions. (°C)
-            The second contains the depth of each prediction. (cm)
+            - The first contains the soil temperature predictions. (°C)
+            - The second contains the depth of each prediction. (cm)
     """
     # Set Constants
     PHASE_FREQ = 2 * np.pi / 365
@@ -188,9 +188,9 @@ def yearly_3d_soil_temp(
     
     Returns:
         A tuple of (doy_grid, z_grid, temp_grid), where each is a 2D NumPy array. 
-        - doy_grid: varies across columns. (same DOY per column)
-        - z_grid: varies across rows. (same depth per row) (m)
-        - temp_grid: soil temperature at each depth and DOY. (°C)
+            - doy_grid: varies across columns. (same DOY per column)
+            - z_grid: varies across rows. (same depth per row) (m)
+            - temp_grid: soil temperature at each depth and DOY. (°C)
     """
     doys = np.arange(0, 365)  # Days of year
     depths = np.linspace(max_depth / num_depths, max_depth, num_depths)  # Depths
@@ -227,9 +227,7 @@ def model_soil_temp(
         thermal_dif: The thermal diffusivity of the soil to model. (mm^2 / s)
 
     Returns:
-        A numpy array containing the predicted temperatures (°C) every 5 minutes 
-            starting at midnight at the specified depth and a numpy array containing
-            the given air temperatures
+        A numpy array containing the predicted temperatures. (°C)
     """
     # Estimate sinusoidal parameters
     thermal_amp = (np.max(air_temps) - np.min(air_temps)) / 2
@@ -275,9 +273,9 @@ def model_3d_soil_temp(
 
     Returns:
         (time_grid, depth_grid, temp_grid), each a 2D NumPy array:
-        - time_grid: varies across columns. (seconds in day)
-        - depth_grid: varies across rows. (m)
-        - temp_grid: soil temperature (°C) at each depth and time.
+            - time_grid: varies across columns. (seconds in day)
+            - depth_grid: varies across rows. (m)
+            - temp_grid: soil temperature (°C) at each depth and time.
     """
     # Calculate depths to evaluate
     depths = np.linspace(max_depth / num_depths, max_depth, num_depths)
@@ -432,7 +430,7 @@ def jensen_haise(
         lats:     A numpy array of latitudes. (Degrees, North is positive)
 
     Returns:
-        The Jensen-Haise models predictions for evapotranspiration clipped to a minimum of zero
+        Daily evapotranspiration clipped to a minimum of zero. (mm/day)
 
     Raises:
         ValueError: If all of the numpy arrays are not the same size
@@ -635,8 +633,8 @@ def model_gdd(
     
     Returns:
         A tuple containing two numpy arrays.
-         - The first contains Growing Degree Days for each day.
-         - The second contains the cummulative sum of Growing Degree Days for each day.
+            - The first contains Growing Degree Days for each day.
+            - The second contains the cummulative sum of Growing Degree Days for each day.
     """
     # Validate parameter input
     if(time_duration <= 0):
@@ -684,12 +682,13 @@ def photoperiod_at_lat(doys: np.ndarray, lat: float) -> Tuple[np.array, np.array
         lat:  The latitude to compute photoperiod at. (Degrees, North is positive)
 
     Returns:
-        Photoperiod, daylight hours, at the given latitude for the given days.
-        The angle of the sum below the horizon.
-        The zenithal distance of the sun in degrees.
-        The mean anomaly of the sun.
-        Lambda.
-        Delta.
+        A tuple containing
+            - Photoperiod, daylight hours, at the given latitude for the given days.
+            - The angle of the sum below the horizon.
+            - The zenithal distance of the sun in degrees.
+            - The mean anomaly of the sun.
+            - Lambda.
+            - Delta.
     """
     # Convert latitude to radians
     lat_radians = np.radians(lat)
@@ -724,13 +723,14 @@ def photoperiod_on_day(doys: np.ndarray, lats: np.ndarray) -> Tuple[np.array, np
         lats: A numpy array of latitudes to compute photoperiod at. (Degrees, North is positive)
 
     Returns:
-        Photoperiod, daylight hours, for the given latitudes on the given day.
-        The angle of the sum below the horizon.
-        The zenithal distance of the sun in degrees.
-        The mean anomaly of the sun.
-        The declination of the sun in degrees.
-        Lambda from the equation.
-        Delta from the equation.
+        A tuple containing
+            Photoperiod, daylight hours, for the given latitudes on the given day.
+            - The angle of the sum below the horizon.
+            - The zenithal distance of the sun in degrees.
+            - The mean anomaly of the sun.
+            - The declination of the sun in degrees.
+            - Lambda from the equation.
+            - Delta from the equation.
     
     References:
         Keisling, T.C., 1982. Calculation of the Length of Day 1. Agronomy Journal, 74(4), pp.758-759.
@@ -800,7 +800,7 @@ def cummulative_water_infiltration(
     Calculates the cummulative vertical water infultration.
     
     Calculates the cummulative vertical water infultration for the given soil parameters.
-        Calculations are made for equally spaced times from [0 to max_time].
+    Calculations are made for equally spaced times from [0 to max_time].
     
     Args:
         water_vol_fraction: The Volume Fraction of water.
@@ -811,9 +811,7 @@ def cummulative_water_infiltration(
         interpolations: The number of interpolated times to calculate.
   
     Returns:
-        A numpy array of length 'interpolations' representing the cummulative vertical water infultration over equal time segments.
-        Where the first value represents the infultration after max_time/interpolations time,
-            and the last vaule represents the infultration after max_time.
+        A numpy array of length 'interpolations' representing the cummulative vertical water infultration.
     """
     # Define Constants
     WATER_DENSITY = 1000 # Units: Kg / m^3

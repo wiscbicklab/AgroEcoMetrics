@@ -2,9 +2,8 @@
 private/
 .vscode/
 
-# Testing images
-Tests/Images/
-Tests/Data/
+# Ignore all testing files
+Tests/
 
 # Python bytecode and cache
 __pycache__/
@@ -19,5 +18,7 @@ dist/
 source/
 docs/
 
-# Ignore Example Code
-Tests/Paper/
+# Ignore Scripts
+Scripts/
+
+
