@@ -5,31 +5,31 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
         <link rel="canonical" href="https://wiscbicklab.github.io//AgroEcoMetrics/_modules/agroecometrics/data.html" />
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>agroecometrics.data - AgroEcoMetrics 0.1.0b documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+        <title>agroecometrics.data - AgroEcoMetrics 0.1.0b2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.1.0b documentation</div></a>
+      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.1.0b2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,8 +189,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  
-  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0b documentation</span>
+  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0b2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -240,81 +239,77 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">circmean</span>
 
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">agroecometrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 
-
-<span class="c1"># Gets the acutal LABELS of columns based on the user settings</span>
-<span class="n">LABELS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get_labels</span><span class="p">()</span>
-
-<span class="c1">####    UTIL FUNCTIONS    ####</span>
-<div class="viewcode-block" id="csv_file_exists">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.data.csv_file_exists">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">csv_file_exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="c1">####    Private UTIL FUNCTIONS    ####</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">__csv_file_exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks is the a Path to a csv file is valid</span>
+<span class="sd">    Checks if a Path is a valid path to an existing .CSV file.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        file_path: The Path to the csv file</span>
+<span class="sd">        file_path: The Path to the file being checked.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        True if the csv file at the given Path already exists and False otherwise</span>
+<span class="sd">        True if the csv file at the given Path already exists and False otherwise.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If file_path is not a Path object.</span>
-<span class="sd">        ValueError: If the file extension is not &#39;.csv&#39;.</span>
-<span class="sd">        FileNotFoundError: If the parent directory does not exist.</span>
+<span class="sd">        ValueError: If the file is not a csv file.</span>
+<span class="sd">        FileNotFoundError: If the parent directory of the file does not exist.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check Parameters for validity</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;file_path must be a pathlib.Path object.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;.csv&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The filename must end with &#39;.csv&#39;.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The directory &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span><span class="p">)</span></div>
-
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The directory &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Return if the file path exists</span>
+    <span class="k">return</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
 
 <span class="c1"># Data File Functions</span>
-<div class="viewcode-block" id="load_data">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.data.load_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span>
+<div class="viewcode-block" id="load_data_csv">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.data.load_data_csv">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_data_csv</span><span class="p">(</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> 
-        <span class="n">date_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_format&#39;</span><span class="p">],</span>
+        <span class="n">date_time_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">date_time_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y %I:%M %p&quot;</span><span class="p">,</span>
         <span class="n">start_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">end_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Loads data into a DataFrame from a given CSV file filtered by date and cleaned</span>
+<span class="sd">    Loads data from a csv file into a DataFrame while filtering and cleaning the data.</span>
 
-<span class="sd">    Loads the data from between the two specificed dates inclusive. If no start or end</span>
-<span class="sd">        date is specified the oldest and newest dates in the data are used respectively.</span>
-<span class="sd">        Adss a column with the Date normalized</span>
-<span class="sd">        Adds a column with the DOY from January 1st. Ie, January 1st = 0 and December 31st = 364</span>
-<span class="sd">        Adds a column with the Year in an integer representation</span>
+<span class="sd">    Loads data from a csv file into a DataFrame. Strips the column names of whitespace on either end and removes apostrophes.</span>
+<span class="sd">    Filters data by the given dates. If no start or end date is specified the oldest and newest dates in the data are used respectively.</span>
+<span class="sd">    Converts the date time column to Date Time objects and numeric columns to Numeric Data Types</span>
+<span class="sd">    Adds columns for the date_norm, DOY, and Year.</span>
+<span class="sd">        Column names can be found by running AEM.settings.calc_calculation_labels().</span>
+<span class="sd">        date_norm stores the date normalized to contain the same time, midnight.</span>
+<span class="sd">        doy stores the number of days since January 1st, where January 1st = 0 and December 31st = 364 or 365 during a leap year.</span>
+<span class="sd">        year stores the current year.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        file_path: The path to your csv data file</span>
-<span class="sd">        start_date: Optional. The date to start filtering from (Inclusive)</span>
-<span class="sd">        end_date: Optional. The date to stop filtering on (Inclusive)</span>
-<span class="sd">        date_format: The date_format to use on the file</span>
+<span class="sd">        file_path: The path to your csv data file.</span>
+<span class="sd">        start_date: Optional. The date to start filtering from (Inclusive).</span>
+<span class="sd">        end_date: Optional. The date to stop filtering on (Inclusive).</span>
+<span class="sd">        date_format: The date_format to use on the file.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        A DataFrame with the information from the csv file filtered by the specified dates</span>
+<span class="sd">        A DataFrame with the information from the csv file filtered by the specified dates.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If file_path is not a Path object.</span>
 <span class="sd">        ValueError: If the file extension is not &#39;.csv&#39;.</span>
 <span class="sd">        FileNotFoundError: If the file could not be found.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">global</span> <span class="n">LABELS</span>
 
     <span class="c1"># Check Parameters</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">csv_file_exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">__csv_file_exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file, </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">,  that you are trying to load does not exist.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">start_date</span> <span class="ow">and</span> <span class="n">end_date</span> <span class="ow">and</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The end date must be after the start date.</span><span class="se">\n</span><span class="s2">Start Date:</span><span class="se">\t</span><span class="si">{start_date}</span><span class="se">\n</span><span class="s2">End Date:</span><span class="se">\t</span><span class="si">{end_date}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -323,76 +318,94 @@
     <span class="n">df</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]],</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">date_time_column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The given date column name, </span><span class="si">{</span><span class="n">date_time_column</span><span class="si">}</span><span class="s2">, was not found in the csv data!&quot;</span><span class="p">)</span>
+    
+
+    <span class="n">df</span><span class="p">[</span><span class="n">date_time_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">date_time_column</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_time_format</span><span class="p">)</span>
+
+
 
     <span class="c1"># Filter data using the start and end dates</span>
     <span class="k">if</span> <span class="n">start_date</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">date_time_column</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)]</span>
     <span class="k">if</span> <span class="n">end_date</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">date_time_column</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)]</span>
 
     <span class="c1"># Adds a Year, DOY, and Normalized Date column to the df</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;doy&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">dayofyear</span><span class="o">-</span><span class="mi">1</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_norm&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="s1">&#39;date_time&#39;</span><span class="p">]],</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_format</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;DOY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">date_time_column</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">dayofyear</span><span class="o">-</span><span class="mi">1</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;YEAR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">date_time_column</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;NORMALIZED_DATE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">date_time_column</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="n">date_time_format</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
 
 
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="interpolate_missing_data">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.data.interpolate_missing_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">interpolate_missing_data</span><span class="p">(</span>
+<div class="viewcode-block" id="interpolate_df">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.data.interpolate_df">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">interpolate_df</span><span class="p">(</span>
         <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
-        <span class="n">label_keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">col_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
-        <span class="p">):</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Interpolates missing data within a DataFrame. Interpolates LABELS based on</span>
-<span class="sd">        list of keys in label_keys or all data is label_keys is None.</span>
+<span class="sd">    Interpolates missing data within a DataFrame.</span>
+
+<span class="sd">    Interpolates data using dataframes interpolate function. </span>
+<span class="sd">    If a list of column names are provided only those columns are interpolated.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        df:     The DataFrame to interpolate data on</span>
-<span class="sd">        LABELS: A list of the label keys to interpolate data on.</span>
-<span class="sd">        method: The pandas interpolation type to use on the data</span>
+<span class="sd">        df: The DataFrame to interpolate</span>
+<span class="sd">        col_names: An optional list of columns names to interpolate the data for</span>
+<span class="sd">        method: The dataframe interpolation method to use</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The DataFrame.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        KeyError: If one of the col_names was not found in the dataframe</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">LABELS</span>
-    <span class="k">if</span> <span class="n">label_keys</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">label_keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">col_names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;label_keys must containa list of keys or be none&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">label_keys</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">LABELS</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; was not found in the available LABELS&quot;</span><span class="p">)</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">col_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">col</span> <span class="o">+</span> <span class="s2">&quot; was not found in the df&quot;</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">LABELS</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="save_data">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.data.save_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span>
+<div class="viewcode-block" id="save_data_csv">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.data.save_data_csv">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_data_csv</span><span class="p">(</span>
         <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Saves your DataFrame to the given csv file</span>
+<span class="sd">    Saves your DataFrame to the given csv file.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        df: The dataframe to be saved</span>
-<span class="sd">        file_path: A Path to where you would like to save the data</span>
+<span class="sd">        df: The dataframe to be saved.</span>
+<span class="sd">        file_path: A Path to where you would like to save the data.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The Path to the newly saved file.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If file_path is not a Path object.</span>
 <span class="sd">        ValueError: If the file extension is not &#39;.csv&#39;.</span>
 <span class="sd">        FileNotFoundError: If the parent directory does not exist.</span>
-<span class="sd">        FileExistsError: If the file already exists and the user selects not to override it</span>
+<span class="sd">        FileExistsError: If the file already exists.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">LABELS</span>
 
     <span class="c1"># Check Parameters</span>
-    <span class="k">if</span> <span class="n">csv_file_exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The file </span><span class="si">{file_path}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">__csv_file_exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
         <span class="n">usr_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Are you sure you want OVERWRITE the file(y/n):  &quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">usr_input</span> <span class="ow">or</span> <span class="n">usr_input</span> <span class="o">!=</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file, </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">, already exists.&quot;</span><span class="p">)</span>
@@ -403,6 +416,79 @@
     <span class="k">return</span> <span class="n">file_path</span></div>
 
 
+
+<span class="c1"># Fletcher&#39;s Functions</span>
+<div class="viewcode-block" id="match_datetimes">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.data.match_datetimes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">match_datetimes</span><span class="p">(</span>
+        <span class="n">target_dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">desired_dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Matches each datetime in &#39;desired_dt&#39; to the closest datetime in &#39;target_dt&#39;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target_dt: The np array of actual weather date_times</span>
+<span class="sd">        desired_dt:    The np array of date_times to find the closest match for</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple of 4 numpy arrays</span>
+<span class="sd">        The first contains the original desired_dt</span>
+<span class="sd">        The second contains the date_times matched from the target_dt.</span>
+<span class="sd">        The third contains the indices of the matched date_times in the original target_dt</span>
+<span class="sd">        The fourth contains the the difference in time between the desired and matched times</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">target_dt</span><span class="p">,</span> <span class="n">desired_dt</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_dt</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">before</span> <span class="o">=</span> <span class="n">target_dt</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">after</span> <span class="o">=</span> <span class="n">target_dt</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">desired_dt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">before</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">desired_dt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">after</span><span class="p">):</span>
+                <span class="n">idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="n">matched_times</span> <span class="o">=</span> <span class="n">target_dt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">desired_dt</span> <span class="o">-</span> <span class="n">matched_times</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">desired_dt</span><span class="p">,</span> <span class="n">matched_times</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">diffs</span></div>
+
+ 
+<div class="viewcode-block" id="df_as_dict">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.data.df_as_dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_as_dict</span><span class="p">(</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts values from a DataFrame into a dictionary</span>
+
+<span class="sd">    Allows users to create a dictionary from a Dataframe. Column names are used for the dictionary keys.</span>
+<span class="sd">    Only the columns the user provides are added to the dictionary. If no columns are provided all columns are added.</span>
+<span class="sd">    The value stored in each key is a list of data from the given DataFrame column</span>
+<span class="sd">    Only the data for </span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df:   The DataFrame containing weather data</span>
+<span class="sd">        cols: The key names to be used in the dictionary</span>
+<span class="sd">        idx:  The indices in the DataFrame to be used in the dictionary</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary of {column_name: values}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get all Columns if None are specified</span>
+    <span class="k">if</span> <span class="n">cols</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="c1"># Get all indices if None are specified</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+
+    <span class="n">return_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">return_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">return_dict</span></div>
 
 
 
@@ -439,9 +525,9 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=cd7bf820"></script>
+</div><script src="../../_static/documentation_options.js?v=d31d1d1e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>
