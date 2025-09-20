@@ -1,5 +1,5 @@
 from typing import Optional, Tuple
-from scipy.stats import circmean
+from scipy.optimize import curve_fit
 
 import numpy as np
 import pandas as pd
@@ -17,73 +17,70 @@ def __compute_vapor_sat_pressure(temp: np.ndarray) -> np.ndarray:
     Computes saturation vapor pressure based Tetens formula.
     
     Args:
-        temp: Temperature used to calculate the saturation vapor pressure (°C).
+        temp: Numpy array of temperatures (°C).
     
     Returns:
-        Computed saturation vapor pressure (kPa).
+        Numpy array of computed saturation vapor pressure (kPa).
     """
-    e_sat = 0.6108 * np.exp(17.27 * temp/(temp+237.3)) 
-    return e_sat
+    return  0.6108 * np.exp(17.27 * temp/(temp+237.3)) 
 
 def __compute_solar_radiation(doy: np.ndarray, lat: float) -> np.ndarray:
     """
     Computes extra-terrestrial solar radiation using the FAO Penman-Monteith method.
     
     Args:
-        doy: Day of year (0-365) where January 1st is 0 and 365.
-        lat: Latitude in decimal degress. Where the northern hemisphere is positive and the southern hemisphere is negative.
-
+        doy: Numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
+        lat: The latitude to compute solar radiations at. (Degrees, North is positive)
     Returns:
-        Extra-terrestrial solar radiation (Ra) in MJ/m²/day.
+        A Numpy array of extra-terrestrial solar radiation on the given days. (MJ/(m² * day)).
     """
-    lat_radians = np.pi / 180 * lat 
+    lat = np.pi / 180 * lat     # Convert latitude to radians
+
     dr = 1 + 0.033 * np.cos(2 * np.pi * doy/365) # Inverse relative distance Earth-Sun
-    solar_declination = 0.409 * np.sin((2 * np.pi * doy/365) - 1.39) # Solar delcination
-    Gsc = 0.0820 # Solar constant
+    sol_declination = 0.409 * np.sin((2 * np.pi * doy/365) - 1.39)
 
-    sunset_hour_angle = np.arccos(-np.tan(lat_radians) * np.tan(solar_declination)) # Sunset hour angle
+    sunset_hour_angle = np.arccos(-np.tan(lat) * np.tan(sol_declination))
 
-    Ra = 24 * 60 / np.pi * Gsc * dr
-    Ra = Ra * (sunset_hour_angle * np.sin(lat_radians) * np.sin(solar_declination) + np.cos(lat_radians) * np.cos(solar_declination) * np.sin(sunset_hour_angle))
+    sol_rad = 24 * 60 / np.pi * 0.0820 * dr
+    sol_rad = sol_rad * (sunset_hour_angle * np.sin(lat) * np.sin(sol_declination) + np.cos(lat) * np.cos(sol_declination) * np.sin(sunset_hour_angle))
+    return sol_rad
 
-    return Ra
 
 # Air Temperature model
-def model_air_temp(air_temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
-    '''
-    Creates an air temperature model and creates air temperature estimates using model.
+def model_air_temp(temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
+    """
+    Generates a daily air temperature estimate by creating a model from actual air temperatures
 
-    Creates an air temperature model by finding the best fit for a sinusoidal function.
-        Estimates Parameters using the given data.
-        Creates a temperature estimate for each day in the df using the model
+    Creates a sinusoidal model of air temperature using best fit on the provided data.
+        Then creates daily air temperature predictions over the entire range of dates provided
 
     Args:
-        air_temps: The daily average air temperature (°C)
-        date_times: The datetime corresponding to each air temperature measurement
+        temps: A numpy array of average daily air temperatures. (°C)
+        date_times: A numpy array of date time objects correspoinding to the air temperatures
     
     Returns: 
         A numpy array of predicted daily temperatures over the period of the dataframe
-    '''
+    """
     # Estimate sinusoidal parameters
-    avg_temp = np.mean(air_temps)    # Mean Temperature | Units: °C
-    thermal_amp = (np.max(air_temps) - np.min(air_temps)) / 2  # | Units: °C
-
-    # Use the day with the minimum and maximum temperatures to calulate time_laf
-    min_idx = np.argmin(air_temps[:int(len(air_temps) / 2)])
-    min_date = pd.to_datetime(date_times[min_idx])
-    max_idx = np.argmax(air_temps)
-    max_date = pd.to_datetime(date_times[max_idx])
-    time_lag_date = min_date + (max_date - pd.Timedelta(days=183) - min_date) / 2
-    time_lag = (time_lag_date - pd.Timestamp(time_lag_date.year, 1, 1)).days  # days since Jan 1
+    thermal_amp = (np.max(temps) - np.min(temps)) / 2
+    avg_temp = np.mean(temps)
+    phase_shift = 15
+    param_estimate = [thermal_amp, avg_temp, phase_shift]
 
     # Convert all dates to day of year
     date_times = pd.to_datetime(date_times)
-    doys = date_times.dt.dayofyear
+    print(date_times)
+    doys = date_times.dt.dayofyear-1
+    print(doys)
+
+    def model(doy, amplitude, phase_shift, offset):
+        return amplitude * np.sin((2 * np.pi *doy / 365.25) + phase_shift) + offset
+    
+    params, __ = curve_fit(model, doys, temps, p0=param_estimate)
+    print(params)
 
     # Generate sinusoidal temperature predictions
-    pred_temp = avg_temp + thermal_amp * np.cos(
-        2 * np.pi * ((doys - time_lag) / 365.0) + np.pi
-    )
+    pred_temp = model(doys, params[0], params[1], params[2])
 
     return np.asarray(pred_temp)
 
@@ -503,7 +500,7 @@ def penman_monteith(
         latitude: float,
         altitude: float,
         solar_rad: Optional[np.ndarray]=None,
-        wind_height: int = 1.5,
+        wind_height: float = 1.5,
     ) -> np.ndarray:
     """
     Computed evapotranspiration using the penman-monteith model
@@ -520,7 +517,7 @@ def penman_monteith(
         latitude: Latitude in decimal degress. Where the northern hemisphere is 
             positive and the southern hemisphere is negative
         altitude: Altitude of the location in meters
-        wind_height: Height of measurment for wind speed
+        wind_height: Height of measurment for wind speed in meters
         
     Returns:
         The Hargreaves models predictions for evapotranspiration clipped to
@@ -537,6 +534,8 @@ def penman_monteith(
     else:
         # Calculates solar radiation
         solar_rad = __compute_solar_radiation(doy, latitude)
+        print(solar_rad)
+        solar_rad = 22
     
     temp_avg = (temp_min + temp_max)/2
     atm_pressure = (p_min+p_max)/2 # Can be also obtained from weather station
@@ -544,7 +543,7 @@ def penman_monteith(
     gamma = 0.000665* (Cp * atm_pressure)
 
     # Wind speed Adjustment
-    wind_speed_at_height = wind_speed * (4.87 / np.log((67.8 * wind_height) - 5.42))  # Eq. 47, FAO-56 wind height in [m]
+    wind_speed_at_height = 6.56 * wind_speed / (np.log(67.8 * wind_height) / np.log(np.e)) # Eq. 47, FAO-56 wind height in [m]
 
     # Calculates air humidity and vapor pressure
     delta = 4098 * (0.6108 * np.exp(17.27 * temp_avg / (temp_avg  + 237.3)))
@@ -555,7 +554,7 @@ def penman_monteith(
     e_actual = (e_temp_min * (RH_max / 100) + e_temp_max * (RH_min / 100)) / 2
 
     # Clear Sky Radiation: Rso (MJ/m2/day)
-    Rso =  (0.75 + (2 * 10**-5) * altitude) * solar_rad  # Eq. 37, FAO-56
+    Rso =  (0.75 + (1 / 50000) * altitude) * solar_rad  # Eq. 37, FAO-56
 
     # Rs/Rso = relative shortwave radiation (limited to <= 1.0)
     alpha = 0.23 # 0.23 for hypothetical grass reference crop
