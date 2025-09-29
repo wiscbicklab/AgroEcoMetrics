@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Optional
+from matplotlib import dates
 import pandas as pd
 import numpy as np
 
@@ -215,7 +216,7 @@ def plot_yearly_3d_soil_temp(
 
     return __save_plot(file_path)
 
-def plot_soil_temp_predictions(
+def plot_modeled_soil_temp(
         air_temp: np.ndarray,
         pred_temp: np.ndarray,
         depth: float,
@@ -253,7 +254,7 @@ def plot_soil_temp_predictions(
     # Create Plot
     plt.figure(figsize=(8, 4))
     plt.scatter(time, air_temp, s=5, color="gray", label="Air Temperature")
-    plt.plot(time, pred_temp, label=f"Predicted: {depth}in", color="tomato", linewidth=1)
+    plt.plot(time, pred_temp, label=f"Predicted: {depth}m", color="tomato", linewidth=1)
 
     # Add Optional actual soil temperature
     if soil_temp is not None:
@@ -266,7 +267,7 @@ def plot_soil_temp_predictions(
 
     return __save_plot(file_path)
 
-def plot_3d_soil_temp_predictions(
+def plot_3d_modeled_soil_temp(
         time_grid: np.ndarray,
         depth_grid: np.ndarray,
         temp_grid: np.ndarray,

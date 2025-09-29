@@ -212,7 +212,7 @@ def yearly_3d_soil_temp(
 def model_soil_temp(
         air_temps: np.ndarray,
         depth: float,
-        thermal_dif: int = 0.203,
+        thermal_dif: int = 0.0000005,
     ) -> np.ndarray:
     """
     Creates soil temperature predictions for each air temperature provided over the course of a day
@@ -223,14 +223,14 @@ def model_soil_temp(
 
     Args:
         air_temps: A numpy array of air temperatures at the soil surface. (°C)
-        depth: The depth to model the soil temperature. (cm)
-        thermal_dif: The thermal diffusivity of the soil to model. (mm^2 / s)
+        depth: The depth to model the soil temperature. (m)
+        thermal_dif: The thermal diffusivity of the soil to model. (m^2 / s)
 
     Returns:
         A numpy array containing the predicted temperatures. (°C)
     """
     # Estimate sinusoidal parameters
-    thermal_amp = (np.max(air_temps) - np.min(air_temps)) / 2
+    thermal_amp = (np.max(air_temps) - np.min(air_temps))
     avg_temp = np.mean(air_temps)
     phase_shift = 3600
     param_estimate = [thermal_amp, avg_temp, phase_shift]
@@ -241,19 +241,24 @@ def model_soil_temp(
     # Determine constants
     PHASE_FREQ = 2 * np.pi / DAY_SECONDS 
 
-    def model(time, amplitude, phase_shift, offset):
-        return amplitude * np.sin((time * PHASE_FREQ) + phase_shift) + offset
+    def model(time, amplitude, phase_shift, avg_temp):
+        return amplitude * np.sin((time * PHASE_FREQ) + phase_shift) + avg_temp
     
     # Estimate function parameters
     params, __ = curve_fit(model, times, air_temps, p0=param_estimate)
-    damp_depth = (2 * thermal_dif / PHASE_FREQ) ** 0.5
+    damp_depth = np.sqrt(2 * thermal_dif / PHASE_FREQ)
 
-    # Generate soil temperature preditions
-    soil_temps = np.sin(PHASE_FREQ * (times - params[1]) * (depth / damp_depth))
-    soil_temps *= params[0] * np.exp(-depth / damp_depth)
+    pred_air_temps = params[0] * np.sin((times * PHASE_FREQ) + params[1]) + params[2]
+    
+    print(params)
+    print((np.exp(-depth/damp_depth) / np.exp(np.e)))
+    print(params[0] * (np.exp(-depth/damp_depth) / np.exp(np.e)))
+    # Generate soil temperature preditions    
+    soil_temps = params[0] * (np.exp(-depth/damp_depth) / np.exp(np.e))
+    soil_temps *= np.sin((times * PHASE_FREQ) - (depth / damp_depth) + params[1])
     soil_temps += params[2]
 
-    return soil_temps
+    return pred_air_temps
 
 def model_3d_soil_temp(
         air_temps: np.ndarray,
@@ -512,6 +517,7 @@ def penman_monteith(
         doys:       A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
         lat:        The latitude of the location. (Degrees, North is positive)
         alts:       The altitude of the location. (m)
+        solar_rad   The soloar radiation occuring over the whole day. ((MJ/(m² * day))
         wind_height: Height of for wind speed measurments. (m)
         
     Returns:
@@ -826,6 +832,5 @@ def cummulative_water_infiltration(
     water_inful =  water_inful ** 0.5 + LITTLE_G * avg_sat_hydraulic_conductivity * times
 
     return water_inful
-
 
 

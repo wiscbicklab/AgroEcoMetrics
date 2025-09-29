@@ -195,10 +195,10 @@ def air_to_soil_temp_test(df: pd.DataFrame, file_path: Path):
     try:
         for i in range(10, 31):
             temp_predictions, air_temp, soil_temp = AEM.equations.model_soil_temp(df, 10, f"07/{i}/2024 12:00 AM")
-            AEM.visualizations.plot_soil_temp_predictions(air_temp, temp_predictions, 10, file_path.joinpath(f"July_Soil_Predictions/July_{i}_soil_temp_predictions.png"), soil_temp)
+            AEM.visualizations.plot_modeled_soil_temp(air_temp, temp_predictions, 10, file_path.joinpath(f"July_Soil_Predictions/July_{i}_soil_temp_predictions.png"), soil_temp)
 
         time_grid, depth_grid, temp_grid = AEM.equations.model_3d_soil_temp(df, 10, "07/21/2024 12:00 AM")
-        AEM.visualizations.plot_3d_soil_temp_predictions(time_grid, depth_grid, temp_grid, file_path.joinpath("3d_soil_temp_predictions.png"))
+        AEM.visualizations.plot_3d_modeled_soil_temp(time_grid, depth_grid, temp_grid, file_path.joinpath("3d_soil_temp_predictions.png"))
         return True
     except Exception as e:
         print("ERROR:", e)
