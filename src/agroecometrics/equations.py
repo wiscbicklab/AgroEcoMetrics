@@ -252,13 +252,13 @@ def model_soil_temp(
     
     print(params)
     print((np.exp(-depth/damp_depth) / np.exp(np.e)))
-    print(params[0] * (np.exp(-depth/damp_depth) / np.exp(np.e)))
+    print(params[0] * (np.e**(-depth/damp_depth)))
     # Generate soil temperature preditions    
-    soil_temps = params[0] * (np.exp(-depth/damp_depth) / np.exp(np.e))
+    soil_temps = params[0] * (np.e**(-depth/damp_depth))
     soil_temps *= np.sin((times * PHASE_FREQ) - (depth / damp_depth) + params[1])
     soil_temps += params[2]
 
-    return pred_air_temps
+    return soil_temps
 
 def model_3d_soil_temp(
         air_temps: np.ndarray,
