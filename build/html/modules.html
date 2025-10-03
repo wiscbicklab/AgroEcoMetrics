@@ -7,7 +7,7 @@
         <link rel="canonical" href="https://wiscbicklab.github.io//AgroEcoMetrics/modules.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>agroecometrics package - AgroEcoMetrics 0.1.0b2 documentation</title>
+        <title>agroecometrics package - AgroEcoMetrics 0.1.0a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">AgroEcoMetrics 0.1.0b2 documentation</div></a>
+      <a href="index.html"><div class="brand">AgroEcoMetrics 0.1.0a documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0b2 documentation</span>
+  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0a documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -303,11 +303,15 @@ If a list of column names are provided only those columns are interpolated.</p>
 <p>Loads data from a csv file into a DataFrame. Strips the column names of whitespace on either end and removes apostrophes.
 Filters data by the given dates. If no start or end date is specified the oldest and newest dates in the data are used respectively.
 Converts the date time column to Date Time objects and numeric columns to Numeric Data Types
-Adds columns for the date_norm, DOY, and Year.
-- Column names can be found by running AEM.settings.calc_calculation_labels().
-- date_norm stores the date normalized to contain the same time, midnight.
-- doy stores the number of days since January 1st, where January 1st = 0 and December 31st = 364 or 365 during a leap year.
-- year stores the current year.</p>
+Adds columns for the date_norm, DOY, and Year.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Column names can be found by running AEM.settings.calc_calculation_labels().</p></li>
+<li><p>date_norm stores the date normalized to contain the same time, midnight.</p></li>
+<li><p>doy stores the number of days since January 1st, where January 1st = 0 and December 31st = 364 or 365 during a leap year.</p></li>
+<li><p>year stores the current year.</p></li>
+</ul>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1253,7 +1257,7 @@ positive and the southern hemisphere is negative.</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=d31d1d1e"></script>
+</div><script src="_static/documentation_options.js?v=fa83724a"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
