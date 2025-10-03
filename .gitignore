@@ -16,7 +16,6 @@ dist/
 *.egg-info/
 *.egg
 source/
-docs/
 
 # Ignore Example Code
 Tests/Paper/
