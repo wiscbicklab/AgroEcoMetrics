@@ -212,7 +212,7 @@ def yearly_3d_soil_temp(
 def model_soil_temp(
         air_temps: np.ndarray,
         depth: float,
-        thermal_dif: int = 0.0000005,
+        thermal_dif: int = 0.000001,
     ) -> np.ndarray:
     """
     Creates soil temperature predictions for each air temperature provided over the course of a day
@@ -250,9 +250,6 @@ def model_soil_temp(
 
     pred_air_temps = params[0] * np.sin((times * PHASE_FREQ) + params[1]) + params[2]
     
-    print(params)
-    print((np.exp(-depth/damp_depth) / np.exp(np.e)))
-    print(params[0] * (np.e**(-depth/damp_depth)))
     # Generate soil temperature preditions    
     soil_temps = params[0] * (np.e**(-depth/damp_depth))
     soil_temps *= np.sin((times * PHASE_FREQ) - (depth / damp_depth) + params[1])
