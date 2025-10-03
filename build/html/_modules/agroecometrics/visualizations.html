@@ -237,9 +237,7 @@
           <h1>Source code for agroecometrics.visualizations</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
@@ -309,34 +307,35 @@
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_air_temp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_air_temp</span><span class="p">(</span>
         <span class="n">air_temps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">predicted_temps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">pred_temps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">date_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a plot of air temperature over the time.</span>
+<span class="sd">    Creates a plot of air temperature and predicted air temperatures over the time.</span>
+
+<span class="sd">    The actual air temperature are plotted as a scatter plot and the predicted air temperatures are ploted as a graph.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        air_temps: The actually air temperatures.</span>
-<span class="sd">        predicted_temps: The predicted air temperatures.</span>
-<span class="sd">        date_times: The datetime objects corresponding to the each actual and predicted temp.</span>
+<span class="sd">        air_temps: A numpy array of actual air temperatures. (°C)</span>
+<span class="sd">        pred_temps: A numpy array of the predicted air temperatures. (°C)</span>
+<span class="sd">        date_times: A numpy array of date times corrosponding to the air temperatures.</span>
 <span class="sd">        file_path: A Path object representing the output file path.</span>
 
 <span class="sd">    Returns: </span>
-<span class="sd">        The resolved file path where the plot was saved</span>
+<span class="sd">        The resolved file path where the plot was saved.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If file_path is not a Path object.</span>
 <span class="sd">        ValueError: If the file extension is not &#39;.png&#39;.</span>
 <span class="sd">        FileNotFoundError: If the parent directory does not exist.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">LABELS</span>
     <span class="n">__check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
     <span class="c1"># Plot actual vs predicted temperature</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">date_times</span><span class="p">,</span> <span class="n">air_temps</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observed&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">date_times</span><span class="p">,</span> <span class="n">predicted_temps</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Predicted&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tomato&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">date_times</span><span class="p">,</span> <span class="n">air_temps</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observed&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">date_times</span><span class="p">,</span> <span class="n">pred_temps</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Predicted&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Air temperature (Celsius)&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">)</span>
     
@@ -349,14 +348,14 @@
 <div class="viewcode-block" id="plot_yearly_soil_temp">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_yearly_soil_temp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_yearly_soil_temp</span><span class="p">(</span>
-        <span class="n">soil_temp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">soil_temps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a plot of modeled soil temperature over a year&#39;s time</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        T_soil: A numpy array of soil temperatures for each day of the year in order</span>
+<span class="sd">        soil_temps: A numpy array of soil temperatures for each day of the year. (°C)</span>
 <span class="sd">        file_path: A Path object representing the output file path.</span>
 
 <span class="sd">    Returns: </span>
@@ -373,7 +372,7 @@
     <span class="c1"># Create the soil temperature plot</span>
     <span class="n">doy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">365</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span><span class="n">soil_temp</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span><span class="n">soil_temps</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Surface Soil Temperature (Celsius)&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Day of Year&quot;</span><span class="p">)</span>
    
@@ -384,15 +383,15 @@
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_daily_soil_temp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_daily_soil_temp</span><span class="p">(</span>
         <span class="n">soil_temps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">soil_depths</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a plot of modeled soil temperature at a given depth</span>
+<span class="sd">    Creates a plot of modeled soil temperature at a given depth.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        soil_temp: Is the predicted soil temperatures (°C)</span>
-<span class="sd">        depth: Is the depth that the soil temperature predictions are made at. (m)</span>
+<span class="sd">        soil_temp: A numpy array of the predicted soil temperatures. (°C)</span>
+<span class="sd">        depth: The depth that the soil temperature predictions are made at. (cm)</span>
 <span class="sd">        file_path: A Path object representing the output file path.</span>
 
 <span class="sd">    Returns: </span>
@@ -408,7 +407,7 @@
 
     <span class="c1"># Create Plot</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">soil_depths</span><span class="p">,</span> <span class="n">soil_temps</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">soil_temps</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Soil temperature (Celsius)&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Soil Depth (Centimeters)&quot;</span><span class="p">)</span>
     
@@ -424,7 +423,7 @@
         <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a 3d plot of soil temperature at different depths over the course of a year</span>
+<span class="sd">    Creates a 3d plot of soil temperature at different depths over the course of a year.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        doy_gird: A 2d np.ndarray with shape (Nz, 365) containing the day of year</span>
@@ -464,63 +463,94 @@
     <span class="k">return</span> <span class="n">__save_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plot_soil_temp_predictions">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_soil_temp_predictions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_soil_temp_predictions</span><span class="p">(</span>
+<div class="viewcode-block" id="plot_modeled_soil_temp">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_modeled_soil_temp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_modeled_soil_temp</span><span class="p">(</span>
         <span class="n">air_temp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">pred_temp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">depth</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">pred_temps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">depths</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">soil_temp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#0072b2&quot;</span><span class="p">,</span> <span class="s2">&quot;#009e73&quot;</span><span class="p">,</span> <span class="s2">&quot;#cc79a7&quot;</span><span class="p">,</span> <span class="s2">&quot;#d55e00&quot;</span><span class="p">,</span> <span class="s2">&quot;#F0E442&quot;</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a plot of air temperature and the predicted soil temperature on a particular date</span>
 
-<span class="sd">    Creates a plot showing the given air temperature and the predicted soil temperature</span>
-<span class="sd">        for the given depth. Optionally plots the actual soil temperature for comparision</span>
+<span class="sd">    Creates a plot showing the given air temperature as a scatter plot, the actual soil temperature</span>
+<span class="sd">    as a scatter plot if provided, and a graphed approximation of the predicted soil temperature at</span>
+<span class="sd">    each of the provided depths. The first provided color is used for the air temperature, the next </span>
+<span class="sd">    is used for actual soil temperatures if provided, and the next available is used for the predicted</span>
+<span class="sd">    soil temperatures.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        air_temp: The air temperature collected every 5 minutes</span>
-<span class="sd">        pred_temp: The soil temperature prediction given in 5 minute intervals</span>
-<span class="sd">        depth: The depth that the soil temperature was predicted at</span>
+<span class="sd">        air_temp: A numpy array of the air temperature collected over a single day.</span>
+<span class="sd">        pred_temps: A 2d numpy array where each row is a set of predicted soil temperatures corrosponding</span>
+<span class="sd">            to the provided air temperatures. Each row corrospondes to the depth in depths.</span>
+<span class="sd">        depths: The depth that the soil temperature was predicted at</span>
 <span class="sd">        file_path: A Path object representing the output file path.</span>
-<span class="sd">        soil_temp: The collected soil temperature given in 5 minute intervals</span>
+<span class="sd">        soil_temp: A numpy array of the collected soil temperature at the same interval as air temperature.</span>
+<span class="sd">        colors: A list of strings providing the color codes to use for the plot. 5 color blind friendly colors are provided.</span>
 
 <span class="sd">    Returns: </span>
 <span class="sd">        The filename where the plot was saved</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If file_path is not a Path object.</span>
-<span class="sd">        ValueError: If the file extension is not &#39;.png&#39; or if the needed label(s) isn&#39;t found in the df</span>
+<span class="sd">        ValueError: If the file extension is not &#39;.png&#39;.</span>
 <span class="sd">        FileNotFoundError: If the parent directory does not exist.</span>
+<span class="sd">        ValueError: If the number of predicted temperatures per set is not equal to the number of provided air temperatures.</span>
+<span class="sd">        ValueError: If the number of predicted temperature sets is not equal to the number of provided depths.</span>
+<span class="sd">        ValueError: If the number of required colors is greater than the number of available colors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">data_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)</span>
     <span class="c1"># Validate input parameters</span>
     <span class="n">__check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pred_temps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">air_temp</span><span class="p">)</span><span class="si">}</span><span class="s2"> air temperatures provided, but </span><span class="si">{</span><span class="n">pred_temps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> predicted temps provided per depth&quot;</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pred_temps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">depths</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">depths</span><span class="p">)</span><span class="si">}</span><span class="s2"> depths provided, but </span><span class="si">{</span><span class="n">pred_temps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> predicted temps provided&quot;</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">soil_temp</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">pred_temps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not enought colors provided&quot;</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">pred_temps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not enought colors provided&quot;</span><span class="p">)</span>
+
     
-    <span class="c1"># Generate time intervals</span>
-    <span class="n">time_passed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1440</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-    <span class="n">time</span> <span class="o">=</span> <span class="n">time_passed</span> <span class="o">/</span> <span class="mi">60</span> 
+    <span class="c1"># Create list of measurement times</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1440</span><span class="p">,</span> <span class="mi">1440</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">air_temp</span><span class="p">))</span>
+    
+    <span class="n">color_num</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="c1"># Create Plot</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">air_temp</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Air Temperature&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">pred_temp</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Predicted: </span><span class="si">{</span><span class="n">depth</span><span class="si">}</span><span class="s2">in&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tomato&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Add air temperature scatter plot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">air_temp</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">color_num</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Air Temperature&quot;</span><span class="p">)</span>
+    <span class="n">color_num</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="c1"># Add Optional actual soil temperature</span>
+    <span class="c1"># Add actual soil temperature scatter plot</span>
     <span class="k">if</span> <span class="n">soil_temp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">soil_temp</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Soil Temp&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">soil_temp</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">color_num</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Soil Temp&quot;</span><span class="p">)</span>
+        <span class="n">color_num</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Create Soil Temperature Graph</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">depths</span><span class="p">)):</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="n">depths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">pred_temp</span> <span class="o">=</span> <span class="n">pred_temps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">pred_temp</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Predicted: </span><span class="si">{</span><span class="n">depth</span><span class="si">}</span><span class="s2">m&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">color_num</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">color_num</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    
 
     <span class="c1"># Set labels</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Temperature  (Celsius)&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (Hours)&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">ticks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">24</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;12 AM&quot;</span><span class="p">,</span> <span class="s2">&quot;6 AM&quot;</span><span class="p">,</span> <span class="s2">&quot;12 PM&quot;</span><span class="p">,</span> <span class="s2">&quot;6 PM&quot;</span><span class="p">,</span> <span class="s2">&quot;12 AM&quot;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">ticks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">720</span><span class="p">,</span> <span class="mi">1080</span><span class="p">,</span> <span class="mi">1440</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;12 AM&quot;</span><span class="p">,</span> <span class="s2">&quot;6 AM&quot;</span><span class="p">,</span> <span class="s2">&quot;12 PM&quot;</span><span class="p">,</span> <span class="s2">&quot;6 PM&quot;</span><span class="p">,</span> <span class="s2">&quot;12 AM&quot;</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">__save_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plot_3d_soil_temp_predictions">
-<a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_3d_soil_temp_predictions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_3d_soil_temp_predictions</span><span class="p">(</span>
+<div class="viewcode-block" id="plot_3d_modeled_soil_temp">
+<a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_3d_modeled_soil_temp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_3d_modeled_soil_temp</span><span class="p">(</span>
         <span class="n">time_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">depth_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">temp_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -578,39 +608,50 @@
 <div class="viewcode-block" id="plot_evapo_data">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.visualizations.plot_evapo_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_evapo_data</span><span class="p">(</span>
-        <span class="n">evapotranspiration</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">pred_evapos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">date_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-        <span class="n">model_label</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;EvapoTranspiration&quot;</span><span class="p">,</span>
+        <span class="n">model_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">colors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#0072b2&quot;</span><span class="p">,</span> <span class="s2">&quot;#009e73&quot;</span><span class="p">,</span> <span class="s2">&quot;#cc79a7&quot;</span><span class="p">,</span> <span class="s2">&quot;#d55e00&quot;</span><span class="p">,</span> <span class="s2">&quot;#F0E442&quot;</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a plot of different evapotraspiration data over time</span>
-
-<span class="sd">    Creates a plot over time of the predicted evapotranspiration in mm/day.</span>
-<span class="sd">      Creates labels and uses different colors for each of the models. </span>
-<span class="sd">      Creates a legend of the model names and colors.</span>
+<span class="sd">    Creates a plot of different evapotraspiration data over time..</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        evapotranspiration: The evapotranspiration (mm/day)</span>
-<span class="sd">        date_times: The datetime objects corresponding to the each actual and predicted temp.</span>
+<span class="sd">        pred_evapos: A 2d Numpy array of evapotranspirations, each row represents a different model. (mm/day)</span>
+<span class="sd">        date_times: A numpy array of date times corrosponding to the evapotranspiration data of each model.</span>
 <span class="sd">        file_path: A Path object representing the output file path.</span>
-<span class="sd">        model_label: Is the label to use on the x-axis for the model</span>
+<span class="sd">        model_labels: A list of labels corrosponding to each row of the provided evapotranspiration data.</span>
+<span class="sd">        colors: A list of strings providing the color codes to use for the plot. 5 color blind friendly colors are provided.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns: </span>
 <span class="sd">        The filename where the plot was saved</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If file_path is not a Path object.</span>
-<span class="sd">        ValueError: If the file extension is not &#39;.png&#39; or if the needed label(s) isn&#39;t found in the df</span>
+<span class="sd">        ValueError: If the file extension is not &#39;.png&#39;.</span>
 <span class="sd">        FileNotFoundError: If the parent directory does not exist.</span>
+<span class="sd">        ValueError: If the length of evapotranspiration data per depth is not equal to the number of date times provided.</span>
+<span class="sd">        ValueError: IF the number of model labels is not equal to the number of evapotranspiration models provided.</span>
+<span class="sd">        ValueError: If the number of of depths provided is greater than the number of colors provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check params</span>
     <span class="n">__check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pred_evapos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_times</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">date_times</span><span class="p">)</span><span class="si">}</span><span class="s2"> Date times were provided, but </span><span class="si">{</span><span class="n">pred_evapos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> data points for each evapotranspiration models provided.&quot;</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pred_evapos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_labels</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data for </span><span class="si">{</span><span class="n">pred_evapos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> evapotransipation models provided, but </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">model_labels</span><span class="p">)</span><span class="si">}</span><span class="s2"> model labels provided.&quot;</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pred_evapos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not enough colors provided&quot;</span><span class="p">)</span>
 
-
-    <span class="c1"># Generates a new Plot</span>
+    <span class="c1"># Generates a new figure</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">date_times</span><span class="p">,</span> <span class="n">evapotranspiration</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">model_label</span><span class="p">)</span>
+    <span class="c1"># Add Evapotranspiration models to the figure</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">model_labels</span><span class="p">)):</span>
+        <span class="n">pred_evapo</span> <span class="o">=</span> <span class="n">pred_evapos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">model_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">date_times</span><span class="p">,</span> <span class="n">pred_evapo</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
     
     <span class="c1"># Adds plot label</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Evapotranspiration (mm/day)&quot;</span><span class="p">)</span>
@@ -642,7 +683,7 @@
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If file_path is not a Path object.</span>
-<span class="sd">        ValueError: If the file extension is not &#39;.png&#39; or the rainfall, runnoff, and date_times parameters are not the same length</span>
+<span class="sd">        ValueError: If the file extension is not &#39;.png&#39;.</span>
 <span class="sd">        FileNotFoundError: If the parent directory does not exist.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__check_png_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
