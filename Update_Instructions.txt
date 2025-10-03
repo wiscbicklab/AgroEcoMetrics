@@ -2,7 +2,7 @@
 1. Update the version Number in pyproject.toml
 2. rm -rf dist build src/agroecometrics.egg-info
 3. python -m build 
-4. python -m twine upload dist/*
+4. python -m twine upload dist/* (You will need a PyPi key for this step)
 
     Uploading new Documentation to Github
 1. Copy the src folder from the branch you are creating documentation for to the gh-pages branch.
@@ -10,6 +10,7 @@
 3. Run 'make clean'
 4. Run 'make html'
 5. Copy the contents of build/html into docs
+6. Commit and push to Github
 
 
 
