@@ -242,17 +242,17 @@ def model_soil_temp(
     PHASE_FREQ = 2 * np.pi / DAY_SECONDS 
 
     def model(time, amplitude, phase_shift, avg_temp):
-        return amplitude * np.sin((time * PHASE_FREQ) + phase_shift) + avg_temp
+        return amplitude * np.sin((time * PHASE_FREQ) - phase_shift) + avg_temp
     
     # Estimate function parameters
     params, __ = curve_fit(model, times, air_temps, p0=param_estimate)
     damp_depth = np.sqrt(2 * thermal_dif / PHASE_FREQ)
 
-    pred_air_temps = params[0] * np.sin((times * PHASE_FREQ) + params[1]) + params[2]
+    #pred_air_temps = params[0] * np.sin((times * PHASE_FREQ) + params[1]) + params[2]
     
     # Generate soil temperature preditions    
-    soil_temps = params[0] * (np.e**(-depth/damp_depth))
-    soil_temps *= np.sin((times * PHASE_FREQ) - (depth / damp_depth) + params[1])
+    soil_temps = params[0] * (np.exp(-depth/damp_depth))
+    soil_temps *= np.sin((times * PHASE_FREQ) - (depth / damp_depth) - params[1])
     soil_temps += params[2]
 
     return soil_temps
@@ -282,7 +282,7 @@ def model_3d_soil_temp(
     # Calculate depths to evaluate
     depths = np.linspace(max_depth / num_depths, max_depth, num_depths)
 
-    # Time steps: 5-minute intervals over the full day
+    # Time steps: Equal spaced time intervals over the full day
     times = np.linspace(0, DAY_SECONDS, len(air_temps))
 
     # Preallocate matrix: [depth x time]

@@ -95,8 +95,8 @@ def plot_air_temp(
 
     # Plot actual vs predicted temperature
     plt.figure(figsize=(8, 4))
-    plt.scatter(date_times, air_temps, s=5, color="red", label="Observed")
-    plt.plot(date_times, pred_temps, label="Predicted", color="blue", linewidth=1)
+    plt.scatter(date_times, air_temps, s=5, color="gray", label="Observed")
+    plt.plot(date_times, pred_temps, label="Predicted", color="red", linewidth=1)
     plt.ylabel("Air temperature (Celsius)")
     plt.xlabel("Date")
     
@@ -251,7 +251,6 @@ def plot_modeled_soil_temp(
         ValueError: If the number of predicted temperature sets is not equal to the number of provided depths.
         ValueError: If the number of required colors is greater than the number of available colors.
     """    
-    data_len = len(air_temp)
     # Validate input parameters
     __check_png_filename(file_path)
     if(pred_temps.shape[1] != len(air_temp)):
@@ -263,12 +262,12 @@ def plot_modeled_soil_temp(
             raise ValueError("Not enought colors provided")
         elif(pred_temps.shape[0] + 1 > len(colors)):
             raise ValueError("Not enought colors provided")
-
     
     # Create list of measurement times
     times = np.arange(0, 1440, 1440/len(air_temp))
     
     color_num = 0
+    plt.figure(figsize=(8, 4))
 
     # Add air temperature scatter plot
     plt.scatter(times, air_temp, s=5, color=colors[color_num], label="Air Temperature")
@@ -280,7 +279,6 @@ def plot_modeled_soil_temp(
         color_num += 1
 
     # Create Soil Temperature Graph
-    plt.figure(figsize=(8, 4))
     for i in range(len(depths)):
         depth = depths[i]
         pred_temp = pred_temps[i]
@@ -353,8 +351,8 @@ def plot_3d_modeled_soil_temp(
 def plot_evapo_data(
         pred_evapos: np.ndarray,
         date_times: np.ndarray,
-        file_path: Path,
         model_labels: list[str],
+        file_path: Path,
         colors: list[str] = ["#0072b2", "#009e73", "#cc79a7", "#d55e00", "#F0E442"],
     ) -> Path:
     """
