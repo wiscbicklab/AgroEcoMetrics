@@ -145,7 +145,7 @@ def daily_soil_temp(
     Returns:
         A tuple containing two numpy arrays.
             - The first contains the soil temperature predictions. (°C)
-            - The second contains the depth of each prediction. (cm)
+            - The second contains the depth of each prediction. (m)
     """
     # Set Constants
     PHASE_FREQ = 2 * np.pi / 365
@@ -513,7 +513,7 @@ def penman_monteith(
         wind_speed: A numpy array of average daily wind speeds. (m/s)
         doys:       A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
         lat:        The latitude of the location. (Degrees, North is positive)
-        alts:       The altitude of the location. (m)
+        alt:       The altitude of the location. (m)
         solar_rad   The soloar radiation occuring over the whole day. ((MJ/(m² * day))
         wind_height: Height of for wind speed measurments. (m)
         

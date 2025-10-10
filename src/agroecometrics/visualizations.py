@@ -146,7 +146,7 @@ def plot_daily_soil_temp(
 
     Args:
         soil_temp: A numpy array of the predicted soil temperatures. (°C)
-        depth: The depth that the soil temperature predictions are made at. (cm)
+        depth: The depth that the soil temperature predictions are made at. (m)
         file_path: A Path object representing the output file path.
 
     Returns: 
@@ -164,7 +164,7 @@ def plot_daily_soil_temp(
     plt.figure()
     plt.plot(depth, soil_temps)
     plt.ylabel("Soil temperature (Celsius)")
-    plt.xlabel("Soil Depth (Centimeters)")
+    plt.xlabel("Soil Depth (Meters)")
     
     return __save_plot(file_path)
 
@@ -181,9 +181,9 @@ def plot_yearly_3d_soil_temp(
         doy_gird: A 2d np.ndarray with shape (Nz, 365) containing the day of year
                 for each plot point.
         z_grid:   A 2d np.ndarray with shape (Nz, 365) containing the soil depth
-                for each plot point.
+                for each plot point. (m)
         t_grid:   A 2d np.ndarray with shape (Nz, 365) containing the soil temperature
-                for each plot point.
+                for each plot point. (°C)
         file_path: A Path object representing the output file path.
     
     Returns: 
@@ -206,7 +206,7 @@ def plot_yearly_3d_soil_temp(
 
     # Label x,y, and z axis
     ax.set_xlabel("Day of the year")
-    ax.set_ylabel("Soil depth [cm]")
+    ax.set_ylabel("Soil depth (Meters)")
     ax.set_zlabel("Soil temperature (Celsius)")
 
     # Set position of the 3D plot
@@ -232,10 +232,10 @@ def plot_modeled_soil_temp(
     soil temperatures.
 
     Args:
-        air_temp: A numpy array of the air temperature collected over a single day.
+        air_temp: A numpy array of the air temperature collected over a single day. (°C)
         pred_temps: A 2d numpy array where each row is a set of predicted soil temperatures corrosponding
-            to the provided air temperatures. Each row corrospondes to the depth in depths.
-        depths: The depth that the soil temperature was predicted at
+            to the provided air temperatures. Each row corrospondes to the depth in depths. (°C)
+        depths: The depth that the soil temperature was predicted at. (m)
         file_path: A Path object representing the output file path.
         soil_temp: A numpy array of the collected soil temperature at the same interval as air temperature.
         colors: A list of strings providing the color codes to use for the plot. 5 color blind friendly colors are provided.
@@ -304,9 +304,9 @@ def plot_3d_modeled_soil_temp(
     Creates a 3D plot of predicted soil temperature over the course of a single day at different depths.
 
     Args:
-        time_grid: A 2D numpy array of shape (n_depths, n_times), where each value is time in minutes.
-        depth_grid: A 2D numpy array matching time_grid, where each value is the depth in cm.
-        temp_grid: A 2D numpy array of predicted soil temperatures (same shape as time_grid).
+        time_grid: A 2D numpy array of shape (n_depths, n_times), where each value is time. (min)
+        depth_grid: A 2D numpy array matching time_grid, where each value is the depth. (m)
+        temp_grid: A 2D numpy array of predicted soil temperatures (same shape as time_grid). (°C)
         file_path: A Path object representing the output file path.
 
     Returns:
@@ -336,7 +336,7 @@ def plot_3d_modeled_soil_temp(
 
     # Axis labels
     ax.set_xlabel("Hour of Day")
-    ax.set_ylabel("Soil Depth [cm]")
+    ax.set_ylabel("Soil Depth (Meters)")
     ax.set_zlabel("Soil Temperature (°C)")
 
     # Set viewing angle
