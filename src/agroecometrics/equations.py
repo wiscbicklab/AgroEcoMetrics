@@ -1,5 +1,5 @@
 from typing import Optional, Tuple
-from scipy.stats import circmean
+from scipy.optimize import curve_fit
 
 import numpy as np
 import pandas as pd
@@ -17,73 +17,67 @@ def __compute_vapor_sat_pressure(temp: np.ndarray) -> np.ndarray:
     Computes saturation vapor pressure based Tetens formula.
     
     Args:
-        temp: Temperature used to calculate the saturation vapor pressure (°C).
+        temp: Numpy array of temperatures. (°C)
     
     Returns:
-        Computed saturation vapor pressure (kPa).
+        Numpy array of computed saturation vapor pressure. (kPa)
     """
-    e_sat = 0.6108 * np.exp(17.27 * temp/(temp+237.3)) 
-    return e_sat
+    return  0.6108 * np.exp(17.27 * temp/(temp+237.3)) 
 
-def __compute_solar_radiation(doy: np.ndarray, lat: float) -> np.ndarray:
+def __compute_solar_radiation(doys: np.ndarray, lat: float) -> np.ndarray:
     """
     Computes extra-terrestrial solar radiation using the FAO Penman-Monteith method.
     
     Args:
-        doy: Day of year (0-365) where January 1st is 0 and 365.
-        lat: Latitude in decimal degress. Where the northern hemisphere is positive and the southern hemisphere is negative.
-
+        doys: Numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
+        lat: The latitude to compute solar radiations at. (Degrees, North is positive)
     Returns:
-        Extra-terrestrial solar radiation (Ra) in MJ/m²/day.
+        A Numpy array of extra-terrestrial solar radiation on the given days. (MJ/(m² * day)).
     """
-    lat_radians = np.pi / 180 * lat 
-    dr = 1 + 0.033 * np.cos(2 * np.pi * doy/365) # Inverse relative distance Earth-Sun
-    solar_declination = 0.409 * np.sin((2 * np.pi * doy/365) - 1.39) # Solar delcination
-    Gsc = 0.0820 # Solar constant
+    lat = np.pi / 180 * lat     # Convert latitude to radians
 
-    sunset_hour_angle = np.arccos(-np.tan(lat_radians) * np.tan(solar_declination)) # Sunset hour angle
+    dr = 1 + 0.033 * np.cos(2 * np.pi * doys/365) # Inverse relative distance Earth-Sun
+    sol_declination = 0.409 * np.sin((2 * np.pi * doys/365) - 1.39)
 
-    Ra = 24 * 60 / np.pi * Gsc * dr
-    Ra = Ra * (sunset_hour_angle * np.sin(lat_radians) * np.sin(solar_declination) + np.cos(lat_radians) * np.cos(solar_declination) * np.sin(sunset_hour_angle))
+    sunset_hour_angle = np.arccos(-np.tan(lat) * np.tan(sol_declination))
 
-    return Ra
+    sol_rad = 24 * 60 / np.pi * 0.0820 * dr
+    sol_rad = sol_rad * (sunset_hour_angle * np.sin(lat) * np.sin(sol_declination) + np.cos(lat) * np.cos(sol_declination) * np.sin(sunset_hour_angle))
+    return sol_rad
+
 
 # Air Temperature model
-def model_air_temp(air_temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
-    '''
-    Creates an air temperature model and creates air temperature estimates using model.
+def model_air_temp(temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
+    """
+    Generates a daily air temperature estimate by creating a model from actual air temperatures.
 
-    Creates an air temperature model by finding the best fit for a sinusoidal function.
-    Estimates Parameters using the given data.
-    Creates a temperature estimate for each day in the df using the model
+    Creates a sinusoidal model of air temperature using best fit on the provided data.
+    Then creates daily air temperature predictions over the entire range of dates provided.
 
     Args:
-        air_temps: The daily average air temperature (°C)
-        date_times: The datetime corresponding to each air temperature measurement
+        temps: A numpy array of average daily air temperatures. (°C)
+        date_times: A numpy array of date time objects correspoinding to the air temperatures.
     
     Returns: 
-        A numpy array of predicted daily temperatures over the period of the dataframe
-    '''
+        A numpy array of predicted daily temperatures from the first to the last day provided, inclusive.
+    """
     # Estimate sinusoidal parameters
-    avg_temp = np.mean(air_temps)    # Mean Temperature | Units: °C
-    thermal_amp = (np.max(air_temps) - np.min(air_temps)) / 2  # | Units: °C
-
-    # Use the day with the minimum and maximum temperatures to calulate time_laf
-    min_idx = np.argmin(air_temps[:int(len(air_temps) / 2)])
-    min_date = pd.to_datetime(date_times[min_idx])
-    max_idx = np.argmax(air_temps)
-    max_date = pd.to_datetime(date_times[max_idx])
-    time_lag_date = min_date + (max_date - pd.Timedelta(days=183) - min_date) / 2
-    time_lag = (time_lag_date - pd.Timestamp(time_lag_date.year, 1, 1)).days  # days since Jan 1
+    thermal_amp = (np.max(temps) - np.min(temps)) / 2
+    avg_temp = np.mean(temps)
+    phase_shift = 15
+    param_estimate = [thermal_amp, avg_temp, phase_shift]
 
     # Convert all dates to day of year
     date_times = pd.to_datetime(date_times)
-    doys = date_times.dt.dayofyear
+    doys = date_times.dt.dayofyear-1
+
+    def model(doy, amplitude, phase_shift, offset):
+        return amplitude * np.sin((2 * np.pi *doy / 365.25) + phase_shift) + offset
+    
+    params, __ = curve_fit(model, doys, temps, p0=param_estimate)
 
     # Generate sinusoidal temperature predictions
-    pred_temp = avg_temp + thermal_amp * np.cos(
-        2 * np.pi * ((doys - time_lag) / 365.0) + np.pi
-    )
+    pred_temp = model(doys, params[0], params[1], params[2])
 
     return np.asarray(pred_temp)
 
@@ -91,228 +85,216 @@ def model_air_temp(air_temps: np.ndarray, date_times: np.ndarray) -> np.ndarray:
 # Soil Temperature models
 def yearly_soil_temp(
         depth: int,
-        avg_temp: int=25,
+        surface_temp: int=25,
         thermal_amp: int = 10,
-        thermal_diffusivity: float = 0.203,
+        thermal_dif: float = 0.203,
         time_lag: int = 15
     ) -> np.ndarray:
     """
-    Models soil temperature over one year at the given depth.
-
-    Creates a model to estimate soil temperature given a day of year and depth.
-    Predicts the soil temperature everyday at the specified depth.
+    Models average soil temperature at a given depth for each day of a year
 
     Args:
-        depth: The depth to model the soil temperature (m).
-        avg_temp: The annual average surface temperature (°C).
-        thermal_amp: The annual thermal amplitude of the soil surface (°C).
-        thermal_dif: The Thermal diffusivity obtained from KD2 Pro instrument (mm^2 / s).
-        time_lag: The time lag between Jaunary 1st and the coldest day of the year (days).
+        depth: The depth to model the soil temperature. (m)
+        surface_temp: The annual average surface temperature. (°C)
+        thermal_amp: The annual thermal amplitude of the soil surface. (°C)
+        thermal_dif: The thermal diffusivity of the soil to estimate. (mm^2 / s)
+        time_lag: The difference between January 1st and the coldest day of the year. (Days)
 
     Return:
-        Predicted soil temperature at the given depth for each day of the year (°C).
+        A numpy array of the daily soil temperature predictions. (°C).
     """
     # Set Constants
-    phase_frequency = 2 * np.pi / YEAR_SECONDS # Phase Frequency | Units: 1 / s
-    PHASE = np.pi/2 + phase_frequency * (time_lag * DAY_SECONDS) # Phase constant | Units: None
+    PHASE_FREQ = 2 * np.pi / 365
+    PHASE_SHIFT = time_lag * PHASE_FREQ - np.pi/2
 
-    # Calculate Damping Depth
-    thermal_diffusivity = thermal_diffusivity / 100    # Unit Conversion | Units: cm^2 / s
-    damp_depth = (2*thermal_diffusivity/phase_frequency)**(1/2) # Units: cm
+    thermal_dif = thermal_dif / 100    # Unit Conversion
 
     # Estimate the temperatures for each day of the year
-    doy = np.arange(0,365)*DAY_SECONDS # Units: s
-    soil_temp = avg_temp + \
-        thermal_amp * np.exp(-depth / damp_depth) * \
-        np.sin(phase_frequency * doy - depth / damp_depth - PHASE)
+    doy = np.arange(0,365)
+    damp_depth = (2*thermal_dif/PHASE_FREQ)**(1/2)
+    soil_temp = np.sin(PHASE_FREQ * doy - depth / damp_depth - PHASE_SHIFT)
+    soil_temp *= thermal_amp * np.exp(-depth / damp_depth)
+    soil_temp += surface_temp
     
     return  np.asarray(soil_temp)
 
 def daily_soil_temp(
         doy: int,
         max_depth: int,
-        interpolations: int = 100,
-        avg_temp: int = 25,
+        num_depths: int = 100,
+        surface_temp: int = 25,
         thermal_amp: int = 10,
-        thermal_diffusivity: int = 0.203,
+        thermal_dif: int = 0.203,
         timelag: int = 15
     ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Models soil temperature on a particular day of the year
+    Models soil temperature at a set of depths on a particular day of the year
 
-    Creates a model to estimate soil temperature given a day of year and depth.
-    Calculates depths to use by linearly interpolating the max_depth by the number of interpolations.
-    Uses the model to estimate the soil temperature at a range of depths on the specified day of year.
+    Estimates the soil temperature at the number of depths specified. 
+    The first depth is max_depth/num_depths and the last depth is max_depth.
     
     Args:
-        doy: Day of year (0-365) where January 1st is 0 and 365.
-        max_depth: The maximum depth in centimeters to model the soil temperature.
-        interpolations: The number of interpolated depths to caluculate soil temperature at.
-        avg_temp: The annual average surface temperature (°C).
-        thermal_amp: The annual thermal amplitude of the soil surface (°C).
-        thermal_diffusivity: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s].
+        doy: The day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
+        max_depth: The maximum depth to model the soil temperature. (m)
+        num_depths: The number of depths to caluculate soil temperature at. (None)
+        surface_temp: The annual average surface temperature. (°C)
+        thermal_amp: The annual thermal amplitude of the soil surface. (°C)
+        thermal_dif: The thermal diffusivity of the soil to estimate. (mm^2 / s)
         time_lag: The time lag in days (0-365) where January 1st is 0 and 365.
 
     Returns:
         A tuple containing two numpy arrays.
-            The first array contains the soil temperature predictions (°C)
-            The second array contians the depth of each prediction (cm)
+            - The first contains the soil temperature predictions. (°C)
+            - The second contains the depth of each prediction. (m)
     """
     # Set Constants
-    phase_frequency = 2 * np.pi / (YEAR_SECONDS) # Phase Frequency | Units: 1 / s
-    PHASE = np.pi / 2 + phase_frequency * (timelag * DAY_SECONDS) # Phase constant | Units: None
+    PHASE_FREQ = 2 * np.pi / 365
+    PHASE_SHIFT = timelag * PHASE_FREQ - np.pi/2
 
-    # Calculate Damping Depth
-    thermal_diffusivity = thermal_diffusivity / 100    # Unit Conversion | Units: cm^2 / s
-    damp_depth = (2 * thermal_diffusivity / phase_frequency) ** 0.5 # Units: cm
+    thermal_dif = thermal_dif / 100 # Unit Conversion
+
+    soil_depths = np.linspace(max_depth/num_depths, max_depth, num_depths) # Interpolate depths
 
     # Estimate the temperatures for each depth
-    soil_depths = np.linspace(max_depth/interpolations, max_depth, interpolations) # Interpolation depths | Units: cm
-    soil_temp = avg_temp + \
-        thermal_amp * np.exp(-soil_depths / damp_depth) * \
-        np.sin(phase_frequency * doy - soil_depths / damp_depth - PHASE)
+    damp_depth = (2 * thermal_dif / PHASE_FREQ) ** 0.5
+    soil_temps = np.sin(PHASE_FREQ * doy - soil_depths / damp_depth - PHASE_SHIFT)
+    soil_temps *= thermal_amp * np.exp(-soil_depths / damp_depth) 
+    soil_temps += surface_temp
 
-    return (np.asarray(soil_temp), np.asarray(soil_depths))
+    return (np.asarray(soil_temps), np.asarray(soil_depths))
 
 def yearly_3d_soil_temp(
         max_depth: int,
-        interpolations: int = 1000,
-        avg_temp: int = 25,
+        num_depths: int = 1000,
+        surface_temp: int = 25,
         thermal_amp: int = 10,
-        thermal_diffusivity: int = 0.203,
+        thermal_dif: float = 0.203,
         timelag: int = 15
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Models soil temperature over a full year (0–365) and across depth.
+    Models soil temperature over a full year (0-365) and across depth.
 
-    Creates a model to estimate soil temperature given a day of year and depth.
-    Calculates depths to use by linearly interpolating the max_depth by the number of interpolations
-    Uses the model to create a matrix of estimations for each day of the year at each depth.
+    Estimates the soil temperature at the number of depths specified for each day of the year. 
+    The first depth is max_depth/num_depths and the last depth is max_depth.
+    Creates a matrix of estimations for each day of the year at each depth.
         
     Args:
-        max_depth: The maximum depth in centimeters to model the soil temperature
-        interpolations: The number of interpolated depths to calculate soil temperature at
-        avg_temp: The annual average surface temperature (°C)
-        thermal_amp: The annual thermal amplitude of the soil surface (°C)
-        thermal_diffusivity: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s]
+        max_depth: The maximum depth in centimeters to model the soil temperature. (m)
+        num_depths: The number of interpolated depths to calculate soil temperature at.
+        surface_temp: The annual average surface temperature. (°C)
+        thermal_amp: The annual thermal amplitude of the soil surface. (°C)
+        thermal_dif: The thermal diffusivity of the soil to model. (mm^2 / s)
         timelag: The time lag in days (0-365) where January 1st is 0 and 365
     
     Returns:
         A tuple of (doy_grid, z_grid, temp_grid), where each is a 2D NumPy array. 
-        Each grid represents a Matrix of depths and doys.
-        doy_grid varies the day of year between columns. Each columns represents the same doy.
-        depth_grid varies the depth between rows. Each row represents the same depth
-        temp_grid varies between rows and columns. 
-        Each point represents the predicted temperature for the doy and depth indicated by the same point in the doy_grid and depth_grid respectively
+            - doy_grid: varies across columns. (same DOY per column)
+            - z_grid: varies across rows. (same depth per row) (m)
+            - temp_grid: soil temperature at each depth and DOY. (°C)
     """
-    # Set Constants
-    phase_frequency = 2 * np.pi / 365 # Phase Frequency | Units: 1 / s
-    PHASE = np.pi/2 + phase_frequency*timelag # Phase constant | Units: None
+    doys = np.arange(0, 365)  # Days of year
+    depths = np.linspace(max_depth / num_depths, max_depth, num_depths)  # Depths
 
-    thermal_diffusivity = thermal_diffusivity * 0.01 * 86400 # Unit conversion | Units: cm^2/day
-    damp_depth = (2*thermal_diffusivity/phase_frequency)**(1/2) # Damping depth 
+    # Initialize temperature matrix [depth x day]
+    temp_grid = np.zeros((num_depths, len(doys)))
 
-    doys = np.arange(1,366)
-    depths = np.linspace(0, max_depth, interpolations) # Interpolation depths
-    doy_grid, depth_grid = np.meshgrid(doys,depths)
-    
-    temp_grid = avg_temp + thermal_amp * np.exp(-depth_grid/damp_depth) * np.sin(phase_frequency*doy_grid - depth_grid/damp_depth - PHASE)
+    for j, doy in enumerate(doys):
+        soil_temps, _ = daily_soil_temp(
+            doy, max_depth, num_depths, surface_temp, thermal_amp, thermal_dif, timelag
+        )
+        temp_grid[:, j] = soil_temps
 
-    return doy_grid, depth_grid, temp_grid
+    # Create matching meshgrids
+    doy_grid, z_grid = np.meshgrid(doys, depths)
+
+    return doy_grid, z_grid, temp_grid
 
 def model_soil_temp(
         air_temps: np.ndarray,
         depth: float,
-        thermal_diffusivity: int = 0.203,
+        thermal_dif: int = 0.000001,
     ) -> np.ndarray:
     """
     Creates soil temperature predictions for each air temperature provided over the course of a day
 
-    Estimates the parameters for a sinusodial function modeling the daily surface temperature.
-    Uses the parameter estimations to create a model of soil temperatures at different depths.
-    Predicts the soil temperatue at the given depth for each air temperature provided
+    Creates a sinusodial model of air temperature using best fir on the provided data
+    Then uses that model to estimate soil temperature at the given depth for each temperature given.
+    Air temperature are assumed to represent a single day and be equally spaced out through the entire day.
 
     Args:
-        air_temps: The soil surface air temperatures for a given day (°C).
-        depth: The depth to model the soil temperature (cm).
-        thermal_diffusivity: The Thermal diffusivity obtained from KD2 Pro instrument [mm^2/s].
+        air_temps: A numpy array of air temperatures at the soil surface. (°C)
+        depth: The depth to model the soil temperature. (m)
+        thermal_dif: The thermal diffusivity of the soil to model. (m^2 / s)
 
     Returns:
-        A numpy array containing the predicted temperatures (°C) every 5 minutes 
-            starting at midnight at the specified depth and a numpy array containing
-            the given air temperatures
+        A numpy array containing the predicted temperatures. (°C)
     """
-    # Constants
-    phase_frequency = 2 * np.pi / DAY_SECONDS # Phase Frequency | Units: 1 / s
-
-    # Calculate Damping Depth
-    thermal_diffusivity = thermal_diffusivity / 100 # Unit Conversion: cm^2 / s
-    damp_depth = (2 * thermal_diffusivity / phase_frequency) ** 0.5 # Units: cm
-
-    measurement_offset = DAY_SECONDS/len(air_temps)
-
     # Estimate sinusoidal parameters
-    avg_temp = np.mean(air_temps)    # Units: °C
-    thermal_amp = (max(air_temps) - min(air_temps)) / 2 # Units: °C
+    thermal_amp = (np.max(air_temps) - np.min(air_temps))
+    avg_temp = np.mean(air_temps)
+    phase_shift = 3600
+    param_estimate = [thermal_amp, avg_temp, phase_shift]
 
-    # Find TimeLag
-    min_idx = np.argmin(air_temps)
-    timelag = min_idx*measurement_offset
+    # Calcuate Times in seconds for each measurement
+    times = np.linspace(0, DAY_SECONDS, len(air_temps))
 
-    # Generate predictions for every air temperature provided
-    times = [i*measurement_offset for i in len(air_temps)] # Units: s
-    temp_predictions = avg_temp + \
-        thermal_amp * np.exp(-depth / damp_depth) * \
-        np.sin(phase_frequency * (times - timelag) - (depth / damp_depth))
+    # Determine constants
+    PHASE_FREQ = 2 * np.pi / DAY_SECONDS 
 
-    return temp_predictions
+    def model(time, amplitude, phase_shift, avg_temp):
+        return amplitude * np.sin((time * PHASE_FREQ) - phase_shift) + avg_temp
+    
+    # Estimate function parameters
+    params, __ = curve_fit(model, times, air_temps, p0=param_estimate)
+    damp_depth = np.sqrt(2 * thermal_dif / PHASE_FREQ)
+
+    #pred_air_temps = params[0] * np.sin((times * PHASE_FREQ) + params[1]) + params[2]
+    
+    # Generate soil temperature preditions    
+    soil_temps = params[0] * (np.exp(-depth/damp_depth))
+    soil_temps *= np.sin((times * PHASE_FREQ) - (depth / damp_depth) - params[1])
+    soil_temps += params[2]
+
+    return soil_temps
 
 def model_3d_soil_temp(
         air_temps: np.ndarray,
         max_depth: float,
-        interpolations: int = 1000,
-        thermal_diffusivity: float = 0.203
+        num_depths: int = 1000,
+        thermal_dif: float = 0.203
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Models soil temperature over a full day (in 5-minute intervals) across depth 
     using air temperature data to parameterize a sinusoidal model.
 
     Args:
-        air_temps: The soil surface air temperatures for a given day (°C).
-        max_depth: Maximum depth to model the soil temperature (cm).
-        interpolations: Number of interpolated depth points.
-        thermal_diffusivity: Thermal diffusivity [mm^2/s] from KD2 Pro instrument.
+        air_temps: Soil surface air temperatures for a given day. (°C)
+        max_depth: Maximum depth to model the soil temperature. (m)
+        num_depths: The number of interpolated depths to calculate soil temperature at.
+        thermal_dif: The thermal diffusivity of the soil to model. (mm^2 / s)
 
     Returns:
-        A tuple of (time_grid, depth_grid, temp_grid), each a 2D NumPy array.
+        (time_grid, depth_grid, temp_grid), each a 2D NumPy array:
+            - time_grid: varies across columns. (seconds in day)
+            - depth_grid: varies across rows. (m)
+            - temp_grid: soil temperature (°C) at each depth and time.
     """
-    # Constants
-    phase_frequency = 2 * np.pi / DAY_SECONDS # Phase Frequency | Units: 1 / s
+    # Calculate depths to evaluate
+    depths = np.linspace(max_depth / num_depths, max_depth, num_depths)
 
-    # Calculate Damping Depth
-    thermal_diffusivity = thermal_diffusivity / 100 # Unit Conversion: cm^2 / s
-    damp_depth = (2 * thermal_diffusivity / phase_frequency) ** 0.5 # Units: cm
+    # Time steps: Equal spaced time intervals over the full day
+    times = np.linspace(0, DAY_SECONDS, len(air_temps))
 
+    # Preallocate matrix: [depth x time]
+    temp_grid = np.zeros((num_depths, len(air_temps)))
 
-    measurement_offset = DAY_SECONDS/len(air_temps)
+    # Generate predictions at each depth
+    for i, depth in enumerate(depths):
+        soil_temps = model_soil_temp(air_temps, depth, thermal_dif)
+        temp_grid[i, :] = soil_temps
 
-    # Estimate sinusoidal parameters
-    avg_temp = np.mean(air_temps)    # Units: °C
-    thermal_amp = (max(air_temps) - min(air_temps)) / 2 # Units: °C
-
-    # Find TimeLag
-    min_idx = np.argmin(air_temps)
-    timelag = min_idx*measurement_offset
-
-    # Create time and depth grids
-    times = [i*measurement_offset for i in len(air_temps)] # Units: s
-    depths = np.linspace(max_depth/interpolations, max_depth, interpolations)
+    # Build matching meshgrids
     time_grid, depth_grid = np.meshgrid(times, depths)
-
-    # Generate predictions for the given times and depths
-    temp_grid = avg_temp + \
-        thermal_amp * np.exp(-depth_grid / damp_depth) * \
-        np.sin(phase_frequency * (time_grid - timelag) - depth_grid / damp_depth)
 
     return time_grid, depth_grid, temp_grid
 
@@ -329,14 +311,17 @@ def dalton(
     Computes Evapotranspiration using the Dalton model 
     
     Args:
-        temp_min: The minimum daily temperature (°C)
-        temp_max: The maximum daily temperature (°C)
-        RH_min:   The minimum daily relative humidity (range: 0.0-1.0)
-        RH_max:   The maximum daily relative humidity (range: 0.0-1.0)
-        wind_speed: The average daily wind speed in meters per second
+        temp_min: A numpy array of minimum daily temperatures. (°C)
+        temp_max: A numpy array of maximum daily temperatures. (°C)
+        RH_min:   A numpy array of minimum daily relative humidities. (range: 0.0-1.0)
+        RH_max:   A numpy array of maximum daily relative humidities. (range: 0.0-1.0)
+        wind_speed: A numpy array of average daily wind speeds. (m/s)
 
     Returns:
-        The Dalton models predictions for evapotranspiration clipped to a minimum of zero (mm/day)
+        Daily evapotranspiration clipped to a minimum of zero. (mm/day)
+
+    Raises:
+        ValueError: If all of the numpy arrays are not the same size
     """
     # Ensures parameter saftey
     if not isinstance(temp_min, float) and not \
@@ -366,14 +351,17 @@ def penman(
     Computes evapotranspiration using the Penman model
 
     Args:
-        temp_min: The minimum daily temperature (°C)
-        temp_max: The maximum daily temperature (°C)
-        RH_min:   The minimum daily relative humidity (range: 0.0-1.0)
-        RH_max:   The maximum daily relative humidity (range: 0.0-1.0)
-        wind_speed: The average daily wind speed in meters per second
+        temp_min: A numpy array of minimum daily temperatures. (°C)
+        temp_max: A numpy array of maximum daily temperatures. (°C)
+        RH_min:   A numpy array of minimum daily relative humidities. (range: 0.0-1.0)
+        RH_max:   A numpy array of maximum daily relative humidities. (range: 0.0-1.0)
+        wind_speed: A numpy array of average daily wind speeds. (m/s)
 
     Returns:
-        The Penman models predictions for evapotranspiration clipped to a minimum of zero
+        Daily evapotranspiration clipped to a minimum of zero. (mm/day)
+
+    Raises:
+        ValueError: If all of the numpy arrays are not the same size
     """
     # Ensure parameter saftey
     if not isinstance(temp_min, float) and not \
@@ -402,13 +390,16 @@ def romanenko(
     Potential evaporation model proposed by Romanenko in 1961
     
     Args:
-        temp_min: The minimum daily temperature (°C)
-        temp_max: The maximum daily temperature (°C)
-        RH_min:   The minimum daily relative humidity (range: 0.0-1.0)
-        RH_max:   The maximum daily relative humidity (range: 0.0-1.0)
+        temp_min: A numpy array of minimum daily temperatures. (°C)
+        temp_max: A numpy array of maximum daily temperatures. (°C)
+        RH_min:   A numpy array of minimum daily relative humidities. (range: 0.0-1.0)
+        RH_max:   A numpy array of maximum daily relative humidities. (range: 0.0-1.0)
 
     Returns:
-        The Romanenko models predictions for evapotranspiration clipped to a minimum of zero
+        Daily evapotranspiration clipped to a minimum of zero. (mm/day)
+
+    Raises:
+        ValueError: If all of the numpy arrays are not the same size
     """
     # Ensure parameter saftey
     if not isinstance(temp_min, float) and not \
@@ -428,28 +419,30 @@ def romanenko(
 def jensen_haise(
         temp_min: np.ndarray,
         temp_max: np.ndarray,
-        doy: np.ndarray,
-        latitude: np.ndarray
+        doys: np.ndarray,
+        lats: np.ndarray
     ) -> np.ndarray:
     """
     Computes evapotranspiration using the Jensen model
     
     Args:
-        temp_min: The minimum daily temperature (°C)
-        temp_max: The maximum daily temperature (°C)
-        doy: Day of year (0-365) where January 1st is 0 and 365
-        latitude: Latitude in decimal degress. Where the northern hemisphere is 
-            positive and the southern hemisphere is negative
+        temp_min: A numpy array of minimum daily temperatures. (°C)
+        temp_max: A numpy array of maximum daily temperatures. (°C)
+        doys:     A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
+        lats:     A numpy array of latitudes. (Degrees, North is positive)
 
     Returns:
-        The Jensen-Haise models predictions for evapotranspiration clipped to a minimum of zero
+        Daily evapotranspiration clipped to a minimum of zero. (mm/day)
+
+    Raises:
+        ValueError: If all of the numpy arrays are not the same size
     """
     # Ensure parameter saftey
     if not isinstance(temp_min, float) and not (len(temp_min) == len(temp_max)):
         raise ValueError("All inputs must be the same length")
     
     # Model Calculations
-    Ra = __compute_solar_radiation(doy, latitude)
+    Ra = __compute_solar_radiation(doys, lats)
     T_avg = (temp_min + temp_max)/2
     PET = 0.0102 * (T_avg+3) * Ra
 
@@ -462,27 +455,29 @@ def hargreaves(
         temp_min: np.ndarray,
         temp_max: np.ndarray,
         doys: np.ndarray,
-        latitude: float
+        lats: float
     ) -> np.ndarray:
     """
     Computes evapotranspiration using the Hargreaves model
     
     Args:
-        temp_min: The minimum daily temperature (°C)
-        temp_max: The maximum daily temperature (°C)
-        doys: Array of Day of year's (0-365) where January 1st is 0 and 365
-        latitude: Latitude in decimal degress. Where the northern hemisphere is 
-            positive and the southern hemisphere is negative
+        temp_min: A numpy array of minimum daily temperatures. (°C)
+        temp_max: A numpy array of maximum daily temperatures. (°C)
+        doys:     A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
+        lats:     A numpy array of latitudes. (Degrees, North is positive)
         
     Returns:
-        The Hargreaves models predictions for evapotranspiration clipped to a minimum of zero
+        Daily evapotranspiration clipped to a minimum of zero. (mm/day)
+
+    Raises:
+        ValueError: If all of the numpy arrays are not the same size
     """
     # Ensure parameter saftey
     if not isinstance(temp_min, float) and not (len(temp_min) == len(temp_max)):
         raise ValueError("All inputs must be the same length")
     
     # Model Calulations
-    Ra = __compute_solar_radiation(doys, latitude)
+    Ra = __compute_solar_radiation(doys, lats)
     T_avg = (temp_min + temp_max)/2
     PET = 0.0023 * Ra * (T_avg + 17.8) * (temp_max - temp_min)**0.5
 
@@ -499,32 +494,34 @@ def penman_monteith(
         p_min: np.ndarray,
         p_max: np.ndarray,
         wind_speed: np.ndarray,
-        doy: np.ndarray,
-        latitude: float,
-        altitude: float,
+        doys: np.ndarray,
+        lat: float,
+        alt: float,
         solar_rad: Optional[np.ndarray]=None,
-        wind_height: int = 1.5,
+        wind_height: float = 1.5,
     ) -> np.ndarray:
     """
     Computed evapotranspiration using the penman-monteith model
     
     Args:
-        temp_min: The minimum daily temperature (°C)
-        temp_max: The maximum daily temperature (°C)
-        RH_min:   The minimum daily relative humidity (range: 0.0-1.0)
-        RH_max:   The maximum daily relative humidity (range: 0.0-1.0)
-        p_min:    The minimum daily atmospheric pressure in Pa
-        p_max:    The maximum daily atmospheric pressure in Pa
-        wind_speed: The average daily wind speed in meters per second
-        doy:      Day of year (0-365) where January 1st is 0 and 365
-        latitude: Latitude in decimal degress. Where the northern hemisphere is 
-            positive and the southern hemisphere is negative
-        altitude: Altitude of the location in meters
-        wind_height: Height of measurment for wind speed
+        temp_min:   A numpy array of minimum daily temperatures. (°C)
+        temp_max:   A numpy array of maximum daily temperatures. (°C)
+        RH_min:     A numpy array of minimum daily relative humidities. (range: 0.0-1.0)
+        RH_max:     A numpy array of maximum daily relative humidities. (range: 0.0-1.0)
+        p_min:      A numpy array of minimum daily atmospheric pressure. (Pa)
+        p_max:      A numpy array of maximum daily atmospheric pressure. (Pa)
+        wind_speed: A numpy array of average daily wind speeds. (m/s)
+        doys:       A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
+        lat:        The latitude of the location. (Degrees, North is positive)
+        alt:       The altitude of the location. (m)
+        solar_rad   The soloar radiation occuring over the whole day. ((MJ/(m² * day))
+        wind_height: Height of for wind speed measurments. (m)
         
     Returns:
-        The Hargreaves models predictions for evapotranspiration clipped to
-            a minimum of zero
+        Daily evapotranspiration clipped to a minimum of zero. (mm/day)
+
+    Raises:
+        ValueError: If all of the numpy arrays are not the same size
     """
     # Ensure parameter saftey
     if not isinstance(temp_min, float) and not (len(temp_min) == len(temp_max) == len(RH_min)\
@@ -536,7 +533,7 @@ def penman_monteith(
                raise ValueError("All inputs must be the same length")
     else:
         # Calculates solar radiation
-        solar_rad = __compute_solar_radiation(doy, latitude)
+        solar_rad = __compute_solar_radiation(doys, lat)
     
     temp_avg = (temp_min + temp_max)/2
     atm_pressure = (p_min+p_max)/2 # Can be also obtained from weather station
@@ -544,7 +541,7 @@ def penman_monteith(
     gamma = 0.000665* (Cp * atm_pressure)
 
     # Wind speed Adjustment
-    wind_speed_at_height = wind_speed * (4.87 / np.log((67.8 * wind_height) - 5.42))  # Eq. 47, FAO-56 wind height in [m]
+    wind_speed_at_height = 6.56 * wind_speed / (np.log(67.8 * wind_height) / np.log(np.e)) # Eq. 47, FAO-56 wind height in [m]
 
     # Calculates air humidity and vapor pressure
     delta = 4098 * (0.6108 * np.exp(17.27 * temp_avg / (temp_avg  + 237.3)))
@@ -555,7 +552,7 @@ def penman_monteith(
     e_actual = (e_temp_min * (RH_max / 100) + e_temp_max * (RH_min / 100)) / 2
 
     # Clear Sky Radiation: Rso (MJ/m2/day)
-    Rso =  (0.75 + (2 * 10**-5) * altitude) * solar_rad  # Eq. 37, FAO-56
+    Rso =  (0.75 + (1 / 50000) * alt) * solar_rad  # Eq. 37, FAO-56
 
     # Rs/Rso = relative shortwave radiation (limited to <= 1.0)
     alpha = 0.23 # 0.23 for hypothetical grass reference crop
@@ -585,18 +582,19 @@ def penman_monteith(
 
     return np.round(PET,2)
 
+
 # Rain/Runoff Models
 def model_runoff(rainfall: np.ndarray, curve_number: int = 75) -> pd.DataFrame:
-    '''
+    """
     Uses Curve Number to estimate runoff from rainfall
 
     Args:
-        precipitation: The daily amount of precipitation in millimeters
-        curve_number: The curve number to use in the calculation
+        precipitation: A numpy array of daily precipitation. (mm)
+        curve_number: The curve number.
 
     Returns:
-        The estimated runoff
-    '''
+        The runoff estimation. (mm)
+    """
     rainfall = rainfall / 25.4 # Unit Conversion | Units: In
 
     # Model Calulations
@@ -610,6 +608,7 @@ def model_runoff(rainfall: np.ndarray, curve_number: int = 75) -> pd.DataFrame:
 
     return runoff * 25.4 # Unit Conversion | Units: mm
 
+
 # Growing Degree Days
 def model_gdd(
         temp_avg: np.ndarray,
@@ -619,24 +618,26 @@ def model_gdd(
         time_duration: float = 1.0
     ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Model how many growing degree days have passed
+    Model how many growing degree days have passed.
 
-    Models Growing Degree days using a minimum base temperature, an optional 
-    optimal temperature, an optional maximum growing temperature, and 
-    the average temperature over the recorded durations
+    Models Growing Degree days using a minimum base temperature, an optional optimal temperature,
+    an optional maximum growing temperature, and the average temperature over the recorded durations.
+    If only a base temperature is provided GDD start accumulating above the base temperature, and 
+    accumulate faster the higher the temperature gets. If optimal and upper temperature are provided
+    the accumulation starts above the base temperature, is greatest at the optimal temperature, and 
+    then decreases linearly down to zero at the upper temperature.
         
     Args:
-        temp_avg:  The average temperature over the duration_time (°C)
-        temp_base: The minimum temperature a given crop will grow at (°C)
-        temp_opt: The optimal temperature a given crop will grow (°C), 
-                            above this temperature growing will slow linearly
-        temp_upper: The maximum temperature a given crop will grow (°C)
-        time_duration: The number of days that each temp_avg represents
+        temp_avg:  A numpy array of average temperatures. (°C)
+        temp_base: The minimum temperature to accumulate GDD. (°C)
+        temp_opt: The optimal temperature to accumulate GDD. (°C)
+        temp_upper: The maximum temperature to accumulate GDD. (°C)
+        time_duration: The length of time each temp_avg represents. (Days)
     
     Returns:
-        A tuple containing two np.ndarray's
-        The first contains Growing Degree Days for each daily temperature
-        The second contains the cummulative sum of Growing Degree Days for each daily temperature
+        A tuple containing two numpy arrays.
+            - The first contains Growing Degree Days for each day.
+            - The second contains the cummulative sum of Growing Degree Days for each day.
     """
     # Validate parameter input
     if(time_duration <= 0):
@@ -674,23 +675,23 @@ def model_gdd(
     return gdd, gdd.cumsum()
 
 
-# Photo Period Tools
-def photoperiod_at_lat(lat: float, doy: np.ndarray) -> Tuple[np.array, np.array, np.array, np.array, np.array]:
+# Photoperiod Tools
+def photoperiod_at_lat(doys: np.ndarray, lat: float) -> Tuple[np.array, np.array, np.array, np.array, np.array]:
     """
     Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.
 
     Args:
-        latitude: Latitude in decimal degress. Where the northern hemisphere is 
-            positive and the southern hemisphere is negative
-        doy: np.ndarray of the days of year (0-365) where January 1st is 0 and 365
+        doys: A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
+        lat:  The latitude to compute photoperiod at. (Degrees, North is positive)
 
     Returns:
-        Photoperiod, daylight hours, at the given latitude for the given days.
-        The angle of the sum below the horizon.
-        The zenithal distance of the sun in degrees.
-        The mean anomaly of the sun.
-        Lambda.
-        Delta.
+        A tuple containing
+            - Photoperiod, daylight hours, at the given latitude for the given days.
+            - The angle of the sum below the horizon.
+            - The zenithal distance of the sun in degrees.
+            - The mean anomaly of the sun.
+            - Lambda.
+            - Delta.
     """
     # Convert latitude to radians
     lat_radians = np.radians(lat)
@@ -704,7 +705,7 @@ def photoperiod_at_lat(lat: float, doy: np.ndarray) -> Tuple[np.array, np.array,
     
     # Mean anomaly of the sun. It is a convenient uniform measure of 
     # how far around its orbit a body has progressed since pericenter.
-    sun_mean_anomaly = 0.9856*doy - 3.251 # Eq. [4].
+    sun_mean_anomaly = 0.9856*doys - 3.251 # Eq. [4].
     
     # Declination of sun in degrees
     sun_declenation = sun_mean_anomaly + 1.916*np.sin(np.radians(sun_mean_anomaly)) + 0.020*np.sin(np.radians(2*sun_mean_anomaly)) + 282.565 # Eq. [3]. Lambda
@@ -716,28 +717,29 @@ def photoperiod_at_lat(lat: float, doy: np.ndarray) -> Tuple[np.array, np.array,
 
     return day_length, sun_angle, sun_zenithal_dist, sun_mean_anomaly, sun_declenation, np.degrees(delta)
     
-def photoperiod_on_day(lat: np.ndarray, doys: np.ndarray) -> Tuple[np.array, np.array, np.array, np.array, np.array]:
+def photoperiod_on_day(doys: np.ndarray, lats: np.ndarray) -> Tuple[np.array, np.array, np.array, np.array, np.array]:
     """
     Computes photoperiod for a given near polar regions.
 
     Args:
-        lat: Latitude in decimal degress. Where the northern hemisphere is positive and the southern hemisphere is negative.
-        doys: The day of year (0-365) where January 1st is 0 and 365 to perform the calculation.
+        doys: A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
+        lats: A numpy array of latitudes to compute photoperiod at. (Degrees, North is positive)
 
     Returns:
-        Photoperiod, daylight hours, for the given latitudes on the given day.
-        The angle of the sum below the horizon.
-        The zenithal distance of the sun in degrees.
-        The mean anomaly of the sun.
-        The declination of the sun in degrees.
-        Lambda from the equation.
-        Delta from the equation.
+        A tuple containing
+            Photoperiod, daylight hours, for the given latitudes on the given day.
+            - The angle of the sum below the horizon.
+            - The zenithal distance of the sun in degrees.
+            - The mean anomaly of the sun.
+            - The declination of the sun in degrees.
+            - Lambda from the equation.
+            - Delta from the equation.
     
     References:
         Keisling, T.C., 1982. Calculation of the Length of Day 1. Agronomy Journal, 74(4), pp.758-759.
     """
     # Convert latitude to radians and convert shapes
-    lat = np.radians(np.asarray(lat)).reshape(-1, 1)  # shape (N, 1)
+    lats = np.radians(np.asarray(lats)).reshape(-1, 1)  # shape (N, 1)
     doys = np.asarray(doys).reshape(1, -1) 
     
     # Angle of the sun below the horizon. Civil twilight is -4.76 degrees.
@@ -757,7 +759,7 @@ def photoperiod_on_day(lat: np.ndarray, doys: np.ndarray) -> Tuple[np.array, np.
     delta = np.arcsin(C*np.sin(np.radians(Lambda))) # Eq. [2].
 
     # Calculate daylength in hours, defining sec(x) = 1/cos(x)
-    P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(lat)) * (1/np.cos(delta)) - np.tan(lat) * np.tan(delta) ) ) # Eq. [1].
+    P = 2/15 * np.degrees( np.arccos( np.cos(alpha) * (1/np.cos(lats)) * (1/np.cos(delta)) - np.tan(lats) * np.tan(delta) ) ) # Eq. [1].
 
     return P, B, alpha, M, Lambda, np.degrees(delta)
 
@@ -812,8 +814,7 @@ def cummulative_water_infiltration(
         interpolations: The number of interpolated times to calculate.
   
     Returns:
-        A numpy array of length 'interpolations' representing the cummulative vertical water infultration over equal time segments.
-        Where the first value represents the infultration after max_time/interpolations time, and the last vaule represents the infultration after max_time.
+        A numpy array of length 'interpolations' representing the cummulative vertical water infultration.
     """
     # Define Constants
     WATER_DENSITY = 1000 # Units: Kg / m^3
@@ -828,6 +829,5 @@ def cummulative_water_infiltration(
     water_inful =  water_inful ** 0.5 + LITTLE_G * avg_sat_hydraulic_conductivity * times
 
     return water_inful
-
 
 

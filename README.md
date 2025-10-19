@@ -34,18 +34,17 @@ Contains models and equations for ecological and agricultural analysis, includin
 - **TEMPERATURE MODELS**: Soil and Air Temperature Prediction Models.
 - **Evapotranspiration Models**: Dalton, Penman, Hargreaves, etc.
 - **Crop Models**: Calculate Growing Degree Days (GDD)
-- **Photoperiod Models**: Photoperiod Predictions.
-- **Water Movement Models**: Infiltration and hydraulic conductivity
+- **Even More**: Provides even more useful agronometric data tools
 
 ### `agroecometrics.visualizations`
 
 Provides methods for creating plots from the calulations made in equations.
 
 - Air Temperature plots
-- Soil temperature plots and 3d mesh graphs
-- Rainfall and runoff plot
-- Growing degree day plots
-- Photoperiod prediction plots
+- Soil Temperature plots and 3d mesh graphs
+- Growing Degree Day Plots
+- Photoperiod Prediction plots
+
 
 ## Getting Started
 

@@ -49,10 +49,10 @@ def load_data_csv(
     Filters data by the given dates. If no start or end date is specified the oldest and newest dates in the data are used respectively.
     Converts the date time column to Date Time objects and numeric columns to Numeric Data Types
     Adds columns for the date_norm, DOY, and Year.
-    -Column names can be found by running AEM.settings.calc_calculation_labels().
-    -date_norm stores the date normalized to contain the same time, midnight.
-    -doy stores the number of days since January 1st, where January 1st = 0 and December 31st = 364 or 365 during a leap year.
-    -year stores the current year.
+     - Column names can be found by running AEM.settings.calc_calculation_labels().
+     - date_norm stores the date normalized to contain the same time, midnight.
+     - doy stores the number of days since January 1st, where January 1st = 0 and December 31st = 364 or 365 during a leap year.
+     - year stores the current year.
 
     Args:
         file_path: The path to your csv data file.

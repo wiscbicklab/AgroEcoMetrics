@@ -1,9 +1,6 @@
 from pathlib import Path
 from typing import Optional
-import pandas as pd
 import numpy as np
-import datetime
-
 import matplotlib.pyplot as plt
 
 
@@ -71,34 +68,35 @@ def __save_plot(file_path: Path) -> Path:
 
 def plot_air_temp(
         air_temps: np.ndarray,
-        predicted_temps: np.ndarray,
+        pred_temps: np.ndarray,
         date_times: np.ndarray,
         file_path: Path
     ) -> Path:
     """
-    Creates a plot of air temperature over the time.
+    Creates a plot of air temperature and predicted air temperatures over the time.
+
+    The actual air temperature are plotted as a scatter plot and the predicted air temperatures are ploted as a graph.
 
     Args:
-        air_temps: The actually air temperatures.
-        predicted_temps: The predicted air temperatures.
-        date_times: The datetime objects corresponding to the each actual and predicted temp.
+        air_temps: A numpy array of actual air temperatures. (°C)
+        pred_temps: A numpy array of the predicted air temperatures. (°C)
+        date_times: A numpy array of date times corrosponding to the air temperatures.
         file_path: A Path object representing the output file path.
 
     Returns: 
-        The resolved file path where the plot was saved
+        The resolved file path where the plot was saved.
 
     Raises:
         TypeError: If file_path is not a Path object.
         ValueError: If the file extension is not '.png'.
         FileNotFoundError: If the parent directory does not exist.
     """
-    global LABELS
     __check_png_filename(file_path)
 
     # Plot actual vs predicted temperature
     plt.figure(figsize=(8, 4))
     plt.scatter(date_times, air_temps, s=5, color="gray", label="Observed")
-    plt.plot(date_times, predicted_temps, label="Predicted", color="tomato", linewidth=1)
+    plt.plot(date_times, pred_temps, label="Predicted", color="red", linewidth=1)
     plt.ylabel("Air temperature (Celsius)")
     plt.xlabel("Date")
     
@@ -108,14 +106,14 @@ def plot_air_temp(
 ####    SOIL TEMPERATURE PLOTS    ####
 
 def plot_yearly_soil_temp(
-        soil_temp: np.ndarray,
+        soil_temps: np.ndarray,
         file_path: Path
     ) -> Path:
     """
     Creates a plot of modeled soil temperature over a year's time
 
     Args:
-        T_soil: A numpy array of soil temperatures for each day of the year in order
+        soil_temps: A numpy array of soil temperatures for each day of the year. (°C)
         file_path: A Path object representing the output file path.
 
     Returns: 
@@ -132,7 +130,7 @@ def plot_yearly_soil_temp(
     # Create the soil temperature plot
     doy = np.arange(0,365)
     plt.figure()
-    plt.plot(doy,soil_temp)
+    plt.plot(doy,soil_temps)
     plt.ylabel("Surface Soil Temperature (Celsius)")
     plt.xlabel("Day of Year")
    
@@ -140,15 +138,15 @@ def plot_yearly_soil_temp(
 
 def plot_daily_soil_temp(
         soil_temps: np.ndarray,
-        soil_depths: int,
+        depth: int,
         file_path: Path,
     ) -> Path:
     """
-    Creates a plot of modeled soil temperature at a given depth
+    Creates a plot of modeled soil temperature at a given depth.
 
     Args:
-        soil_temp: Is the predicted soil temperatures (°C)
-        depth: Is the depth that the soil temperature predictions are made at. (m)
+        soil_temp: A numpy array of the predicted soil temperatures. (°C)
+        depth: The depth that the soil temperature predictions are made at. (m)
         file_path: A Path object representing the output file path.
 
     Returns: 
@@ -164,9 +162,9 @@ def plot_daily_soil_temp(
 
     # Create Plot
     plt.figure()
-    plt.plot(soil_depths, soil_temps)
+    plt.plot(depth, soil_temps)
     plt.ylabel("Soil temperature (Celsius)")
-    plt.xlabel("Soil Depth (Centimeters)")
+    plt.xlabel("Soil Depth (Meters)")
     
     return __save_plot(file_path)
 
@@ -177,15 +175,15 @@ def plot_yearly_3d_soil_temp(
         file_path: Path
     ) -> Path:
     """
-    Creates a 3d plot of soil temperature at different depths over the course of a year
+    Creates a 3d plot of soil temperature at different depths over the course of a year.
 
     Args:
         doy_gird: A 2d np.ndarray with shape (Nz, 365) containing the day of year
                 for each plot point.
         z_grid:   A 2d np.ndarray with shape (Nz, 365) containing the soil depth
-                for each plot point.
+                for each plot point. (m)
         t_grid:   A 2d np.ndarray with shape (Nz, 365) containing the soil temperature
-                for each plot point.
+                for each plot point. (°C)
         file_path: A Path object representing the output file path.
     
     Returns: 
@@ -208,7 +206,7 @@ def plot_yearly_3d_soil_temp(
 
     # Label x,y, and z axis
     ax.set_xlabel("Day of the year")
-    ax.set_ylabel("Soil depth [cm]")
+    ax.set_ylabel("Soil depth (Meters)")
     ax.set_zlabel("Soil temperature (Celsius)")
 
     # Set position of the 3D plot
@@ -216,58 +214,87 @@ def plot_yearly_3d_soil_temp(
 
     return __save_plot(file_path)
 
-def plot_soil_temp_predictions(
+def plot_modeled_soil_temp(
         air_temp: np.ndarray,
-        pred_temp: np.ndarray,
-        depth: float,
+        pred_temps: np.ndarray,
+        depths: np.ndarray,
         file_path: Path,
         soil_temp: Optional[np.ndarray] = None,
+        colors: list[str] = ["#0072b2", "#009e73", "#cc79a7", "#d55e00", "#F0E442"],
     ) -> Path:
     """
     Creates a plot of air temperature and the predicted soil temperature on a particular date
 
-    Creates a plot showing the given air temperature and the predicted soil temperature
-        for the given depth. Optionally plots the actual soil temperature for comparision
+    Creates a plot showing the given air temperature as a scatter plot, the actual soil temperature
+    as a scatter plot if provided, and a graphed approximation of the predicted soil temperature at
+    each of the provided depths. The first provided color is used for the air temperature, the next 
+    is used for actual soil temperatures if provided, and the next available is used for the predicted
+    soil temperatures.
 
     Args:
-        air_temp: The air temperature collected every 5 minutes
-        pred_temp: The soil temperature prediction given in 5 minute intervals
-        depth: The depth that the soil temperature was predicted at
+        air_temp: A numpy array of the air temperature collected over a single day. (°C)
+        pred_temps: A 2d numpy array where each row is a set of predicted soil temperatures corrosponding
+            to the provided air temperatures. Each row corrospondes to the depth in depths. (°C)
+        depths: The depth that the soil temperature was predicted at. (m)
         file_path: A Path object representing the output file path.
-        soil_temp: The collected soil temperature given in 5 minute intervals
+        soil_temp: A numpy array of the collected soil temperature at the same interval as air temperature.
+        colors: A list of strings providing the color codes to use for the plot. 5 color blind friendly colors are provided.
 
     Returns: 
         The filename where the plot was saved
 
     Raises:
         TypeError: If file_path is not a Path object.
-        ValueError: If the file extension is not '.png' or if the needed label(s) isn't found in the df
+        ValueError: If the file extension is not '.png'.
         FileNotFoundError: If the parent directory does not exist.
+        ValueError: If the number of predicted temperatures per set is not equal to the number of provided air temperatures.
+        ValueError: If the number of predicted temperature sets is not equal to the number of provided depths.
+        ValueError: If the number of required colors is greater than the number of available colors.
     """    
     # Validate input parameters
     __check_png_filename(file_path)
+    if(pred_temps.shape[1] != len(air_temp)):
+        raise ValueError(f"{len(air_temp)} air temperatures provided, but {pred_temps.shape[1]} predicted temps provided per depth")
+    if(pred_temps.shape[0] != len(depths)):
+        raise ValueError(f"{len(depths)} depths provided, but {pred_temps.shape[0]} predicted temps provided")
+    if(soil_temp):
+        if(pred_temps.shape[0] + 2 > len(colors)):
+            raise ValueError("Not enought colors provided")
+        elif(pred_temps.shape[0] + 1 > len(colors)):
+            raise ValueError("Not enought colors provided")
     
-    # Generate time intervals
-    time_passed = np.arange(0, 1440, 5)
-    time = time_passed / 60 
-
-    # Create Plot
+    # Create list of measurement times
+    times = np.arange(0, 1440, 1440/len(air_temp))
+    
+    color_num = 0
     plt.figure(figsize=(8, 4))
-    plt.scatter(time, air_temp, s=5, color="gray", label="Air Temperature")
-    plt.plot(time, pred_temp, label=f"Predicted: {depth}in", color="tomato", linewidth=1)
 
-    # Add Optional actual soil temperature
+    # Add air temperature scatter plot
+    plt.scatter(times, air_temp, s=5, color=colors[color_num], label="Air Temperature")
+    color_num += 1
+
+    # Add actual soil temperature scatter plot
     if soil_temp is not None:
-        plt.scatter(time, soil_temp, s=5, color="blue", label="Soil Temp")
+        plt.scatter(times, soil_temp, s=5, color=colors[color_num], label="Soil Temp")
+        color_num += 1
+
+    # Create Soil Temperature Graph
+    for i in range(len(depths)):
+        depth = depths[i]
+        pred_temp = pred_temps[i]
+        plt.plot(times, pred_temp, label=f"Predicted: {depth}m", color=colors[color_num], linewidth=1)
+        color_num += 1
+
+    
 
     # Set labels
     plt.ylabel("Temperature  (Celsius)")
     plt.xlabel("Time (Hours)")
-    plt.xticks(ticks=[0, 6, 12, 18, 24], labels=["12 AM", "6 AM", "12 PM", "6 PM", "12 AM"])
+    plt.xticks(ticks=[0, 360, 720, 1080, 1440], labels=["12 AM", "6 AM", "12 PM", "6 PM", "12 AM"])
 
     return __save_plot(file_path)
 
-def plot_3d_soil_temp_predictions(
+def plot_3d_modeled_soil_temp(
         time_grid: np.ndarray,
         depth_grid: np.ndarray,
         temp_grid: np.ndarray,
@@ -277,9 +304,9 @@ def plot_3d_soil_temp_predictions(
     Creates a 3D plot of predicted soil temperature over the course of a single day at different depths.
 
     Args:
-        time_grid: A 2D numpy array of shape (n_depths, n_times), where each value is time in minutes.
-        depth_grid: A 2D numpy array matching time_grid, where each value is the depth in cm.
-        temp_grid: A 2D numpy array of predicted soil temperatures (same shape as time_grid).
+        time_grid: A 2D numpy array of shape (n_depths, n_times), where each value is time. (min)
+        depth_grid: A 2D numpy array matching time_grid, where each value is the depth. (m)
+        temp_grid: A 2D numpy array of predicted soil temperatures (same shape as time_grid). (°C)
         file_path: A Path object representing the output file path.
 
     Returns:
@@ -309,7 +336,7 @@ def plot_3d_soil_temp_predictions(
 
     # Axis labels
     ax.set_xlabel("Hour of Day")
-    ax.set_ylabel("Soil Depth [cm]")
+    ax.set_ylabel("Soil Depth (Meters)")
     ax.set_zlabel("Soil Temperature (°C)")
 
     # Set viewing angle
@@ -322,39 +349,50 @@ def plot_3d_soil_temp_predictions(
 ####    EVAPOTRANSPIRATION PLOTS    ####
 
 def plot_evapo_data(
-        evapotranspiration: np.ndarray,
+        pred_evapos: np.ndarray,
         date_times: np.ndarray,
+        model_labels: list[str],
         file_path: Path,
-        model_label: str="EvapoTranspiration",
+        colors: list[str] = ["#0072b2", "#009e73", "#cc79a7", "#d55e00", "#F0E442"],
     ) -> Path:
     """
-    Creates a plot of different evapotraspiration data over time
-
-    Creates a plot over time of the predicted evapotranspiration in mm/day.
-      Creates labels and uses different colors for each of the models. 
-      Creates a legend of the model names and colors.
+    Creates a plot of different evapotraspiration data over time..
 
     Args:
-        evapotranspiration: The evapotranspiration (mm/day)
-        date_times: The datetime objects corresponding to the each actual and predicted temp.
+        pred_evapos: A 2d Numpy array of evapotranspirations, each row represents a different model. (mm/day)
+        date_times: A numpy array of date times corrosponding to the evapotranspiration data of each model.
         file_path: A Path object representing the output file path.
-        model_label: Is the label to use on the x-axis for the model
+        model_labels: A list of labels corrosponding to each row of the provided evapotranspiration data.
+        colors: A list of strings providing the color codes to use for the plot. 5 color blind friendly colors are provided.
     
     Returns: 
         The filename where the plot was saved
 
     Raises:
         TypeError: If file_path is not a Path object.
-        ValueError: If the file extension is not '.png' or if the needed label(s) isn't found in the df
+        ValueError: If the file extension is not '.png'.
         FileNotFoundError: If the parent directory does not exist.
+        ValueError: If the length of evapotranspiration data per depth is not equal to the number of date times provided.
+        ValueError: IF the number of model labels is not equal to the number of evapotranspiration models provided.
+        ValueError: If the number of of depths provided is greater than the number of colors provided.
     """
+    # Check params
     __check_png_filename(file_path)
+    if(pred_evapos.shape[1] != len(date_times)):
+        raise ValueError(f"{len(date_times)} Date times were provided, but {pred_evapos.shape[1]} data points for each evapotranspiration models provided.")
+    if(pred_evapos.shape[0] != len(model_labels)):
+        raise ValueError(f"Data for {pred_evapos.shape[0]} evapotransipation models provided, but {len(model_labels)} model labels provided.")
+    if(pred_evapos.shape[0] > len(colors)):
+        raise ValueError("Not enough colors provided")
 
-
-    # Generates a new Plot
+    # Generates a new figure
     plt.figure(figsize=(10,4))
 
-    plt.plot(date_times, evapotranspiration, label=model_label)
+    # Add Evapotranspiration models to the figure
+    for i in range(len(model_labels)):
+        pred_evapo = pred_evapos[i]
+        label = model_labels[i]
+        plt.plot(date_times, pred_evapo, label=label)
     
     # Adds plot label
     plt.ylabel("Evapotranspiration (mm/day)")
@@ -383,7 +421,7 @@ def plot_rainfall(
 
     Raises:
         TypeError: If file_path is not a Path object.
-        ValueError: If the file extension is not '.png' or the rainfall, runnoff, and date_times parameters are not the same length
+        ValueError: If the file extension is not '.png'.
         FileNotFoundError: If the parent directory does not exist.
     """
     __check_png_filename(file_path)
