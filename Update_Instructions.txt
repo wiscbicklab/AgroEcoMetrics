@@ -1,8 +1,11 @@
+Make Sure you are in an environment with sphinx and twine installed.
+    
     Uploading a new PyPi Version:
-1. Update the version Number in pyproject.toml
-2. rm -rf dist build src/agroecometrics.egg-info
-3. python -m build 
-4. python -m twine upload dist/* (You will need a PyPi key for this step)
+1. Copy the src folder from the branch you are creating documentation for to the gh-pages branch.
+2. Update the version Number in pyproject.toml
+3. rm -rf dist build src/agroecometrics.egg-info
+4. python -m build 
+5. python -m twine upload dist/* (You will need a PyPi key for this step)
 
     Uploading new Documentation to Github
 1. Copy the src folder from the branch you are creating documentation for to the gh-pages branch.
