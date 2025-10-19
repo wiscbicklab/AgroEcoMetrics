@@ -246,14 +246,910 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="data">
-<h2>data<a class="headerlink" href="#data" title="Link to this heading">¶</a></h2>
+<section id="module-agroecometrics.data">
+<span id="data"></span><h2>data<a class="headerlink" href="#module-agroecometrics.data" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.data.df_as_dict">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.data.</span></span><span class="sig-name descname"><span class="pre">df_as_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/data.html#df_as_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.data.df_as_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Extracts values from a DataFrame into a dictionary</p>
+<p>Allows users to create a dictionary from a Dataframe. Column names are used for the dictionary keys.
+Only the columns the user provides are added to the dictionary. If no columns are provided all columns are added.
+The value stored in each key is a list of data from the given DataFrame column
+Only the data for</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – The DataFrame containing weather data</p></li>
+<li><p><strong>cols</strong> – The key names to be used in the dictionary</p></li>
+<li><p><strong>idx</strong> – The indices in the DataFrame to be used in the dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>values}.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary of {column_name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.data.interpolate_df">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.data.</span></span><span class="sig-name descname"><span class="pre">interpolate_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'linear'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/agroecometrics/data.html#interpolate_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.data.interpolate_df" title="Link to this definition">¶</a></dt>
+<dd><p>Interpolates missing data within a DataFrame.</p>
+<p>Interpolates data using dataframes interpolate function.
+If a list of column names are provided only those columns are interpolated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – The DataFrame to interpolate</p></li>
+<li><p><strong>col_names</strong> – An optional list of columns names to interpolate the data for</p></li>
+<li><p><strong>method</strong> – The dataframe interpolation method to use</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DataFrame.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>KeyError</strong> – If one of the col_names was not found in the dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.data.load_data_csv">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.data.</span></span><span class="sig-name descname"><span class="pre">load_data_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_time_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_time_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'%m/%d/%Y</span> <span class="pre">%I:%M</span> <span class="pre">%p'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/agroecometrics/data.html#load_data_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.data.load_data_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Loads data from a csv file into a DataFrame while filtering and cleaning the data.</p>
+<p>Loads data from a csv file into a DataFrame. Strips the column names of whitespace on either end and removes apostrophes.
+Filters data by the given dates. If no start or end date is specified the oldest and newest dates in the data are used respectively.
+Converts the date time column to Date Time objects and numeric columns to Numeric Data Types
+Adds columns for the date_norm, DOY, and Year.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Column names can be found by running AEM.settings.calc_calculation_labels().</p></li>
+<li><p>date_norm stores the date normalized to contain the same time, midnight.</p></li>
+<li><p>doy stores the number of days since January 1st, where January 1st = 0 and December 31st = 364 or 365 during a leap year.</p></li>
+<li><p>year stores the current year.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> – The path to your csv data file.</p></li>
+<li><p><strong>start_date</strong> – Optional. The date to start filtering from (Inclusive).</p></li>
+<li><p><strong>end_date</strong> – Optional. The date to stop filtering on (Inclusive).</p></li>
+<li><p><strong>date_format</strong> – The date_format to use on the file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame with the information from the csv file filtered by the specified dates.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.csv’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the file could not be found.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.data.match_datetimes">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.data.</span></span><span class="sig-name descname"><span class="pre">match_datetimes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/data.html#match_datetimes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.data.match_datetimes" title="Link to this definition">¶</a></dt>
+<dd><p>Matches each datetime in ‘desired_dt’ to the closest datetime in ‘target_dt’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_dt</strong> – The np array of actual weather date_times</p></li>
+<li><p><strong>desired_dt</strong> – The np array of date_times to find the closest match for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple of 4 numpy arrays
+The first contains the original desired_dt
+The second contains the date_times matched from the target_dt.
+The third contains the indices of the matched date_times in the original target_dt
+The fourth contains the the difference in time between the desired and matched times</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.data.save_data_csv">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.data.</span></span><span class="sig-name descname"><span class="pre">save_data_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/data.html#save_data_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.data.save_data_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Saves your DataFrame to the given csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – The dataframe to be saved.</p></li>
+<li><p><strong>file_path</strong> – A Path to where you would like to save the data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Path to the newly saved file.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.csv’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+<li><p><strong>FileExistsError</strong> – If the file already exists.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="equations">
-<h2>equations<a class="headerlink" href="#equations" title="Link to this heading">¶</a></h2>
+<section id="module-agroecometrics.equations">
+<span id="equations"></span><h2>equations<a class="headerlink" href="#module-agroecometrics.equations" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.cummulative_water_infiltration">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">cummulative_water_infiltration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">water_vol_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_sat_hydraulic_conductivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infultration_water_potential</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wetting_front_water_potential</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#cummulative_water_infiltration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.cummulative_water_infiltration" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the cummulative vertical water infultration.</p>
+<p>Calculates the cummulative vertical water infultration for the given soil parameters.
+Calculations are made for equally spaced times from [0 to max_time].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>water_vol_fraction</strong> – The Volume Fraction of water.</p></li>
+<li><p><strong>avg_sat_hydraulic_conductivity</strong> – The average hydraulic conductivity of the wet soil (kg * s /m^3).</p></li>
+<li><p><strong>infultration_water_potential</strong> – The infultration boudary’s water potential (J / kg).</p></li>
+<li><p><strong>wetting_front_water_potential</strong> – The wetting front’s water potential (J / kg).</p></li>
+<li><p><strong>max_time</strong> – The length of time to calcute the cummulative water infultration (s).</p></li>
+<li><p><strong>interpolations</strong> – The number of interpolated times to calculate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of length ‘interpolations’ representing the cummulative vertical water infultration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.daily_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">daily_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timelag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#daily_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.daily_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Models soil temperature at a set of depths on a particular day of the year</p>
+<p>Estimates the soil temperature at the number of depths specified.
+The first depth is max_depth/num_depths and the last depth is max_depth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doy</strong> – The day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>max_depth</strong> – The maximum depth to model the soil temperature. (m)</p></li>
+<li><p><strong>num_depths</strong> – The number of depths to caluculate soil temperature at. (None)</p></li>
+<li><p><strong>surface_temp</strong> – The annual average surface temperature. (°C)</p></li>
+<li><p><strong>thermal_amp</strong> – The annual thermal amplitude of the soil surface. (°C)</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to estimate. (mm^2 / s)</p></li>
+<li><p><strong>time_lag</strong> – The time lag in days (0-365) where January 1st is 0 and 365.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing two numpy arrays.</dt><dd><ul class="simple">
+<li><p>The first contains the soil temperature predictions. (°C)</p></li>
+<li><p>The second contains the depth of each prediction. (m)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.dalton">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">dalton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#dalton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.dalton" title="Link to this definition">¶</a></dt>
+<dd><p>Computes Evapotranspiration using the Dalton model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>RH_min</strong> – A numpy array of minimum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>RH_max</strong> – A numpy array of maximum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>wind_speed</strong> – A numpy array of average daily wind speeds. (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.hargreaves">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">hargreaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#hargreaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.hargreaves" title="Link to this definition">¶</a></dt>
+<dd><p>Computes evapotranspiration using the Hargreaves model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lats</strong> – A numpy array of latitudes. (Degrees, North is positive)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.hydraulic_conductivity">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">hydraulic_conductivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sat_hydraulic_conductivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">air_entry_water_potential</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volumetric_water_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sat_water_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#hydraulic_conductivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.hydraulic_conductivity" title="Link to this definition">¶</a></dt>
+<dd><p>Estimates the hydraulic conductivity of soil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sat_hydraulic_conductivity</strong> – The saturated conductivity of the soil  (kg * s / m^3).</p></li>
+<li><p><strong>air_entry_water_potential</strong> – The air entry water potential of the soil  (J / kg).</p></li>
+<li><p><strong>volumetric_water_content</strong> – Is the volumetric water content of the soil (m^3 / m^3).</p></li>
+<li><p><strong>sat_water_content</strong> – Is the saturation water content of the soil (m^3 / m^3).</p></li>
+<li><p><strong>b</strong> – Is the exponent of moisture release.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The calculated hydraulic conductivity of the soil given the parameters ().</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.jensen_haise">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">jensen_haise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#jensen_haise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.jensen_haise" title="Link to this definition">¶</a></dt>
+<dd><p>Computes evapotranspiration using the Jensen model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lats</strong> – A numpy array of latitudes. (Degrees, North is positive)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.model_3d_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_3d_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Models soil temperature over a full day (in 5-minute intervals) across depth
+using air temperature data to parameterize a sinusoidal model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>air_temps</strong> – Soil surface air temperatures for a given day. (°C)</p></li>
+<li><p><strong>max_depth</strong> – Maximum depth to model the soil temperature. (m)</p></li>
+<li><p><strong>num_depths</strong> – The number of interpolated depths to calculate soil temperature at.</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to model. (mm^2 / s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>time_grid: varies across columns. (seconds in day)</p></li>
+<li><p>depth_grid: varies across rows. (m)</p></li>
+<li><p>temp_grid: soil temperature (°C) at each depth and time.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(time_grid, depth_grid, temp_grid), each a 2D NumPy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.model_air_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_air_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_air_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_air_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a daily air temperature estimate by creating a model from actual air temperatures.</p>
+<p>Creates a sinusoidal model of air temperature using best fit on the provided data.
+Then creates daily air temperature predictions over the entire range of dates provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temps</strong> – A numpy array of average daily air temperatures. (°C)</p></li>
+<li><p><strong>date_times</strong> – A numpy array of date time objects correspoinding to the air temperatures.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of predicted daily temperatures from the first to the last day provided, inclusive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.model_gdd">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_gdd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_avg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_upper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_gdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_gdd" title="Link to this definition">¶</a></dt>
+<dd><p>Model how many growing degree days have passed.</p>
+<p>Models Growing Degree days using a minimum base temperature, an optional optimal temperature,
+an optional maximum growing temperature, and the average temperature over the recorded durations.
+If only a base temperature is provided GDD start accumulating above the base temperature, and
+accumulate faster the higher the temperature gets. If optimal and upper temperature are provided
+the accumulation starts above the base temperature, is greatest at the optimal temperature, and
+then decreases linearly down to zero at the upper temperature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp_avg</strong> – A numpy array of average temperatures. (°C)</p></li>
+<li><p><strong>temp_base</strong> – The minimum temperature to accumulate GDD. (°C)</p></li>
+<li><p><strong>temp_opt</strong> – The optimal temperature to accumulate GDD. (°C)</p></li>
+<li><p><strong>temp_upper</strong> – The maximum temperature to accumulate GDD. (°C)</p></li>
+<li><p><strong>time_duration</strong> – The length of time each temp_avg represents. (Days)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing two numpy arrays.</dt><dd><ul class="simple">
+<li><p>The first contains Growing Degree Days for each day.</p></li>
+<li><p>The second contains the cummulative sum of Growing Degree Days for each day.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.model_runoff">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_runoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rainfall</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curve_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">75</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_runoff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_runoff" title="Link to this definition">¶</a></dt>
+<dd><p>Uses Curve Number to estimate runoff from rainfall</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>precipitation</strong> – A numpy array of daily precipitation. (mm)</p></li>
+<li><p><strong>curve_number</strong> – The curve number.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The runoff estimation. (mm)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.model_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Creates soil temperature predictions for each air temperature provided over the course of a day</p>
+<p>Creates a sinusodial model of air temperature using best fir on the provided data
+Then uses that model to estimate soil temperature at the given depth for each temperature given.
+Air temperature are assumed to represent a single day and be equally spaced out through the entire day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>air_temps</strong> – A numpy array of air temperatures at the soil surface. (°C)</p></li>
+<li><p><strong>depth</strong> – The depth to model the soil temperature. (m)</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to model. (m^2 / s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array containing the predicted temperatures. (°C)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.penman">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">penman</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#penman"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.penman" title="Link to this definition">¶</a></dt>
+<dd><p>Computes evapotranspiration using the Penman model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>RH_min</strong> – A numpy array of minimum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>RH_max</strong> – A numpy array of maximum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>wind_speed</strong> – A numpy array of average daily wind speeds. (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.penman_monteith">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">penman_monteith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solar_rad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#penman_monteith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.penman_monteith" title="Link to this definition">¶</a></dt>
+<dd><p>Computed evapotranspiration using the penman-monteith model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>RH_min</strong> – A numpy array of minimum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>RH_max</strong> – A numpy array of maximum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>p_min</strong> – A numpy array of minimum daily atmospheric pressure. (Pa)</p></li>
+<li><p><strong>p_max</strong> – A numpy array of maximum daily atmospheric pressure. (Pa)</p></li>
+<li><p><strong>wind_speed</strong> – A numpy array of average daily wind speeds. (m/s)</p></li>
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lat</strong> – The latitude of the location. (Degrees, North is positive)</p></li>
+<li><p><strong>alt</strong> – The altitude of the location. (m)</p></li>
+<li><p><strong>day.</strong> (<em>solar_rad   The soloar radiation occuring over the whole</em>)</p></li>
+<li><p><strong>wind_height</strong> – Height of for wind speed measurments. (m)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.photoperiod_at_lat">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_at_lat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_at_lat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_at_lat" title="Link to this definition">¶</a></dt>
+<dd><p>Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lat</strong> – The latitude to compute photoperiod at. (Degrees, North is positive)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing</dt><dd><ul class="simple">
+<li><p>Photoperiod, daylight hours, at the given latitude for the given days.</p></li>
+<li><p>The angle of the sum below the horizon.</p></li>
+<li><p>The zenithal distance of the sun in degrees.</p></li>
+<li><p>The mean anomaly of the sun.</p></li>
+<li><p>Lambda.</p></li>
+<li><p>Delta.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.photoperiod_on_day">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_on_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_on_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_on_day" title="Link to this definition">¶</a></dt>
+<dd><p>Computes photoperiod for a given near polar regions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
+<li><p><strong>lats</strong> – A numpy array of latitudes to compute photoperiod at. (Degrees, North is positive)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing</dt><dd><p>Photoperiod, daylight hours, for the given latitudes on the given day.
+- The angle of the sum below the horizon.
+- The zenithal distance of the sun in degrees.
+- The mean anomaly of the sun.
+- The declination of the sun in degrees.
+- Lambda from the equation.
+- Delta from the equation.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Keisling, T.C., 1982. Calculation of the Length of Day 1. Agronomy Journal, 74(4), pp.758-759.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.romanenko">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">romanenko</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RH_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#romanenko"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.romanenko" title="Link to this definition">¶</a></dt>
+<dd><p>Potential evaporation model proposed by Romanenko in 1961</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
+<li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
+<li><p><strong>RH_min</strong> – A numpy array of minimum daily relative humidities. (range: 0.0-1.0)</p></li>
+<li><p><strong>RH_max</strong> – A numpy array of maximum daily relative humidities. (range: 0.0-1.0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Daily evapotranspiration clipped to a minimum of zero. (mm/day)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If all of the numpy arrays are not the same size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.yearly_3d_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">yearly_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timelag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#yearly_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.yearly_3d_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Models soil temperature over a full year (0-365) and across depth.</p>
+<p>Estimates the soil temperature at the number of depths specified for each day of the year.
+The first depth is max_depth/num_depths and the last depth is max_depth.
+Creates a matrix of estimations for each day of the year at each depth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_depth</strong> – The maximum depth in centimeters to model the soil temperature. (m)</p></li>
+<li><p><strong>num_depths</strong> – The number of interpolated depths to calculate soil temperature at.</p></li>
+<li><p><strong>surface_temp</strong> – The annual average surface temperature. (°C)</p></li>
+<li><p><strong>thermal_amp</strong> – The annual thermal amplitude of the soil surface. (°C)</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to model. (mm^2 / s)</p></li>
+<li><p><strong>timelag</strong> – The time lag in days (0-365) where January 1st is 0 and 365</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple of (doy_grid, z_grid, temp_grid), where each is a 2D NumPy array.</dt><dd><ul class="simple">
+<li><p>doy_grid: varies across columns. (same DOY per column)</p></li>
+<li><p>z_grid: varies across rows. (same depth per row) (m)</p></li>
+<li><p>temp_grid: soil temperature at each depth and DOY. (°C)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.equations.yearly_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">yearly_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_lag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#yearly_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.yearly_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Models average soil temperature at a given depth for each day of a year</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>depth</strong> – The depth to model the soil temperature. (m)</p></li>
+<li><p><strong>surface_temp</strong> – The annual average surface temperature. (°C)</p></li>
+<li><p><strong>thermal_amp</strong> – The annual thermal amplitude of the soil surface. (°C)</p></li>
+<li><p><strong>thermal_dif</strong> – The thermal diffusivity of the soil to estimate. (mm^2 / s)</p></li>
+<li><p><strong>time_lag</strong> – The difference between January 1st and the coldest day of the year. (Days)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array of the daily soil temperature predictions. (°C).</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="visualizations">
-<h2>visualizations<a class="headerlink" href="#visualizations" title="Link to this heading">¶</a></h2>
+<section id="module-agroecometrics.visualizations">
+<span id="visualizations"></span><h2>visualizations<a class="headerlink" href="#module-agroecometrics.visualizations" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_3d_modeled_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_3d_modeled_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_3d_modeled_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_3d_modeled_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a 3D plot of predicted soil temperature over the course of a single day at different depths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_grid</strong> – A 2D numpy array of shape (n_depths, n_times), where each value is time. (min)</p></li>
+<li><p><strong>depth_grid</strong> – A 2D numpy array matching time_grid, where each value is the depth. (m)</p></li>
+<li><p><strong>temp_grid</strong> – A 2D numpy array of predicted soil temperatures (same shape as time_grid). (°C)</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’ or if the needed label(s) isn’t found in the df</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_air_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_air_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_air_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_air_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of air temperature and predicted air temperatures over the time.</p>
+<p>The actual air temperature are plotted as a scatter plot and the predicted air temperatures are ploted as a graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>air_temps</strong> – A numpy array of actual air temperatures. (°C)</p></li>
+<li><p><strong>pred_temps</strong> – A numpy array of the predicted air temperatures. (°C)</p></li>
+<li><p><strong>date_times</strong> – A numpy array of date times corrosponding to the air temperatures.</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The resolved file path where the plot was saved.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_daily_photoperiod">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_daily_photoperiod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_daily_photoperiod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_daily_photoperiod" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of the photoperiod from -45 to 45 degree latitude on the given day of year</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doys</strong> – A np.ndarray of the days of year (0-365) where January 1st is 0 and 365 to perform the calculation</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_daily_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_daily_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">soil_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_daily_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_daily_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of modeled soil temperature at a given depth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>soil_temp</strong> – A numpy array of the predicted soil temperatures. (°C)</p></li>
+<li><p><strong>depth</strong> – The depth that the soil temperature predictions are made at. (m)</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_evapo_data">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_evapo_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_evapos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['#0072b2',</span> <span class="pre">'#009e73',</span> <span class="pre">'#cc79a7',</span> <span class="pre">'#d55e00',</span> <span class="pre">'#F0E442']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_evapo_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_evapo_data" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of different evapotraspiration data over time..</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pred_evapos</strong> – A 2d Numpy array of evapotranspirations, each row represents a different model. (mm/day)</p></li>
+<li><p><strong>date_times</strong> – A numpy array of date times corrosponding to the evapotranspiration data of each model.</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+<li><p><strong>model_labels</strong> – A list of labels corrosponding to each row of the provided evapotranspiration data.</p></li>
+<li><p><strong>colors</strong> – A list of strings providing the color codes to use for the plot. 5 color blind friendly colors are provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+<li><p><strong>ValueError</strong> – If the length of evapotranspiration data per depth is not equal to the number of date times provided.</p></li>
+<li><p><strong>ValueError</strong> – IF the number of model labels is not equal to the number of evapotranspiration models provided.</p></li>
+<li><p><strong>ValueError</strong> – If the number of of depths provided is greater than the number of colors provided.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_gdd">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_gdd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_gdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_gdd" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of the Growing Degree Days that occured over each time segment in the data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdd</strong> – The Growing Degree Days that occured</p></li>
+<li><p><strong>date_times</strong> – The datetime objects corresponding to the each actual and predicted temp.</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’ or if the needed label(s) isn’t found in the df</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_gdd_sum">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_gdd_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdd_sum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_gdd_sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_gdd_sum" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of the Cumulative Growing Degree Days that occured over the data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdd_sum</strong> – The cummulative Growing Degree Days that have occured since the start of the data.</p></li>
+<li><p><strong>date_times</strong> – The datetime objects corresponding to the each actual and predicted temp.</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’ or if the needed label isn’t found in the df</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_modeled_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_modeled_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">soil_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['#0072b2',</span> <span class="pre">'#009e73',</span> <span class="pre">'#cc79a7',</span> <span class="pre">'#d55e00',</span> <span class="pre">'#F0E442']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_modeled_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_modeled_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of air temperature and the predicted soil temperature on a particular date</p>
+<p>Creates a plot showing the given air temperature as a scatter plot, the actual soil temperature
+as a scatter plot if provided, and a graphed approximation of the predicted soil temperature at
+each of the provided depths. The first provided color is used for the air temperature, the next
+is used for actual soil temperatures if provided, and the next available is used for the predicted
+soil temperatures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>air_temp</strong> – A numpy array of the air temperature collected over a single day. (°C)</p></li>
+<li><p><strong>pred_temps</strong> – A 2d numpy array where each row is a set of predicted soil temperatures corrosponding
+to the provided air temperatures. Each row corrospondes to the depth in depths. (°C)</p></li>
+<li><p><strong>depths</strong> – The depth that the soil temperature was predicted at. (m)</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+<li><p><strong>soil_temp</strong> – A numpy array of the collected soil temperature at the same interval as air temperature.</p></li>
+<li><p><strong>colors</strong> – A list of strings providing the color codes to use for the plot. 5 color blind friendly colors are provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+<li><p><strong>ValueError</strong> – If the number of predicted temperatures per set is not equal to the number of provided air temperatures.</p></li>
+<li><p><strong>ValueError</strong> – If the number of predicted temperature sets is not equal to the number of provided depths.</p></li>
+<li><p><strong>ValueError</strong> – If the number of required colors is greater than the number of available colors.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_rainfall">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_rainfall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rainfall</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_rainfall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_rainfall" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of rainfall and runoff over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – DataFrame with cumulative rainfall and runoff</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_yearly_3d_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_yearly_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doy_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_yearly_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_yearly_3d_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a 3d plot of soil temperature at different depths over the course of a year.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doy_gird</strong> – A 2d np.ndarray with shape (Nz, 365) containing the day of year
+for each plot point.</p></li>
+<li><p><strong>z_grid</strong> – A 2d np.ndarray with shape (Nz, 365) containing the soil depth
+for each plot point. (m)</p></li>
+<li><p><strong>t_grid</strong> – A 2d np.ndarray with shape (Nz, 365) containing the soil temperature
+for each plot point. (°C)</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_yearly_photoperiod">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_yearly_photoperiod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_yearly_photoperiod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_yearly_photoperiod" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of the photoperiod at a specified latitude over a year’s time. Not accurate near polar regions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>latitude</strong> – Latitude in decimal degress. Where the northern hemisphere is .
+positive and the southern hemisphere is negative.</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agroecometrics.visualizations.plot_yearly_soil_temp">
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_yearly_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">soil_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_yearly_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_yearly_soil_temp" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a plot of modeled soil temperature over a year’s time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>soil_temps</strong> – A numpy array of soil temperatures for each day of the year. (°C)</p></li>
+<li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filename where the plot was saved</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If file_path is not a Path object.</p></li>
+<li><p><strong>ValueError</strong> – If the file extension is not ‘.png’.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the parent directory does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -306,9 +1202,50 @@
             <ul>
 <li><a class="reference internal" href="#">agroecometrics package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#data">data</a></li>
-<li><a class="reference internal" href="#equations">equations</a></li>
-<li><a class="reference internal" href="#visualizations">visualizations</a></li>
+<li><a class="reference internal" href="#module-agroecometrics.data">data</a><ul>
+<li><a class="reference internal" href="#agroecometrics.data.df_as_dict"><code class="docutils literal notranslate"><span class="pre">df_as_dict()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.data.interpolate_df"><code class="docutils literal notranslate"><span class="pre">interpolate_df()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.data.load_data_csv"><code class="docutils literal notranslate"><span class="pre">load_data_csv()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.data.match_datetimes"><code class="docutils literal notranslate"><span class="pre">match_datetimes()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.data.save_data_csv"><code class="docutils literal notranslate"><span class="pre">save_data_csv()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-agroecometrics.equations">equations</a><ul>
+<li><a class="reference internal" href="#agroecometrics.equations.cummulative_water_infiltration"><code class="docutils literal notranslate"><span class="pre">cummulative_water_infiltration()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.daily_soil_temp"><code class="docutils literal notranslate"><span class="pre">daily_soil_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.dalton"><code class="docutils literal notranslate"><span class="pre">dalton()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.hargreaves"><code class="docutils literal notranslate"><span class="pre">hargreaves()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.hydraulic_conductivity"><code class="docutils literal notranslate"><span class="pre">hydraulic_conductivity()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.jensen_haise"><code class="docutils literal notranslate"><span class="pre">jensen_haise()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.model_3d_soil_temp"><code class="docutils literal notranslate"><span class="pre">model_3d_soil_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.model_air_temp"><code class="docutils literal notranslate"><span class="pre">model_air_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.model_gdd"><code class="docutils literal notranslate"><span class="pre">model_gdd()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.model_runoff"><code class="docutils literal notranslate"><span class="pre">model_runoff()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.model_soil_temp"><code class="docutils literal notranslate"><span class="pre">model_soil_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.penman"><code class="docutils literal notranslate"><span class="pre">penman()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.penman_monteith"><code class="docutils literal notranslate"><span class="pre">penman_monteith()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.photoperiod_at_lat"><code class="docutils literal notranslate"><span class="pre">photoperiod_at_lat()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.photoperiod_on_day"><code class="docutils literal notranslate"><span class="pre">photoperiod_on_day()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.romanenko"><code class="docutils literal notranslate"><span class="pre">romanenko()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.yearly_3d_soil_temp"><code class="docutils literal notranslate"><span class="pre">yearly_3d_soil_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.equations.yearly_soil_temp"><code class="docutils literal notranslate"><span class="pre">yearly_soil_temp()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-agroecometrics.visualizations">visualizations</a><ul>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_3d_modeled_soil_temp"><code class="docutils literal notranslate"><span class="pre">plot_3d_modeled_soil_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_air_temp"><code class="docutils literal notranslate"><span class="pre">plot_air_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_daily_photoperiod"><code class="docutils literal notranslate"><span class="pre">plot_daily_photoperiod()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_daily_soil_temp"><code class="docutils literal notranslate"><span class="pre">plot_daily_soil_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_evapo_data"><code class="docutils literal notranslate"><span class="pre">plot_evapo_data()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_gdd"><code class="docutils literal notranslate"><span class="pre">plot_gdd()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_gdd_sum"><code class="docutils literal notranslate"><span class="pre">plot_gdd_sum()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_modeled_soil_temp"><code class="docutils literal notranslate"><span class="pre">plot_modeled_soil_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_rainfall"><code class="docutils literal notranslate"><span class="pre">plot_rainfall()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_yearly_3d_soil_temp"><code class="docutils literal notranslate"><span class="pre">plot_yearly_3d_soil_temp()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_yearly_photoperiod"><code class="docutils literal notranslate"><span class="pre">plot_yearly_photoperiod()</span></code></a></li>
+<li><a class="reference internal" href="#agroecometrics.visualizations.plot_yearly_soil_temp"><code class="docutils literal notranslate"><span class="pre">plot_yearly_soil_temp()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

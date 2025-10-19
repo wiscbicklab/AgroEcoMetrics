@@ -7,7 +7,7 @@
         <link rel="canonical" href="https://wiscbicklab.github.io//AgroEcoMetrics/modules.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>agroecometrics package - AgroEcoMetrics 0.1.0a documentation</title>
+        <title>agroecometrics package - AgroEcoMetrics 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">AgroEcoMetrics 0.1.0a documentation</div></a>
+      <a href="index.html"><div class="brand">AgroEcoMetrics 0.1.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0a documentation</span>
+  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -428,7 +428,7 @@ The first depth is max_depth/num_depths and the last depth is max_depth.</p>
 <dd class="field-even"><p><dl class="simple">
 <dt>A tuple containing two numpy arrays.</dt><dd><ul class="simple">
 <li><p>The first contains the soil temperature predictions. (°C)</p></li>
-<li><p>The second contains the depth of each prediction. (cm)</p></li>
+<li><p>The second contains the depth of each prediction. (m)</p></li>
 </ul>
 </dd>
 </dl>
@@ -681,7 +681,7 @@ Air temperature are assumed to represent a single day and be equally spaced out 
 <li><p><strong>wind_speed</strong> – A numpy array of average daily wind speeds. (m/s)</p></li>
 <li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
 <li><p><strong>lat</strong> – The latitude of the location. (Degrees, North is positive)</p></li>
-<li><p><strong>alts</strong> – The altitude of the location. (m)</p></li>
+<li><p><strong>alt</strong> – The altitude of the location. (m)</p></li>
 <li><p><strong>day.</strong> (<em>solar_rad   The soloar radiation occuring over the whole</em>)</p></li>
 <li><p><strong>wind_height</strong> – Height of for wind speed measurments. (m)</p></li>
 </ul>
@@ -836,9 +836,9 @@ Creates a matrix of estimations for each day of the year at each depth.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>time_grid</strong> – A 2D numpy array of shape (n_depths, n_times), where each value is time in minutes.</p></li>
-<li><p><strong>depth_grid</strong> – A 2D numpy array matching time_grid, where each value is the depth in cm.</p></li>
-<li><p><strong>temp_grid</strong> – A 2D numpy array of predicted soil temperatures (same shape as time_grid).</p></li>
+<li><p><strong>time_grid</strong> – A 2D numpy array of shape (n_depths, n_times), where each value is time. (min)</p></li>
+<li><p><strong>depth_grid</strong> – A 2D numpy array matching time_grid, where each value is the depth. (m)</p></li>
+<li><p><strong>temp_grid</strong> – A 2D numpy array of predicted soil temperatures (same shape as time_grid). (°C)</p></li>
 <li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
@@ -914,7 +914,7 @@ Creates a matrix of estimations for each day of the year at each depth.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>soil_temp</strong> – A numpy array of the predicted soil temperatures. (°C)</p></li>
-<li><p><strong>depth</strong> – The depth that the soil temperature predictions are made at. (cm)</p></li>
+<li><p><strong>depth</strong> – The depth that the soil temperature predictions are made at. (m)</p></li>
 <li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
@@ -933,7 +933,7 @@ Creates a matrix of estimations for each day of the year at each depth.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.visualizations.plot_evapo_data">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_evapo_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_evapos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['#0072b2',</span> <span class="pre">'#009e73',</span> <span class="pre">'#cc79a7',</span> <span class="pre">'#d55e00',</span> <span class="pre">'#F0E442']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_evapo_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_evapo_data" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.visualizations.</span></span><span class="sig-name descname"><span class="pre">plot_evapo_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_evapos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['#0072b2',</span> <span class="pre">'#009e73',</span> <span class="pre">'#cc79a7',</span> <span class="pre">'#d55e00',</span> <span class="pre">'#F0E442']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="_modules/agroecometrics/visualizations.html#plot_evapo_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.visualizations.plot_evapo_data" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a plot of different evapotraspiration data over time..</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1023,10 +1023,10 @@ soil temperatures.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>air_temp</strong> – A numpy array of the air temperature collected over a single day.</p></li>
+<li><p><strong>air_temp</strong> – A numpy array of the air temperature collected over a single day. (°C)</p></li>
 <li><p><strong>pred_temps</strong> – A 2d numpy array where each row is a set of predicted soil temperatures corrosponding
-to the provided air temperatures. Each row corrospondes to the depth in depths.</p></li>
-<li><p><strong>depths</strong> – The depth that the soil temperature was predicted at</p></li>
+to the provided air temperatures. Each row corrospondes to the depth in depths. (°C)</p></li>
+<li><p><strong>depths</strong> – The depth that the soil temperature was predicted at. (m)</p></li>
 <li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 <li><p><strong>soil_temp</strong> – A numpy array of the collected soil temperature at the same interval as air temperature.</p></li>
 <li><p><strong>colors</strong> – A list of strings providing the color codes to use for the plot. 5 color blind friendly colors are provided.</p></li>
@@ -1082,9 +1082,9 @@ to the provided air temperatures. Each row corrospondes to the depth in depths.<
 <li><p><strong>doy_gird</strong> – A 2d np.ndarray with shape (Nz, 365) containing the day of year
 for each plot point.</p></li>
 <li><p><strong>z_grid</strong> – A 2d np.ndarray with shape (Nz, 365) containing the soil depth
-for each plot point.</p></li>
+for each plot point. (m)</p></li>
 <li><p><strong>t_grid</strong> – A 2d np.ndarray with shape (Nz, 365) containing the soil temperature
-for each plot point.</p></li>
+for each plot point. (°C)</p></li>
 <li><p><strong>file_path</strong> – A Path object representing the output file path.</p></li>
 </ul>
 </dd>
@@ -1257,7 +1257,7 @@ positive and the southern hemisphere is negative.</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=fa83724a"></script>
+</div><script src="_static/documentation_options.js?v=01f34227"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

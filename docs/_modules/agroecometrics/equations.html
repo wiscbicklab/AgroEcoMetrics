@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://wiscbicklab.github.io//AgroEcoMetrics/_modules/agroecometrics/equations.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>agroecometrics.equations - AgroEcoMetrics 0.1.0a documentation</title>
+        <title>agroecometrics.equations - AgroEcoMetrics 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.1.0a documentation</div></a>
+      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.1.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,7 +189,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0a documentation</span>
+  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -390,7 +390,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A tuple containing two numpy arrays.</span>
 <span class="sd">            - The first contains the soil temperature predictions. (°C)</span>
-<span class="sd">            - The second contains the depth of each prediction. (cm)</span>
+<span class="sd">            - The second contains the depth of each prediction. (m)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Set Constants</span>
     <span class="n">PHASE_FREQ</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">365</span>
@@ -493,17 +493,17 @@
     <span class="n">PHASE_FREQ</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">DAY_SECONDS</span> 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">phase_shift</span><span class="p">,</span> <span class="n">avg_temp</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">time</span> <span class="o">*</span> <span class="n">PHASE_FREQ</span><span class="p">)</span> <span class="o">+</span> <span class="n">phase_shift</span><span class="p">)</span> <span class="o">+</span> <span class="n">avg_temp</span>
+        <span class="k">return</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">time</span> <span class="o">*</span> <span class="n">PHASE_FREQ</span><span class="p">)</span> <span class="o">-</span> <span class="n">phase_shift</span><span class="p">)</span> <span class="o">+</span> <span class="n">avg_temp</span>
     
     <span class="c1"># Estimate function parameters</span>
     <span class="n">params</span><span class="p">,</span> <span class="n">__</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">air_temps</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">param_estimate</span><span class="p">)</span>
     <span class="n">damp_depth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">thermal_dif</span> <span class="o">/</span> <span class="n">PHASE_FREQ</span><span class="p">)</span>
 
-    <span class="n">pred_air_temps</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">times</span> <span class="o">*</span> <span class="n">PHASE_FREQ</span><span class="p">)</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c1">#pred_air_temps = params[0] * np.sin((times * PHASE_FREQ) + params[1]) + params[2]</span>
     
     <span class="c1"># Generate soil temperature preditions    </span>
-    <span class="n">soil_temps</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">depth</span><span class="o">/</span><span class="n">damp_depth</span><span class="p">))</span>
-    <span class="n">soil_temps</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">times</span> <span class="o">*</span> <span class="n">PHASE_FREQ</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">depth</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">)</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">soil_temps</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">depth</span><span class="o">/</span><span class="n">damp_depth</span><span class="p">))</span>
+    <span class="n">soil_temps</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">times</span> <span class="o">*</span> <span class="n">PHASE_FREQ</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">depth</span> <span class="o">/</span> <span class="n">damp_depth</span><span class="p">)</span> <span class="o">-</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">soil_temps</span> <span class="o">+=</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">soil_temps</span></div>
@@ -536,7 +536,7 @@
     <span class="c1"># Calculate depths to evaluate</span>
     <span class="n">depths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">max_depth</span> <span class="o">/</span> <span class="n">num_depths</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">,</span> <span class="n">num_depths</span><span class="p">)</span>
 
-    <span class="c1"># Time steps: 5-minute intervals over the full day</span>
+    <span class="c1"># Time steps: Equal spaced time intervals over the full day</span>
     <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">DAY_SECONDS</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">air_temps</span><span class="p">))</span>
 
     <span class="c1"># Preallocate matrix: [depth x time]</span>
@@ -785,7 +785,7 @@
 <span class="sd">        wind_speed: A numpy array of average daily wind speeds. (m/s)</span>
 <span class="sd">        doys:       A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</span>
 <span class="sd">        lat:        The latitude of the location. (Degrees, North is positive)</span>
-<span class="sd">        alts:       The altitude of the location. (m)</span>
+<span class="sd">        alt:       The altitude of the location. (m)</span>
 <span class="sd">        solar_rad   The soloar radiation occuring over the whole day. ((MJ/(m² * day))</span>
 <span class="sd">        wind_height: Height of for wind speed measurments. (m)</span>
 <span class="sd">        </span>
@@ -1154,7 +1154,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=fa83724a"></script>
+</div><script src="../../_static/documentation_options.js?v=01f34227"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
