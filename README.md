@@ -66,12 +66,12 @@ import pandas as pd
 # Load your data
 data_path = Path("**your_weather_data.csv**")
 image_path = Path("**your_saved_plot.png**")
-df = AEM.data.load_data_csv(data_path, "**date_time_col_name**", start_date='2024-01-01', end_date='2024-12-31')
+df = AEM.data.load_data_csv(data_path, "**date_time_col_name**", start_date='2024-01-01', end_date='2024-12-31', date_time_format="%m/%d/%Y %I:%M %p")
 
 # Create a Graph of air temperature on a particular day
 date_times = df["**date_time_col_name**"]
 avg_air_temp = df['**avg_air_temp_col_name**']
-air_temp_pred = AEM.equations.model_air_temp(avg_air_temp)
+air_temp_pred = AEM.equations.model_air_temp(avg_air_temp, date_times)
 AEM.visualizations.plot_air_temp(avg_air_temp, air_temp_pred, date_times, image_path)
 ```
 
