@@ -4,7 +4,7 @@ private/
 Scripts/
 
 # Ignore all testing files
-Tests/
+local_Tests/
 
 # Python bytecode and cache
 __pycache__/

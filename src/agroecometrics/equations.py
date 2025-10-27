@@ -264,7 +264,7 @@ def model_3d_soil_temp(
         thermal_dif: float = 0.203
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Models soil temperature over a full day (in 5-minute intervals) across depth 
+    Models soil temperature over a full day across depth 
     using air temperature data to parameterize a sinusoidal model.
 
     Args:
