@@ -455,7 +455,7 @@ def hargreaves(
         temp_min: np.ndarray,
         temp_max: np.ndarray,
         doys: np.ndarray,
-        lats: float
+        lat: float
     ) -> np.ndarray:
     """
     Computes evapotranspiration using the Hargreaves model
@@ -464,7 +464,7 @@ def hargreaves(
         temp_min: A numpy array of minimum daily temperatures. (°C)
         temp_max: A numpy array of maximum daily temperatures. (°C)
         doys:     A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)
-        lats:     A numpy array of latitudes. (Degrees, North is positive)
+        lat:      The latitude of the location data is calculated at. (Degrees, North is positive)
         
     Returns:
         Daily evapotranspiration clipped to a minimum of zero. (mm/day)
@@ -477,7 +477,7 @@ def hargreaves(
         raise ValueError("All inputs must be the same length")
     
     # Model Calulations
-    Ra = __compute_solar_radiation(doys, lats)
+    Ra = __compute_solar_radiation(doys, lat)
     T_avg = (temp_min + temp_max)/2
     PET = 0.0023 * Ra * (T_avg + 17.8) * (temp_max - temp_min)**0.5
 
@@ -676,7 +676,7 @@ def model_gdd(
 
 
 # Photoperiod Tools
-def photoperiod_at_lat(doys: np.ndarray, lat: float) -> Tuple[np.array, np.array, np.array, np.array, np.array]:
+def photoperiod_at_lat(doys: np.ndarray, lat: float) -> Tuple[np.array, np.array, np.array, np.array, np.array, np.array]:
     """
     Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.
 
@@ -687,7 +687,7 @@ def photoperiod_at_lat(doys: np.ndarray, lat: float) -> Tuple[np.array, np.array
     Returns:
         A tuple containing
             - Photoperiod, daylight hours, at the given latitude for the given days.
-            - The angle of the sum below the horizon.
+            - The angle of the sun below the horizon.
             - The zenithal distance of the sun in degrees.
             - The mean anomaly of the sun.
             - Lambda.
@@ -717,7 +717,7 @@ def photoperiod_at_lat(doys: np.ndarray, lat: float) -> Tuple[np.array, np.array
 
     return day_length, sun_angle, sun_zenithal_dist, sun_mean_anomaly, sun_declenation, np.degrees(delta)
     
-def photoperiod_on_day(doys: np.ndarray, lats: np.ndarray) -> Tuple[np.array, np.array, np.array, np.array, np.array]:
+def photoperiod_on_day(doys: np.ndarray, lats: np.ndarray) -> Tuple[np.array, np.array, np.array, np.array, np.array, np.array]:
     """
     Computes photoperiod for a given near polar regions.
 
