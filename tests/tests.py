@@ -912,77 +912,30 @@ def photoperiod_test():
      pred_declination_5, pred_delta_5) = AEM.equations.photoperiod_on_day(doys, lats)
     (pred_day_len_6, pred_angle_6, pred_z_dist_6, pred_anomaly_6,
      pred_declination_6, pred_delta_6) = AEM.equations.photoperiod_on_day(doys, lats)
+    pred_float_vals = np.asarray([
+      pred_angle_1, pred_z_dist_1, pred_angle_2, pred_z_dist_2, pred_angle_3,
+      pred_z_dist_3, pred_angle_4, pred_z_dist_4, pred_angle_5, pred_z_dist_5,
+      pred_angle_6, pred_z_dist_6
+    ])
     
     location = Path("expected/photoperiod/.npy")
-
-    np.save(location.with_name("day_length_1.npy"), pred_day_len_1)
-    np.save(location.with_name("sun_angle_1.npy"), pred_angle_1)
-    np.save(location.with_name("sun_zenithal_distance_1.npy"), pred_z_dist_1)
-    np.save(location.with_name("sun_mean_anomaly_1.npy"), pred_anomaly_1)
-    np.save(location.with_name("sun_declination_1.npy"), pred_declination_1)
-    np.save(location.with_name("delta_1.npy"), pred_delta_1)
-    np.save(location.with_name("day_length_2.npy"), pred_day_len_2)
-    np.save(location.with_name("sun_angle_2.npy"), pred_angle_2)
-    np.save(location.with_name("sun_zenithal_distance_2.npy"), pred_z_dist_2)
-    np.save(location.with_name("sun_mean_anomaly_2.npy"), pred_anomaly_2)
-    np.save(location.with_name("sun_declination_2.npy"), pred_declination_2)
-    np.save(location.with_name("delta_2.npy"), pred_delta_2)
-    np.save(location.with_name("day_length_3.npy"), pred_day_len_3)
-    np.save(location.with_name("sun_angle_3.npy"), pred_angle_3)
-    np.save(location.with_name("sun_zenithal_distance_3.npy"), pred_z_dist_3)
-    np.save(location.with_name("sun_mean_anomaly_3.npy"), pred_anomaly_3)
-    np.save(location.with_name("sun_declination_3.npy"), pred_declination_3)
-    np.save(location.with_name("delta_3.npy"), pred_delta_3)
-    np.save(location.with_name("day_length_4.npy"), pred_day_len_4)
-    np.save(location.with_name("sun_angle_4.npy"), pred_angle_4)
-    np.save(location.with_name("sun_zenithal_distance_4.npy"), pred_z_dist_4)
-    np.save(location.with_name("sun_mean_anomaly_4.npy"), pred_anomaly_4)
-    np.save(location.with_name("sun_declination_4.npy"), pred_declination_4)
-    np.save(location.with_name("delta_4.npy"), pred_delta_4)
-    np.save(location.with_name("day_length_5.npy"), pred_day_len_5)
-    np.save(location.with_name("sun_angle_5.npy"), pred_angle_5)
-    np.save(location.with_name("sun_zenithal_distance_5.npy"), pred_z_dist_5)
-    np.save(location.with_name("sun_mean_anomaly_5.npy"), pred_anomaly_5)
-    np.save(location.with_name("sun_declination_5.npy"), pred_declination_5)
-    np.save(location.with_name("delta_5.npy"), pred_delta_5)
-    np.save(location.with_name("day_length_6.npy"), pred_day_len_6)
-    np.save(location.with_name("sun_angle_6.npy"), pred_angle_6)
-    np.save(location.with_name("sun_zenithal_distance_6.npy"), pred_z_dist_6)
-    np.save(location.with_name("sun_mean_anomaly_6.npy"), pred_anomaly_6)
-    np.save(location.with_name("sun_declination_6.npy"), pred_declination_6)
-    np.save(location.with_name("delta_6.npy"), pred_delta_6)
-
     files = [
-      "day_length_1.npy", "sun_angle_1.npy", "sun_zenithal_distance_1.npy",
-      "sun_mean_anomaly_1.npy", "sun_declination_1.npy", "delta_1.npy",
-      "day_length_2.npy", "sun_angle_2.npy", "sun_zenithal_distance_2.npy",
-      "sun_mean_anomaly_2.npy", "sun_declination_2.npy", "delta_2.npy",
-      "day_length_3.npy", "sun_angle_3.npy", "sun_zenithal_distance_3.npy",
-      "sun_mean_anomaly_3.npy", "sun_declination_3.npy", "delta_3.npy",
-      "day_length_4.npy", "sun_angle_4.npy", "sun_zenithal_distance_4.npy",
-      "sun_mean_anomaly_4.npy", "sun_declination_4.npy", "delta_4.npy",
-      "day_length_5.npy", "sun_angle_5.npy", "sun_zenithal_distance_5.npy",
-      "sun_mean_anomaly_5.npy", "sun_declination_5.npy", "delta_5.npy",
-      "day_length_6.npy", "sun_angle_6.npy", "sun_zenithal_distance_6.npy",
-      "sun_mean_anomaly_6.npy", "sun_declination_6.npy", "delta_6.npy",
-    ]
-    (exp_day_len_1, exp_angle_1, exp_z_dist_1, exp_anomaly_1, exp_declination_1,
-     exp_delta_1, exp_day_len_2, exp_angle_2, exp_z_dist_2, exp_anomaly_2, 
-     exp_declination_2, exp_delta_2, exp_day_len_3, exp_angle_3, exp_z_dist_3, 
-     exp_anomaly_3, exp_declination_3, exp_delta_3, exp_day_len_4, exp_angle_4, 
-     exp_z_dist_4, exp_anomaly_4, exp_declination_4, exp_delta_4, exp_day_len_5, 
-     exp_angle_5, exp_z_dist_5, exp_anomaly_5, exp_declination_5, exp_delta_5,
-     exp_day_len_6, exp_angle_6, exp_z_dist_6, exp_anomaly_6, exp_declination_6,
-     exp_delta_6, ) = load_np_files(location, files)
+      "day_length_1.npy", "sun_mean_anomaly_1.npy", "sun_declination_1.npy", "delta_1.npy",
+      "day_length_2.npy", "sun_mean_anomaly_2.npy", "sun_declination_2.npy", "delta_2.npy",
+      "day_length_3.npy", "sun_mean_anomaly_3.npy", "sun_declination_3.npy", "delta_3.npy",
+      "day_length_4.npy", "sun_mean_anomaly_4.npy", "sun_declination_4.npy", "delta_4.npy",
+      "day_length_5.npy", "sun_mean_anomaly_5.npy", "sun_declination_5.npy", "delta_5.npy",
+      "day_length_6.npy", "sun_mean_anomaly_6.npy", "sun_declination_6.npy", "delta_6.npy",
+      "float_vals.npy" ]
+    (exp_day_len_1, exp_anomaly_1, exp_declination_1, exp_delta_1, exp_day_len_2,
+     exp_anomaly_2, exp_declination_2, exp_delta_2, exp_day_len_3, exp_anomaly_3,
+     exp_declination_3, exp_delta_3, exp_day_len_4, exp_anomaly_4, exp_declination_4,
+     exp_delta_4, exp_day_len_5, exp_anomaly_5, exp_declination_5, exp_delta_5,
+     exp_day_len_6, exp_anomaly_6, exp_declination_6, exp_delta_6, exp_float_vals) = load_np_files(location, files)
+    
     
     # Compare size of actual and expected results
     if(pred_day_len_1.shape[0] != len(exp_day_len_1)):
-      print("Size mismatch occured running photoperiod_at_lat")
-      return False
-    if(pred_angle_1.shape[0] != len(exp_angle_1)):
-      print("Size mismatch occured running photoperiod_at_lat")
-      return False
-    if(pred_z_dist_1.shape[0] != len(exp_z_dist_1)):
       print("Size mismatch occured running photoperiod_at_lat")
       return False
     if(pred_anomaly_1.shape[0] != len(exp_anomaly_1)):
@@ -997,12 +950,6 @@ def photoperiod_test():
     if(pred_day_len_2.shape[0] != len(exp_day_len_2)):
       print("Size mismatch occured running photoperiod_at_lat")
       return False
-    if(pred_angle_2.shape[0] != len(exp_angle_2)):
-      print("Size mismatch occured running photoperiod_at_lat")
-      return False
-    if(pred_z_dist_2.shape[0] != len(exp_z_dist_2)):
-      print("Size mismatch occured running photoperiod_at_lat")
-      return False
     if(pred_anomaly_2.shape[0] != len(exp_anomaly_2)):
       print("Size mismatch occured running photoperiod_at_lat")
       return False
@@ -1013,12 +960,6 @@ def photoperiod_test():
       print("Size mismatch occured running photoperiod_at_lat")
       return False
     if(pred_day_len_3.shape[0] != len(exp_day_len_3)):
-      print("Size mismatch occured running photoperiod_at_lat")
-      return False
-    if(pred_angle_3.shape[0] != len(exp_angle_3)):
-      print("Size mismatch occured running photoperiod_at_lat")
-      return False
-    if(pred_z_dist_3.shape[0] != len(exp_z_dist_3)):
       print("Size mismatch occured running photoperiod_at_lat")
       return False
     if(pred_anomaly_3.shape[0] != len(exp_anomaly_3)):
@@ -1033,12 +974,6 @@ def photoperiod_test():
     if(pred_day_len_4.shape[0] != len(exp_day_len_4)):
       print("Size mismatch occured running photoperiod_on_day")
       return False
-    if(pred_angle_4.shape[0] != len(exp_angle_4)):
-      print("Size mismatch occured running photoperiod_on_day")
-      return False
-    if(pred_z_dist_4.shape[0] != len(exp_z_dist_4)):
-      print("Size mismatch occured running photoperiod_on_day")
-      return False
     if(pred_anomaly_4.shape[0] != len(exp_anomaly_4)):
       print("Size mismatch occured running photoperiod_on_day")
       return False
@@ -1051,12 +986,6 @@ def photoperiod_test():
     if(pred_day_len_5.shape[0] != len(exp_day_len_5)):
       print("Size mismatch occured running photoperiod_on_day")
       return False
-    if(pred_angle_5.shape[0] != len(exp_angle_5)):
-      print("Size mismatch occured running photoperiod_on_day")
-      return False
-    if(pred_z_dist_5.shape[0] != len(exp_z_dist_5)):
-      print("Size mismatch occured running photoperiod_on_day")
-      return False
     if(pred_anomaly_5.shape[0] != len(exp_anomaly_5)):
       print("Size mismatch occured running photoperiod_on_day")
       return False
@@ -1067,12 +996,6 @@ def photoperiod_test():
       print("Size mismatch occured running photoperiod_on_day")
       return False
     if(pred_day_len_6.shape[0] != len(exp_day_len_6)):
-      print("Size mismatch occured running photoperiod_on_day")
-      return False
-    if(pred_angle_6.shape[0] != len(exp_angle_6)):
-      print("Size mismatch occured running photoperiod_on_day")
-      return False
-    if(pred_z_dist_6.shape[0] != len(exp_z_dist_6)):
       print("Size mismatch occured running photoperiod_on_day")
       return False
     if(pred_anomaly_6.shape[0] != len(exp_anomaly_6)):
@@ -1089,12 +1012,6 @@ def photoperiod_test():
     if(not np.allclose(pred_day_len_1, exp_day_len_1)):
       print("Incorrect results from photoperiod_at_lat")
       return False
-    if(not np.allclose(pred_angle_1, exp_angle_1)):
-      print("Incorrect results from photoperiod_at_lat")
-      return False
-    if(not np.allclose(pred_z_dist_1, exp_z_dist_1)):
-      print("Incorrect results from photoperiod_at_lat")
-      return False
     if(not np.allclose(pred_anomaly_1, exp_anomaly_1)):
       print("Incorrect results from photoperiod_at_lat")
       return False
@@ -1105,12 +1022,6 @@ def photoperiod_test():
       print("Incorrect results from photoperiod_at_lat")
       return False
     if(not np.allclose(pred_day_len_2, exp_day_len_2)):
-      print("Incorrect results from photoperiod_at_lat")
-      return False
-    if(not np.allclose(pred_angle_2, exp_angle_2)):
-      print("Incorrect results from photoperiod_at_lat")
-      return False
-    if(not np.allclose(pred_z_dist_2, exp_z_dist_2)):
       print("Incorrect results from photoperiod_at_lat")
       return False
     if(not np.allclose(pred_anomaly_2, exp_anomaly_2)):
@@ -1125,12 +1036,6 @@ def photoperiod_test():
     if(not np.allclose(pred_day_len_3, exp_day_len_3)):
       print("Incorrect results from photoperiod_at_lat")
       return False
-    if(not np.allclose(pred_angle_3, exp_angle_3)):
-      print("Incorrect results from photoperiod_at_lat")
-      return False
-    if(not np.allclose(pred_z_dist_3, exp_z_dist_3)):
-      print("Incorrect results from photoperiod_at_lat")
-      return False
     if(not np.allclose(pred_anomaly_3, exp_anomaly_3)):
       print("Incorrect results from photoperiod_at_lat")
       return False
@@ -1141,12 +1046,6 @@ def photoperiod_test():
       print("Incorrect results from photoperiod_at_lat")
       return False
     if(not np.allclose(pred_day_len_4, exp_day_len_4)):
-      print("Incorrect results from photoperiod_on_day")
-      return False
-    if(not np.allclose(pred_angle_4, exp_angle_4)):
-      print("Incorrect results from photoperiod_on_day")
-      return False
-    if(not np.allclose(pred_z_dist_4, exp_z_dist_4)):
       print("Incorrect results from photoperiod_on_day")
       return False
     if(not np.allclose(pred_anomaly_4, exp_anomaly_4)):
@@ -1161,12 +1060,6 @@ def photoperiod_test():
     if(not np.allclose(pred_day_len_5, exp_day_len_5)):
       print("Incorrect results from photoperiod_on_day")
       return False
-    if(not np.allclose(pred_angle_5, exp_angle_5)):
-      print("Incorrect results from photoperiod_on_day")
-      return False
-    if(not np.allclose(pred_z_dist_5, exp_z_dist_5)):
-      print("Incorrect results from photoperiod_on_day")
-      return False
     if(not np.allclose(pred_anomaly_5, exp_anomaly_5)):
       print("Incorrect results from photoperiod_on_day")
       return False
@@ -1179,12 +1072,6 @@ def photoperiod_test():
     if(not np.allclose(pred_day_len_6, exp_day_len_6)):
       print("Incorrect results from photoperiod_on_day")
       return False
-    if(not np.allclose(pred_angle_6, exp_angle_6)):
-      print("Incorrect results from photoperiod_on_day")
-      return False
-    if(not np.allclose(pred_z_dist_6, exp_z_dist_6)):
-      print("Incorrect results from photoperiod_on_day")
-      return False
     if(not np.allclose(pred_anomaly_6, exp_anomaly_6)):
       print("Incorrect results from photoperiod_on_day")
       return False
@@ -1192,6 +1079,9 @@ def photoperiod_test():
       print("Incorrect results from photoperiod_on_day")
       return False
     if(not np.allclose(pred_delta_6, exp_delta_6)):
+      print("Incorrect results from photoperiod_on_day")
+      return False
+    if(not np.allclose(pred_float_vals, exp_float_vals)):
       print("Incorrect results from photoperiod_on_day")
       return False
 
@@ -1206,11 +1096,146 @@ def photoperiod_test():
 
 def water_flow_test():
   try:
-    print("Implementation not Complete")
-    return False
+    pred_hydro_conduct_1 = AEM.equations.hydraulic_conductivity(0.5, -10, .1, 4.2, 3.2)
+    pred_hydro_conduct_2 = AEM.equations.hydraulic_conductivity(0.5, -10, .1, 4.2, 4.8)
+    pred_hydro_conduct_3 = AEM.equations.hydraulic_conductivity(0.5, -10, .1, 3.2, 3.2)
+    pred_hydro_conduct_4 = AEM.equations.hydraulic_conductivity(0.5, -10, .18, 4.2, 4.8)
+    pred_hydro_conduct_5 = AEM.equations.hydraulic_conductivity(0.5, -20, .1, 4.2, 3.2)
+    pred_hydro_conduct_6 = AEM.equations.hydraulic_conductivity(0.5, -20, .18, 4.2, 4.8)
+    pred_hydro_conduct_7 = AEM.equations.hydraulic_conductivity(0.01, -65, .18, 5.7, 4.4)
+    pred_hydro_conduct_8 = AEM.equations.hydraulic_conductivity(0.01, -65, .18, 5.7, 5.6)
+    pred_hydro_conduct_9 = AEM.equations.hydraulic_conductivity(0.01, -65, .18, 5.7, 4.4)
+    pred_hydro_conduct_10 = AEM.equations.hydraulic_conductivity(0.01, -65, .28, 6.7, 5.6)
+    pred_hydro_conduct_11 = AEM.equations.hydraulic_conductivity(0.01, -82, .28, 5.7, 4.4)
+    pred_hydro_conduct_12 = AEM.equations.hydraulic_conductivity(0.01, -82, .18, 6.7, 5.6)
+    pred_hydro_conduct_13 = AEM.equations.hydraulic_conductivity(0.005, -65, .28, 6.3, 7)
+    pred_hydro_conduct_14 = AEM.equations.hydraulic_conductivity(0.005, -65, .37, 6.3, 7.2)
+    pred_hydro_conduct_15 = AEM.equations.hydraulic_conductivity(0.005, -65, .28, 6.7, 7)
+    pred_hydro_conduct_16 = AEM.equations.hydraulic_conductivity(0.005, -77, .37, 7.1, 7.2)
+    pred_hydro_conduct_17 = AEM.equations.hydraulic_conductivity(0.005, -62, .28, 6.3, 7)
+    pred_hydro_conduct_18 = AEM.equations.hydraulic_conductivity(0.005, -77, .37, 7.1, 7.2)
+    pred_hydro_conduct_19 = AEM.equations.hydraulic_conductivity(0.00025, -148, .42, 9.2, 12.3)
+    pred_hydro_conduct_20 = AEM.equations.hydraulic_conductivity(0.00025, -148, .42, 13.4, 13.6)
+    pred_hydro_conduct_21 = AEM.equations.hydraulic_conductivity(0.00025, -148, .42, 9.2, 12.3)
+    pred_hydro_conduct_22 = AEM.equations.hydraulic_conductivity(0.00025, -261, .57, 14.4, 13.6)
+    pred_hydro_conduct_23 = AEM.equations.hydraulic_conductivity(0.00025, -148, .42, 12.2, 12.3)
+    pred_hydro_conduct_24 = AEM.equations.hydraulic_conductivity(0.00025, -333, .57, 13.4, 13.6)
+    pred_water_infiltration_1 = AEM.equations.cummulative_water_infiltration(0.1, 10**-4, -0.5, -25, 1800)
+    pred_water_infiltration_2 = AEM.equations.cummulative_water_infiltration(0.1, 10**-4, -0.5, -25, 3600)
+    pred_water_infiltration_3 = AEM.equations.cummulative_water_infiltration(0.1, 10**-4, -0.5, -25, 7200)
+    pred_water_infiltration_4 = AEM.equations.cummulative_water_infiltration(0.3, 10**-4, -0.5, -60, 3600)
+    pred_water_infiltration_5 = AEM.equations.cummulative_water_infiltration(0.3, 10**-4, -3.2, -60, 3600)
+    pred_water_infiltration_6 = AEM.equations.cummulative_water_infiltration(0.3, 10**-4, -3.2, -60, 7200)
+    pred_water_infiltration_7 = AEM.equations.cummulative_water_infiltration(0.1, 10**-6, -3.2, -100, 3600)
+    pred_water_infiltration_8 = AEM.equations.cummulative_water_infiltration(0.1, 10**-6, -4.9, -100, 3600)
+    pred_water_infiltration_9 = AEM.equations.cummulative_water_infiltration(0.2, 10**-6, -4.9, -300, 3600)
+    pred_water_infiltration_10 = AEM.equations.cummulative_water_infiltration(0.25, 10**-6, -5.0, -300, 7200)
+    pred_water_infiltration_11 = AEM.equations.cummulative_water_infiltration(0.3, 10**-6, -5.0, -350, 1800)
+    pred_water_infiltration_12 = AEM.equations.cummulative_water_infiltration(0.3, 10**-6, -5.0, -350, 3600)
+    pred_hydro_vals = np.asarray([
+      pred_hydro_conduct_1, pred_hydro_conduct_2, pred_hydro_conduct_3, pred_hydro_conduct_4, pred_hydro_conduct_5,
+      pred_hydro_conduct_6, pred_hydro_conduct_7, pred_hydro_conduct_8, pred_hydro_conduct_9, pred_hydro_conduct_10,
+      pred_hydro_conduct_11, pred_hydro_conduct_12, pred_hydro_conduct_13, pred_hydro_conduct_14, pred_hydro_conduct_15,
+      pred_hydro_conduct_16, pred_hydro_conduct_17, pred_hydro_conduct_18, pred_hydro_conduct_19, pred_hydro_conduct_20,
+      pred_hydro_conduct_21, pred_hydro_conduct_22, pred_hydro_conduct_23, pred_hydro_conduct_24,
+    ])
+
+    location = Path("expected/water_flow/.npy")
+
+    files = [
+      "infiltration_1.npy", "infiltration_2.npy", "infiltration_3.npy", "infiltration_4.npy", 
+      "infiltration_5.npy", "infiltration_6.npy", "infiltration_7.npy", "infiltration_8.npy", 
+      "infiltration_9.npy", "infiltration_10.npy", "infiltration_11.npy", "infiltration_12.npy", 
+      "hydraulic_conductivity.npy",
+    ]
+    (exp_water_infiltration_1, exp_water_infiltration_2, exp_water_infiltration_3, 
+     exp_water_infiltration_4, exp_water_infiltration_5, exp_water_infiltration_6, 
+     exp_water_infiltration_7, exp_water_infiltration_8, exp_water_infiltration_9, 
+     exp_water_infiltration_10, exp_water_infiltration_11, exp_water_infiltration_12,
+     exp_hydro_vals) = load_np_files(location, files)
+    
+     # Compare size of actual and expected results
+    if(pred_water_infiltration_1.shape[0] != len(exp_water_infiltration_1)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_2.shape[0] != len(exp_water_infiltration_2)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_3.shape[0] != len(exp_water_infiltration_3)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_4.shape[0] != len(exp_water_infiltration_4)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_5.shape[0] != len(exp_water_infiltration_5)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_6.shape[0] != len(exp_water_infiltration_6)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_7.shape[0] != len(exp_water_infiltration_7)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_8.shape[0] != len(exp_water_infiltration_8)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_9.shape[0] != len(exp_water_infiltration_9)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_10.shape[0] != len(exp_water_infiltration_10)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_11.shape[0] != len(exp_water_infiltration_11)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+    if(pred_water_infiltration_12.shape[0] != len(exp_water_infiltration_12)):
+      print("Size mismatch occured running cummulative_water_infiltration")
+      return False
+
+    # Compare contents of the actual and expected results
+    if(not np.allclose(pred_hydro_vals, exp_hydro_vals)):
+      print("Incorrect results from hydraulic_conductivity")
+      return False
+    if(not np.allclose(pred_water_infiltration_1, exp_water_infiltration_1)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_2, exp_water_infiltration_2)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_3, exp_water_infiltration_3)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_4, exp_water_infiltration_4)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_5, exp_water_infiltration_5)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_6, exp_water_infiltration_6)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_7, exp_water_infiltration_7)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_8, exp_water_infiltration_8)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_9, exp_water_infiltration_9)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_10, exp_water_infiltration_10)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_11, exp_water_infiltration_11)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+    if(not np.allclose(pred_water_infiltration_12, exp_water_infiltration_12)):
+      print("Incorrect results from cummulative_water_infiltration")
+      return False
+
 
   except Exception:
-    print("Exception occured while running evapotranspiration models")
+    print("Exception occured while running water flow tests")
     traceback.print_exc()
     return False
   

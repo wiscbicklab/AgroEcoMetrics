@@ -676,7 +676,7 @@ def model_gdd(
 
 
 # Photoperiod Tools
-def photoperiod_at_lat(doys: np.ndarray, lat: float) -> Tuple[np.array, np.array, np.array, np.array, np.array, np.array]:
+def photoperiod_at_lat(doys: np.ndarray, lat: float) -> Tuple[np.array, float, float, np.array, np.array, np.array]:
     """
     Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.
 
@@ -783,7 +783,7 @@ def hydraulic_conductivity(
         b: Is the exponent of moisture release.
 
     Returns:
-        The calculated hydraulic conductivity of the soil given the parameters ().
+        The calculated hydraulic conductivity of the soil given the parameters.
     """
     wetting_front_water_potential = air_entry_water_potential* (volumetric_water_content / sat_water_content) ** (-b)
 
