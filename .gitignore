@@ -4,6 +4,8 @@ private/
 
 # Ignore Test Files
 Tests/
+tests/
+local_Tests/
 
 # Python bytecode and cache
 __pycache__/

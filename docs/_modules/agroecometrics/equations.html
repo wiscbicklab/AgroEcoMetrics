@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://wiscbicklab.github.io//AgroEcoMetrics/_modules/agroecometrics/equations.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>agroecometrics.equations - AgroEcoMetrics 0.1.0 documentation</title>
+        <title>agroecometrics.equations - AgroEcoMetrics 0.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.1.0 documentation</div></a>
+      <a href="../../index.html"><div class="brand">AgroEcoMetrics 0.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,7 +189,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0 documentation</span>
+  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -518,7 +518,7 @@
         <span class="n">thermal_dif</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.203</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Models soil temperature over a full day (in 5-minute intervals) across depth </span>
+<span class="sd">    Models soil temperature over a full day across depth </span>
 <span class="sd">    using air temperature data to parameterize a sinusoidal model.</span>
 
 <span class="sd">    Args:</span>
@@ -724,7 +724,7 @@
         <span class="n">temp_min</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">temp_max</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">doys</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">lats</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="n">lat</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes evapotranspiration using the Hargreaves model</span>
@@ -733,7 +733,7 @@
 <span class="sd">        temp_min: A numpy array of minimum daily temperatures. (°C)</span>
 <span class="sd">        temp_max: A numpy array of maximum daily temperatures. (°C)</span>
 <span class="sd">        doys:     A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</span>
-<span class="sd">        lats:     A numpy array of latitudes. (Degrees, North is positive)</span>
+<span class="sd">        lat:      The latitude of the location data is calculated at. (Degrees, North is positive)</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        Daily evapotranspiration clipped to a minimum of zero. (mm/day)</span>
@@ -746,7 +746,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All inputs must be the same length&quot;</span><span class="p">)</span>
     
     <span class="c1"># Model Calulations</span>
-    <span class="n">Ra</span> <span class="o">=</span> <span class="n">__compute_solar_radiation</span><span class="p">(</span><span class="n">doys</span><span class="p">,</span> <span class="n">lats</span><span class="p">)</span>
+    <span class="n">Ra</span> <span class="o">=</span> <span class="n">__compute_solar_radiation</span><span class="p">(</span><span class="n">doys</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
     <span class="n">T_avg</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_min</span> <span class="o">+</span> <span class="n">temp_max</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">PET</span> <span class="o">=</span> <span class="mf">0.0023</span> <span class="o">*</span> <span class="n">Ra</span> <span class="o">*</span> <span class="p">(</span><span class="n">T_avg</span> <span class="o">+</span> <span class="mf">17.8</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">temp_max</span> <span class="o">-</span> <span class="n">temp_min</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
 
@@ -957,7 +957,7 @@
 <span class="c1"># Photoperiod Tools</span>
 <div class="viewcode-block" id="photoperiod_at_lat">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.equations.photoperiod_at_lat">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">photoperiod_at_lat</span><span class="p">(</span><span class="n">doys</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">photoperiod_at_lat</span><span class="p">(</span><span class="n">doys</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.</span>
 
@@ -968,7 +968,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A tuple containing</span>
 <span class="sd">            - Photoperiod, daylight hours, at the given latitude for the given days.</span>
-<span class="sd">            - The angle of the sum below the horizon.</span>
+<span class="sd">            - The angle of the sun below the horizon.</span>
 <span class="sd">            - The zenithal distance of the sun in degrees.</span>
 <span class="sd">            - The mean anomaly of the sun.</span>
 <span class="sd">            - Lambda.</span>
@@ -1001,7 +1001,7 @@
     
 <div class="viewcode-block" id="photoperiod_on_day">
 <a class="viewcode-back" href="../../modules.html#agroecometrics.equations.photoperiod_on_day">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">photoperiod_on_day</span><span class="p">(</span><span class="n">doys</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lats</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">photoperiod_on_day</span><span class="p">(</span><span class="n">doys</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lats</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes photoperiod for a given near polar regions.</span>
 
@@ -1070,7 +1070,7 @@
 <span class="sd">        b: Is the exponent of moisture release.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The calculated hydraulic conductivity of the soil given the parameters ().</span>
+<span class="sd">        The calculated hydraulic conductivity of the soil given the parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">wetting_front_water_potential</span> <span class="o">=</span> <span class="n">air_entry_water_potential</span><span class="o">*</span> <span class="p">(</span><span class="n">volumetric_water_content</span> <span class="o">/</span> <span class="n">sat_water_content</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">)</span>
 
@@ -1154,7 +1154,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../_static/documentation_options.js?v=a58bc63e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

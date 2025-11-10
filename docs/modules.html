@@ -7,7 +7,7 @@
         <link rel="canonical" href="https://wiscbicklab.github.io//AgroEcoMetrics/modules.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>agroecometrics package - AgroEcoMetrics 0.1.0 documentation</title>
+        <title>agroecometrics package - AgroEcoMetrics 0.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -167,7 +167,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">AgroEcoMetrics 0.1.0 documentation</div></a>
+      <a href="index.html"><div class="brand">AgroEcoMetrics 0.1.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.0 documentation</span>
+  <span class="sidebar-brand-text">AgroEcoMetrics 0.1.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -462,7 +462,7 @@ The first depth is max_depth/num_depths and the last depth is max_depth.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.hargreaves">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">hargreaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#hargreaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.hargreaves" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">hargreaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#hargreaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.hargreaves" title="Link to this definition">¶</a></dt>
 <dd><p>Computes evapotranspiration using the Hargreaves model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -470,7 +470,7 @@ The first depth is max_depth/num_depths and the last depth is max_depth.</p>
 <li><p><strong>temp_min</strong> – A numpy array of minimum daily temperatures. (°C)</p></li>
 <li><p><strong>temp_max</strong> – A numpy array of maximum daily temperatures. (°C)</p></li>
 <li><p><strong>doys</strong> – A numpy array containing the day of year, days since January 1st. (January 1st = 0 and December 31st = 364)</p></li>
-<li><p><strong>lats</strong> – A numpy array of latitudes. (Degrees, North is positive)</p></li>
+<li><p><strong>lat</strong> – The latitude of the location data is calculated at. (Degrees, North is positive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -497,7 +497,7 @@ The first depth is max_depth/num_depths and the last depth is max_depth.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The calculated hydraulic conductivity of the soil given the parameters ().</p>
+<dd class="field-even"><p>The calculated hydraulic conductivity of the soil given the parameters.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -527,7 +527,7 @@ The first depth is max_depth/num_depths and the last depth is max_depth.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.model_3d_soil_temp">
 <span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">model_3d_soil_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">air_temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_dif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.203</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#model_3d_soil_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.model_3d_soil_temp" title="Link to this definition">¶</a></dt>
-<dd><p>Models soil temperature over a full day (in 5-minute intervals) across depth
+<dd><p>Models soil temperature over a full day across depth
 using air temperature data to parameterize a sinusoidal model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -697,7 +697,7 @@ Air temperature are assumed to represent a single day and be equally spaced out 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.photoperiod_at_lat">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_at_lat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_at_lat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_at_lat" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_at_lat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_at_lat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_at_lat" title="Link to this definition">¶</a></dt>
 <dd><p>Computes photoperiod for a given latitude and day of year. Not accurate near polar regions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -710,7 +710,7 @@ Air temperature are assumed to represent a single day and be equally spaced out 
 <dd class="field-even"><p><dl class="simple">
 <dt>A tuple containing</dt><dd><ul class="simple">
 <li><p>Photoperiod, daylight hours, at the given latitude for the given days.</p></li>
-<li><p>The angle of the sum below the horizon.</p></li>
+<li><p>The angle of the sun below the horizon.</p></li>
 <li><p>The zenithal distance of the sun in degrees.</p></li>
 <li><p>The mean anomaly of the sun.</p></li>
 <li><p>Lambda.</p></li>
@@ -725,7 +725,7 @@ Air temperature are assumed to represent a single day and be equally spaced out 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="agroecometrics.equations.photoperiod_on_day">
-<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_on_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_on_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_on_day" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">agroecometrics.equations.</span></span><span class="sig-name descname"><span class="pre">photoperiod_on_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agroecometrics/equations.html#photoperiod_on_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agroecometrics.equations.photoperiod_on_day" title="Link to this definition">¶</a></dt>
 <dd><p>Computes photoperiod for a given near polar regions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1257,7 +1257,7 @@ positive and the southern hemisphere is negative.</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=01f34227"></script>
+</div><script src="_static/documentation_options.js?v=a58bc63e"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
