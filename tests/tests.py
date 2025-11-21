@@ -710,6 +710,7 @@ def model_gdd_test():
     pred_day_gdd_4, pred_day_gdd_sum_4 = AEM.equations.model_gdd(daily_avg_temp, 18, 22, 25)
     pred_day_gdd_5, pred_day_gdd_sum_5 = AEM.equations.model_gdd(daily_avg_temp, 20, 22, 25)
     pred_day_gdd_6, pred_day_gdd_sum_6 = AEM.equations.model_gdd(daily_avg_temp, 18, 20, 26)
+    pred_day_gdd_7, pred_day_gdd_sum_7 = AEM.equations.model_gdd(daily_avg_temp, 10)
 
     pred_min_gdd_1, pred_min_gdd_sum_1 = AEM.equations.model_gdd(minute_avg_temp, 18, time_duration=1/(12*24))
     pred_min_gdd_2, pred_min_gdd_sum_2 = AEM.equations.model_gdd(minute_avg_temp, 20, time_duration=1/(12*24))
@@ -717,26 +718,27 @@ def model_gdd_test():
     pred_min_gdd_4, pred_min_gdd_sum_4 = AEM.equations.model_gdd(minute_avg_temp, 18, 22, 25, 1/(12*24))
     pred_min_gdd_5, pred_min_gdd_sum_5 = AEM.equations.model_gdd(minute_avg_temp, 20, 22, 25, 1/(12*24))
     pred_min_gdd_6, pred_min_gdd_sum_6 = AEM.equations.model_gdd(minute_avg_temp, 18, 20, 28, 1/(12*24))
+    pred_min_gdd_7, pred_min_gdd_sum_7 = AEM.equations.model_gdd(minute_avg_temp, 10, time_duration=1/(12*24))
 
 
     # Load expected results
     location = Path("expected/model_gdd/.npy")
     files = [
       "daily_gdd_1.npy", "daily_gdd_2.npy", "daily_gdd_3.npy",
-      "daily_gdd_4.npy", "daily_gdd_5.npy", "daily_gdd_6.npy",
+      "daily_gdd_4.npy", "daily_gdd_5.npy", "daily_gdd_6.npy", "daily_gdd_7.npy",
       "daily_gdd_sum_1.npy", "daily_gdd_sum_2.npy", "daily_gdd_sum_3.npy",
-      "daily_gdd_sum_4.npy", "daily_gdd_sum_5.npy", "daily_gdd_sum_6.npy",
+      "daily_gdd_sum_4.npy", "daily_gdd_sum_5.npy", "daily_gdd_sum_6.npy", "daily_gdd_sum_7.npy",
       "minute_gdd_1.npy", "minute_gdd_2.npy", "minute_gdd_3.npy",
-      "minute_gdd_4.npy", "minute_gdd_5.npy", "minute_gdd_6.npy",
+      "minute_gdd_4.npy", "minute_gdd_5.npy", "minute_gdd_6.npy", "minute_gdd_7.npy",
       "minute_gdd_sum_1.npy", "minute_gdd_sum_2.npy", "minute_gdd_sum_3.npy",
-      "minute_gdd_sum_4.npy", "minute_gdd_sum_5.npy", "minute_gdd_sum_6.npy",
+      "minute_gdd_sum_4.npy", "minute_gdd_sum_5.npy", "minute_gdd_sum_6.npy", "minute_gdd_sum_7.npy",
     ]
     (exp_day_gdd_1, exp_day_gdd_2, exp_day_gdd_3, exp_day_gdd_4, exp_day_gdd_5,
-     exp_day_gdd_6, exp_day_gdd_sum_1, exp_day_gdd_sum_2, exp_day_gdd_sum_3, 
-     exp_day_gdd_sum_4, exp_day_gdd_sum_5, exp_day_gdd_sum_6, exp_min_gdd_1,
-     exp_min_gdd_2, exp_min_gdd_3, exp_min_gdd_4, exp_min_gdd_5, exp_min_gdd_6, 
+     exp_day_gdd_6, exp_day_gdd_7, exp_day_gdd_sum_1, exp_day_gdd_sum_2, exp_day_gdd_sum_3, 
+     exp_day_gdd_sum_4, exp_day_gdd_sum_5, exp_day_gdd_sum_6, exp_day_gdd_sum_7, exp_min_gdd_1,
+     exp_min_gdd_2, exp_min_gdd_3, exp_min_gdd_4, exp_min_gdd_5, exp_min_gdd_6, exp_min_gdd_7, 
      exp_min_gdd_sum_1, exp_min_gdd_sum_2, exp_min_gdd_sum_3, exp_min_gdd_sum_4,
-     exp_min_gdd_sum_5, exp_min_gdd_sum_6
+     exp_min_gdd_sum_5, exp_min_gdd_sum_6, exp_min_gdd_sum_7
     ) = load_np_files(location, files)
 
     # Compare size of actual and expected results
@@ -758,6 +760,9 @@ def model_gdd_test():
     if(pred_day_gdd_6.shape[0] != len(exp_day_gdd_6)):
       print("Size mismatch occured running growing degree day model on daily data")
       return False
+    if(pred_day_gdd_7.shape[0] != len(exp_day_gdd_7)):
+      print("Size mismatch occured running growing degree day model on daily data")
+      return False
     if(pred_day_gdd_sum_1.shape[0] != len(exp_day_gdd_sum_1)):
       print("Size mismatch occured running growing degree day model on daily data")
       return False
@@ -774,6 +779,9 @@ def model_gdd_test():
       print("Size mismatch occured running growing degree day model on daily data")
       return False
     if(pred_day_gdd_sum_6.shape[0] != len(exp_day_gdd_sum_6)):
+      print("Size mismatch occured running growing degree day model on daily data")
+      return False
+    if(pred_day_gdd_sum_7.shape[0] != len(exp_day_gdd_sum_7)):
       print("Size mismatch occured running growing degree day model on daily data")
       return False
     if(pred_min_gdd_1.shape[0] != len(exp_min_gdd_1)):
@@ -794,6 +802,9 @@ def model_gdd_test():
     if(pred_min_gdd_6.shape[0] != len(exp_min_gdd_6)):
       print("Size mismatch occured running growing degree day model on 5 minute data")
       return False
+    if(pred_min_gdd_7.shape[0] != len(exp_min_gdd_7)):
+      print("Size mismatch occured running growing degree day model on 5 minute data")
+      return False
     if(pred_min_gdd_sum_1.shape[0] != len(exp_min_gdd_sum_1)):
       print("Size mismatch occured running growing degree day model on 5 minute data")
       return False
@@ -810,6 +821,9 @@ def model_gdd_test():
       print("Size mismatch occured running growing degree day model on 5 minute data")
       return False
     if(pred_min_gdd_sum_6.shape[0] != len(exp_min_gdd_sum_6)):
+      print("Size mismatch occured running growing degree day model on 5 minute data")
+      return False
+    if(pred_min_gdd_sum_7.shape[0] != len(exp_min_gdd_sum_7)):
       print("Size mismatch occured running growing degree day model on 5 minute data")
       return False
 
@@ -832,6 +846,9 @@ def model_gdd_test():
     if(not np.allclose(pred_day_gdd_6, exp_day_gdd_6)):
       print("Incorrect results from growing degree day model on daily data")
       return False
+    if(not np.allclose(pred_day_gdd_7, exp_day_gdd_7)):
+      print("Incorrect results from growing degree day model on daily data")
+      return False
     if(not np.allclose(pred_day_gdd_sum_1, exp_day_gdd_sum_1)):
       print("Incorrect results from growing degree day model on daily data")
       return False
@@ -848,6 +865,9 @@ def model_gdd_test():
       print("Incorrect results from growing degree day model on daily data")
       return False
     if(not np.allclose(pred_day_gdd_sum_6, exp_day_gdd_sum_6)):
+      print("Incorrect results from growing degree day model on daily data")
+      return False
+    if(not np.allclose(pred_day_gdd_sum_7, exp_day_gdd_sum_7)):
       print("Incorrect results from growing degree day model on daily data")
       return False
     if(not np.allclose(pred_min_gdd_1, exp_min_gdd_1)):
@@ -868,6 +888,9 @@ def model_gdd_test():
     if(not np.allclose(pred_min_gdd_6, exp_min_gdd_6)):
       print("Incorrect results from growing degree day model on 5 minute data")
       return False
+    if(not np.allclose(pred_min_gdd_7, exp_min_gdd_7)):
+      print("Incorrect results from growing degree day model on 5 minute data")
+      return False
     if(not np.allclose(pred_min_gdd_sum_1, exp_min_gdd_sum_1)):
       print("Incorrect results from growing degree day model on 5 minute data")
       return False
@@ -884,6 +907,9 @@ def model_gdd_test():
       print("Incorrect results from growing degree day model on 5 minute data")
       return False
     if(not np.allclose(pred_min_gdd_sum_6, exp_min_gdd_sum_6)):
+      print("Incorrect results from growing degree day model on 5 minute data")
+      return False
+    if(not np.allclose(pred_min_gdd_sum_7, exp_min_gdd_sum_7)):
       print("Incorrect results from growing degree day model on 5 minute data")
       return False
 
