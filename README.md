@@ -77,3 +77,9 @@ AEM.visualizations.plot_air_temp(avg_air_temp, air_temp_pred, date_times, image_
 
 This script loads weather data filtered to only 2024, creates an air temperature models from the data, and saves a plot of the predicted temperatures from the model against the actual temperatures.
 
+
+## Testing
+Within the tests folder is 5 min data for July 5th 2025 and Daily Data for the month of July 2025 both from Arlington Wisconsin. In order to test that AEM is working as expected, you can run tests.py in this same folder. This test will test each of the equations functions, and give you information about whether or not the tests suceeded. If all tests succeed the package is working as expected.
+
+
+
